@@ -1,0 +1,150 @@
+{
+  "templateName": "Masters Classic 9-Cat",
+  "categories": [
+    {
+      "name": "Past Champions",
+      "sortOrder": 1,
+      "golferNames": [
+        "Tiger Woods",
+        "Phil Mickelson",
+        "Bubba Watson",
+        "Adam Scott",
+        "Sergio Garcia",
+        "Patrick Reed",
+        "Jordan Spieth",
+        "Dustin Johnson",
+        "Hideki Matsuyama",
+        "Scottie Scheffler",
+        "Jon Rahm"
+      ]
+    },
+    {
+      "name": "World Top 10",
+      "sortOrder": 2,
+      "golferNames": [
+        "Scottie Scheffler",
+        "Xander Schauffele",
+        "Rory McIlroy",
+        "Jon Rahm",
+        "Collin Morikawa",
+        "Ludvig Åberg",
+        "Wyndham Clark",
+        "Viktor Hovland",
+        "Patrick Cantlay",
+        "Matt Fitzpatrick"
+      ]
+    },
+    {
+      "name": "Contenders",
+      "sortOrder": 3,
+      "golferNames": [
+        "Brooks Koepka",
+        "Bryson DeChambeau",
+        "Tommy Fleetwood",
+        "Tony Finau",
+        "Sam Burns",
+        "Shane Lowry",
+        "Cameron Smith",
+        "Justin Thomas",
+        "Sungjae Im",
+        "Cameron Young"
+      ]
+    },
+    {
+      "name": "Dark Horses",
+      "sortOrder": 4,
+      "golferNames": [
+        "Max Homa",
+        "Sahith Theegala",
+        "Russell Henley",
+        "Keegan Bradley",
+        "Jason Day",
+        "Robert MacIntyre",
+        "Corey Conners",
+        "Davis Riley",
+        "Chris Kirk",
+        "Akshay Bhatia"
+      ]
+    },
+    {
+      "name": "Veterans",
+      "sortOrder": 5,
+      "golferNames": [
+        "Tiger Woods",
+        "Phil Mickelson",
+        "Adam Scott",
+        "Sergio Garcia",
+        "Bubba Watson",
+        "Jason Day",
+        "Keegan Bradley",
+        "Lucas Glover",
+        "Billy Horschel",
+        "Brian Harman"
+      ]
+    },
+    {
+      "name": "International",
+      "sortOrder": 6,
+      "golferNames": [
+        "Rory McIlroy",
+        "Jon Rahm",
+        "Viktor Hovland",
+        "Ludvig Åberg",
+        "Matt Fitzpatrick",
+        "Tommy Fleetwood",
+        "Shane Lowry",
+        "Hideki Matsuyama",
+        "Cameron Smith",
+        "Min Woo Lee"
+      ]
+    },
+    {
+      "name": "Rising Stars",
+      "sortOrder": 7,
+      "golferNames": [
+        "Tom Kim",
+        "Nick Dunlap",
+        "Akshay Bhatia",
+        "Ludvig Åberg",
+        "Robert MacIntyre",
+        "Sahith Theegala",
+        "Davis Riley",
+        "Cameron Young",
+        "Si Woo Kim",
+        "Will Zalatoris"
+      ]
+    },
+    {
+      "name": "Fan Favorites",
+      "sortOrder": 8,
+      "golferNames": [
+        "Tiger Woods",
+        "Phil Mickelson",
+        "Rory McIlroy",
+        "Jordan Spieth",
+        "Bryson DeChambeau",
+        "Brooks Koepka",
+        "Dustin Johnson",
+        "Rickey Fowler placeholder",
+        "Justin Thomas",
+        "Tony Finau"
+      ]
+    },
+    {
+      "name": "Longshots",
+      "sortOrder": 9,
+      "golferNames": [
+        "Denny McCarthy",
+        "Sepp Straka",
+        "Billy Horschel",
+        "Lucas Glover",
+        "Brian Harman",
+        "Min Woo Lee",
+        "Nick Dunlap",
+        "Si Woo Kim",
+        "Will Zalatoris",
+        "Bubba Watson"
+      ]
+    }
+  ]
+}
