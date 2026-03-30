@@ -78,12 +78,8 @@ export default function DashboardPage() {
 function PoolCard({ pool }: { pool: PoolItem }) {
   const badge = getBadge(pool);
 
-  const href = pool.isOrganizer
-    ? `/pool/${pool.id}/manage`
-    : `/dashboard`;
-
   return (
-    <Link href={href} className="block rounded-lg border border-green-200 p-4 hover:border-green-400 transition">
+    <div className="rounded-lg border border-green-200 p-4">
       <div className="flex items-start justify-between">
         <div className="min-w-0">
           <h3 className="font-semibold text-green-900 truncate">{pool.name}</h3>
@@ -103,11 +99,14 @@ function PoolCard({ pool }: { pool: PoolItem }) {
         <p className="mt-2 text-xs text-green-500">{badge.sub}</p>
       )}
       {pool.isOrganizer && (
-        <span className="mt-2 inline-block rounded bg-green-100 px-2 py-0.5 text-xs text-green-700">
-          Organizer
-        </span>
+        <Link
+          href={`/pool/${pool.id}/manage`}
+          className="mt-3 inline-block rounded bg-green-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-900"
+        >
+          Manage Pool
+        </Link>
       )}
-    </Link>
+    </div>
   );
 }
 
