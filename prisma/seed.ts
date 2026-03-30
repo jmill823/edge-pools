@@ -78,6 +78,7 @@ async function main() {
       endDate: new Date("2026-04-13T00:00:00Z"),
       status: "UPCOMING",
       year: 2026,
+      slashGolfTournId: "014",
     },
   });
   console.log(`Created tournament: ${tournament.name}`);
