@@ -36,11 +36,30 @@ export default function ManagePoolPage({
   const [pool, setPool] = useState<PoolData | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Edit form state
+  const [editName, setEditName] = useState("");
+  const [editDeadline, setEditDeadline] = useState("");
+  const [editMaxEntries, setEditMaxEntries] = useState(1);
+  const [editRules, setEditRules] = useState("");
 
   const loadPool = useCallback(() => {
     fetch(`/api/pools/${params.id}`)
       .then((r) => r.json())
-      .then(setPool);
+      .then((data) => {
+        setPool(data);
+        // Sync edit form state
+        setEditName(data.name || "");
+        setEditDeadline(
+          data.picksDeadline
+            ? toLocalDatetime(data.picksDeadline)
+            : ""
+        );
+        setEditMaxEntries(data.maxEntries || 1);
+        setEditRules(data.rules || "");
+      });
   }, [params.id]);
 
   const loadMembers = useCallback(() => {
@@ -83,6 +102,32 @@ export default function ManagePoolPage({
     loadPool();
   }
 
+  async function saveSettings() {
+    setSaving(true);
+    await fetch(`/api/pools/${params.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: editName.trim(),
+        picksDeadline: new Date(editDeadline).toISOString(),
+        maxEntries: editMaxEntries,
+        rules: editRules.trim() || null,
+      }),
+    });
+    setSaving(false);
+    setEditing(false);
+    loadPool();
+  }
+
+  function cancelEdit() {
+    if (!pool) return;
+    setEditName(pool.name);
+    setEditDeadline(toLocalDatetime(pool.picksDeadline));
+    setEditMaxEntries(pool.maxEntries);
+    setEditRules(pool.rules || "");
+    setEditing(false);
+  }
+
   function copyLink() {
     if (!pool) return;
     const url = `${window.location.origin}/join/${pool.inviteCode}`;
@@ -115,6 +160,8 @@ export default function ManagePoolPage({
       ? `${window.location.origin}/join/${pool.inviteCode}`
       : "";
 
+  const isSetup = pool.status === "SETUP";
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
       {/* Header */}
@@ -142,7 +189,7 @@ export default function ManagePoolPage({
 
       {/* Controls */}
       <div className="mt-6 flex flex-wrap gap-3">
-        {pool.status === "SETUP" && (
+        {isSetup && (
           <button
             onClick={() => updateStatus("OPEN")}
             className="rounded-md bg-green-800 px-4 py-2 text-sm font-medium text-white hover:bg-green-900"
@@ -169,6 +216,152 @@ export default function ManagePoolPage({
           {pool.acceptingMembers ? "Close to New Members" : "Reopen to Members"}
         </button>
       </div>
+
+      {/* Edit Settings — SETUP only */}
+      {isSetup && (
+        <div className="mt-8 rounded-lg border border-green-200 p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-green-900">
+              Pool Settings
+            </h2>
+            {!editing && (
+              <button
+                onClick={() => setEditing(true)}
+                className="rounded border border-green-300 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50"
+              >
+                Edit Settings
+              </button>
+            )}
+          </div>
+
+          {editing ? (
+            <div className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-green-700 uppercase tracking-wide">
+                  Pool Name
+                </label>
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="mt-1 w-full rounded border border-green-200 px-3 py-2 text-sm text-green-900 focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-green-700 uppercase tracking-wide">
+                  Picks Deadline
+                </label>
+                <input
+                  type="datetime-local"
+                  value={editDeadline}
+                  onChange={(e) => setEditDeadline(e.target.value)}
+                  className="mt-1 w-full rounded border border-green-200 px-3 py-2 text-sm text-green-900 focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-green-700 uppercase tracking-wide">
+                  Max Entries Per Player
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={5}
+                  value={editMaxEntries}
+                  onChange={(e) =>
+                    setEditMaxEntries(
+                      Math.max(1, Math.min(5, Number(e.target.value)))
+                    )
+                  }
+                  className="mt-1 w-24 rounded border border-green-200 px-3 py-2 text-sm text-green-900 focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-green-700 uppercase tracking-wide">
+                  House Rules
+                </label>
+                <textarea
+                  value={editRules}
+                  onChange={(e) => setEditRules(e.target.value)}
+                  rows={3}
+                  placeholder="Optional rules, prize info, etc."
+                  className="mt-1 w-full rounded border border-green-200 px-3 py-2 text-sm text-green-900 placeholder:text-green-400 focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-400"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={saveSettings}
+                  disabled={saving || !editName.trim()}
+                  className="rounded-md bg-green-800 px-4 py-2 text-sm font-medium text-white hover:bg-green-900 disabled:opacity-50"
+                >
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+                <button
+                  onClick={cancelEdit}
+                  className="rounded-md border border-green-300 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="text-xs text-green-500">Pool Name</dt>
+                <dd className="font-medium text-green-900">{pool.name}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-green-500">Picks Deadline</dt>
+                <dd className="font-medium text-green-900">
+                  {new Date(pool.picksDeadline).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-green-500">Max Entries</dt>
+                <dd className="font-medium text-green-900">
+                  {pool.maxEntries}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-green-500">House Rules</dt>
+                <dd className="font-medium text-green-900">
+                  {pool.rules || "—"}
+                </dd>
+              </div>
+            </dl>
+          )}
+        </div>
+      )}
+
+      {/* Edit Categories link — SETUP only */}
+      {isSetup && (
+        <div className="mt-4">
+          <Link
+            href={`/pool/${pool.id}/categories`}
+            className="inline-flex items-center gap-2 rounded-md border border-green-300 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+            Edit Categories &amp; Golfers
+          </Link>
+        </div>
+      )}
 
       {/* Invite section */}
       <div className="mt-8 rounded-lg border border-green-200 bg-green-50 p-4">
@@ -264,8 +457,8 @@ export default function ManagePoolPage({
         </div>
       </div>
 
-      {/* Rules */}
-      {pool.rules && (
+      {/* Rules (read-only display when not in SETUP) */}
+      {!isSetup && pool.rules && (
         <div className="mt-8">
           <h2 className="text-lg font-semibold text-green-900">House Rules</h2>
           <p className="mt-2 whitespace-pre-wrap text-sm text-green-700">
@@ -285,6 +478,13 @@ export default function ManagePoolPage({
       </div>
     </div>
   );
+}
+
+/** Convert ISO string to datetime-local input value */
+function toLocalDatetime(iso: string): string {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function StatusBadge({ status }: { status: string }) {
