@@ -1,0 +1,82 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { getOrCreateUser } from "@/lib/auth";
+
+/**
+ * PATCH — Edit picks for an existing entry (before deadline).
+ * Body: { picks: [{ categoryId, golferId }] }
+ */
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string; entryId: string } }
+) {
+  const user = await getOrCreateUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const entry = await prisma.entry.findUnique({
+    where: { id: params.entryId },
+    include: { pool: true },
+  });
+
+  if (!entry) {
+    return NextResponse.json({ error: "Entry not found" }, { status: 404 });
+  }
+
+  if (entry.poolId !== params.id) {
+    return NextResponse.json({ error: "Entry does not belong to this pool" }, { status: 400 });
+  }
+
+  // Only entry owner can edit
+  if (entry.userId !== user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Deadline enforcement
+  const now = new Date();
+  if (now > entry.pool.picksDeadline) {
+    return NextResponse.json(
+      { error: "Picks deadline has passed. Your picks are locked." },
+      { status: 400 }
+    );
+  }
+
+  const body = await req.json();
+  const picks: { categoryId: string; golferId: string }[] = body.picks;
+
+  if (!Array.isArray(picks) || picks.length === 0) {
+    return NextResponse.json(
+      { error: "Picks are required" },
+      { status: 400 }
+    );
+  }
+
+  // No-reuse validation
+  const golferIds = picks.map((p) => p.golferId);
+  const uniqueGolferIds = new Set(golferIds);
+  if (uniqueGolferIds.size !== golferIds.length) {
+    return NextResponse.json(
+      { error: "Cannot pick the same golfer in multiple categories" },
+      { status: 400 }
+    );
+  }
+
+  // Replace all picks for this entry
+  await prisma.$transaction(async (tx) => {
+    await tx.pick.deleteMany({ where: { entryId: params.entryId } });
+    await tx.pick.createMany({
+      data: picks.map((p) => ({
+        entryId: params.entryId,
+        categoryId: p.categoryId,
+        golferId: p.golferId,
+      })),
+    });
+    await tx.entry.update({
+      where: { id: params.entryId },
+      data: { updatedAt: new Date() },
+    });
+  });
+
+  return NextResponse.json({ success: true });
+}

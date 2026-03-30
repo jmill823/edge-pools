@@ -457,6 +457,19 @@ export default function ManagePoolPage({
         </div>
       </div>
 
+      {/* View Entries link */}
+      <div className="mt-6">
+        <Link
+          href={`/pool/${pool.id}/manage/entries`}
+          className="inline-flex items-center gap-2 rounded-md border border-green-300 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
+        >
+          View All Entries
+          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
+            {pool.entryCount}
+          </span>
+        </Link>
+      </div>
+
       {/* Rules (read-only display when not in SETUP) */}
       {!isSetup && pool.rules && (
         <div className="mt-8">

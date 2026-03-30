@@ -31,7 +31,11 @@ export async function GET(
     return NextResponse.json({ error: "Pool not found" }, { status: 404 });
   }
 
-  if (pool.organizerId !== user.id) {
+  // Allow any pool member (or organizer) to view categories
+  const membership = await prisma.poolMember.findUnique({
+    where: { poolId_userId: { poolId: params.id, userId: user.id } },
+  });
+  if (!membership && pool.organizerId !== user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

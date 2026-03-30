@@ -98,14 +98,33 @@ function PoolCard({ pool }: { pool: PoolItem }) {
       {badge.sub && (
         <p className="mt-2 text-xs text-green-500">{badge.sub}</p>
       )}
-      {pool.isOrganizer && (
-        <Link
-          href={`/pool/${pool.id}/manage`}
-          className="mt-3 inline-block rounded bg-green-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-900"
-        >
-          Manage Pool
-        </Link>
-      )}
+      <div className="mt-3 flex flex-wrap gap-2">
+        {pool.isOrganizer && (
+          <Link
+            href={`/pool/${pool.id}/manage`}
+            className="inline-block rounded bg-green-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-900"
+          >
+            Manage Pool
+          </Link>
+        )}
+        {(pool.status === "OPEN" || pool.status === "SETUP") &&
+          !pool.hasSubmittedPicks && (
+            <Link
+              href={`/pool/${pool.id}/picks`}
+              className="inline-block rounded bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
+            >
+              Make Picks
+            </Link>
+          )}
+        {pool.hasSubmittedPicks && (
+          <Link
+            href={`/pool/${pool.id}/my-entries`}
+            className="inline-block rounded border border-green-300 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50"
+          >
+            View Picks
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
