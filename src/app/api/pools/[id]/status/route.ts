@@ -37,5 +37,30 @@ export async function PATCH(
     data: { status },
   });
 
+  // When pool goes LIVE, also set tournament to LIVE
+  if (status === "LIVE") {
+    await prisma.tournament.update({
+      where: { id: pool.tournamentId },
+      data: { status: "LIVE" },
+    });
+  }
+
+  // When pool completes, check if all pools for tournament are complete
+  if (status === "COMPLETE") {
+    const activePools = await prisma.pool.count({
+      where: {
+        tournamentId: pool.tournamentId,
+        status: { not: "COMPLETE" },
+        id: { not: pool.id },
+      },
+    });
+    if (activePools === 0) {
+      await prisma.tournament.update({
+        where: { id: pool.tournamentId },
+        data: { status: "COMPLETE" },
+      });
+    }
+  }
+
   return NextResponse.json(updated);
 }

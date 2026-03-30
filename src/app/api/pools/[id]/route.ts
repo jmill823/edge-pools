@@ -32,11 +32,16 @@ export async function GET(
     return NextResponse.json({ error: "Pool not found" }, { status: 404 });
   }
 
+  const pendingReplacements = await prisma.pendingReplacement.count({
+    where: { poolId: pool.id, status: "PENDING" },
+  });
+
   return NextResponse.json({
     ...pool,
     memberCount: pool._count.members,
     entryCount: pool._count.entries,
     isOrganizer: pool.organizerId === user.id,
+    pendingReplacements,
   });
 }
 

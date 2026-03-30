@@ -28,6 +28,8 @@ model Tournament {
   endDate     DateTime
   status      TournamentStatus @default(UPCOMING)
   year        Int
+  slashGolfTournId String?
+  lastSyncAt  DateTime?
   createdAt   DateTime         @default(now())
 
   pools       Pool[]
@@ -75,6 +77,7 @@ model Pool {
   categories      Category[]
   members         PoolMember[]
   entries         Entry[]
+  pendingReplacements PendingReplacement[]
 }
 
 enum PoolStatus {
@@ -177,4 +180,18 @@ model GolferScore {
   tournament      Tournament @relation(fields: [tournamentId], references: [id])
 
   @@unique([golferId, tournamentId, round])
+}
+
+model PendingReplacement {
+  id                  String   @id @default(cuid())
+  poolId              String
+  pickId              String
+  originalGolferId    String
+  replacementGolferId String
+  reason              String   // "WD" or "CUT"
+  status              String   @default("PENDING") // PENDING, CONFIRMED, OVERRIDDEN
+  confirmedAt         DateTime?
+  createdAt           DateTime @default(now())
+
+  pool                Pool     @relation(fields: [poolId], references: [id])
 }

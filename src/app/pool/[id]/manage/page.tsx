@@ -25,7 +25,8 @@ interface PoolData {
   memberCount: number;
   entryCount: number;
   isOrganizer: boolean;
-  tournament: { name: string; startDate: string };
+  tournament: { id: string; name: string; startDate: string; lastSyncAt: string | null };
+  pendingReplacements: number;
 }
 
 export default function ManagePoolPage({
@@ -38,6 +39,7 @@ export default function ManagePoolPage({
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [polling, setPolling] = useState(false);
 
   // Edit form state
   const [editName, setEditName] = useState("");
@@ -161,9 +163,32 @@ export default function ManagePoolPage({
       : "";
 
   const isSetup = pool.status === "SETUP";
+  const isLiveOrLocked = pool.status === "LIVE" || pool.status === "LOCKED";
+
+  async function triggerPollScores() {
+    setPolling(true);
+    try {
+      await fetch("/api/cron/poll-scores", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET || "edge-pools-cron-secret-2026"}` },
+      });
+    } catch { /* ignore */ }
+    setPolling(false);
+    loadPool();
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
+      {/* Replacement alert */}
+      {pool.pendingReplacements > 0 && (
+        <Link
+          href={`/pool/${pool.id}/manage/replacements`}
+          className="mb-4 block rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 hover:bg-amber-100"
+        >
+          ⚠️ {pool.pendingReplacements} replacement(s) need confirmation →
+        </Link>
+      )}
+
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -203,6 +228,22 @@ export default function ManagePoolPage({
             className="rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700"
           >
             Lock Picks
+          </button>
+        )}
+        {pool.status === "LOCKED" && (
+          <button
+            onClick={() => updateStatus("LIVE")}
+            className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Go Live
+          </button>
+        )}
+        {pool.status === "LIVE" && (
+          <button
+            onClick={() => updateStatus("COMPLETE")}
+            className="rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+          >
+            Complete Tournament
           </button>
         )}
         <button
@@ -480,13 +521,71 @@ export default function ManagePoolPage({
         </div>
       )}
 
+      {/* Leaderboard + Scoring — LIVE/LOCKED pools */}
+      {isLiveOrLocked && (
+        <div className="mt-8 rounded-lg border border-green-200 p-4">
+          <h2 className="text-lg font-semibold text-green-900 mb-3">
+            Live Scoring
+          </h2>
+          {pool.tournament.lastSyncAt && (
+            <p className="text-xs text-green-500 mb-3">
+              Last synced:{" "}
+              {new Date(pool.tournament.lastSyncAt).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </p>
+          )}
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/pool/${pool.id}/leaderboard`}
+              className="rounded bg-green-800 px-4 py-2 text-sm font-medium text-white hover:bg-green-900"
+            >
+              View Leaderboard
+            </Link>
+            <button
+              onClick={triggerPollScores}
+              disabled={polling}
+              className="rounded border border-green-300 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50 disabled:opacity-50"
+            >
+              {polling ? "Polling..." : "Poll Scores Now"}
+            </button>
+            <Link
+              href={`/pool/${pool.id}/manage/replacements`}
+              className="rounded border border-green-300 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
+            >
+              Replacements
+              {pool.pendingReplacements > 0 && (
+                <span className="ml-1 rounded-full bg-amber-200 px-1.5 py-0.5 text-xs text-amber-800">
+                  {pool.pendingReplacements}
+                </span>
+              )}
+            </Link>
+            <Link
+              href={`/admin/scores/${pool.tournament.id}`}
+              className="rounded border border-green-300 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
+            >
+              Manual Scores
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Nav */}
-      <div className="mt-8 pt-4 border-t border-green-200">
+      <div className="mt-8 pt-4 border-t border-green-200 flex gap-4">
         <Link
           href="/dashboard"
           className="text-sm font-medium text-green-700 hover:text-green-900"
         >
           &larr; Back to Dashboard
+        </Link>
+        <Link
+          href="/admin/golfer-mapping"
+          className="text-sm font-medium text-green-500 hover:text-green-700"
+        >
+          Golfer Mapping
         </Link>
       </div>
     </div>
