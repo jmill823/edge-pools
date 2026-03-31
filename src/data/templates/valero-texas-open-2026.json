@@ -1,0 +1,50 @@
+{
+  "templateName": "Valero Texas Open 2026 — 9-Cat Test",
+  "categories": [
+    {
+      "name": "The Favorites",
+      "sortOrder": 1,
+      "golferNames": ["Ludvig Åberg", "Patrick Cantlay", "Matt Fitzpatrick", "Tommy Fleetwood", "Hideki Matsuyama", "Tony Finau", "Sam Burns", "Tom Kim", "Jordan Spieth"]
+    },
+    {
+      "name": "The Hunters",
+      "sortOrder": 2,
+      "golferNames": ["Akshay Bhatia", "Cameron Young", "Max Homa", "Keegan Bradley", "Brian Harman", "Corey Conners", "Chris Kirk", "Denny McCarthy", "Si Woo Kim"]
+    },
+    {
+      "name": "International",
+      "sortOrder": 3,
+      "golferNames": ["Ludvig Åberg", "Matt Fitzpatrick", "Tommy Fleetwood", "Hideki Matsuyama", "Tom Kim", "Si Woo Kim", "Corey Conners", "Ryo Hisatsune", "Thorbjørn Olesen", "Francesco Molinari", "Justin Rose", "Victor Perez", "Thriston Lawrence", "Erik van Rooyen", "Antoine Rozner", "Takumi Kanaya", "Matteo Manassero", "Ryan Fox", "Emiliano Grillo", "Padraig Harrington", "Martin Laird", "Niklas Norgaard", "Jesper Svensson", "Adam Svensson", "Sami Valimaki", "Matti Schmid", "Rikuya Hoshino", "Kaito Onishi", "Cristobal Del Solar", "Paul Waring", "Matt Wallace", "Michael Thorbjornsen", "David Skinns", "Rafael Campos", "Harry Hall", "Rico Hoey", "Camilo Villegas", "Alejandro Tosti", "Kris Ventura", "Henrik Norlander"]
+    },
+    {
+      "name": "American Grit",
+      "sortOrder": 4,
+      "golferNames": ["Patrick Cantlay", "Tony Finau", "Sam Burns", "Jordan Spieth", "Akshay Bhatia", "Cameron Young", "Max Homa", "Keegan Bradley", "Brian Harman", "Chris Kirk", "Denny McCarthy", "Rickie Fowler", "Daniel Berger", "Joel Dahmen", "Tom Hoge", "Eric Cole", "Keith Mitchell", "Jake Knapp", "Nick Hardy", "J.T. Poston", "Kevin Kisner", "Matt Kuchar", "Webb Simpson", "Ryan Palmer", "Charley Hoffman", "Zach Johnson", "Gary Woodland", "Luke List", "Andrew Putnam", "Lee Hodges", "Beau Hossler", "Aaron Baddeley", "Bud Cauley", "Steven Fisk", "Ben Griffin", "Lanto Griffin", "Peter Malnati", "Ben Martin", "Max McGreevy", "Maverick McNealy", "Chad Ramey", "Sam Ryder", "Adam Schenk", "Alex Smalley", "Ben Silverman", "Greyson Sigg", "Justin Lower"]
+    },
+    {
+      "name": "Veterans (35+)",
+      "sortOrder": 5,
+      "golferNames": ["Padraig Harrington", "Zach Johnson", "Charley Hoffman", "Matt Kuchar", "Ryan Palmer", "Webb Simpson", "Justin Rose", "Kevin Kisner", "Camilo Villegas", "Jimmy Walker", "Gary Woodland", "Martin Laird", "Rickie Fowler", "Daniel Berger", "Francesco Molinari", "Aaron Baddeley", "Bud Cauley", "Brice Garnett", "Nate Lashley", "Luke List", "Peter Malnati", "Ben Martin", "Mark Hubbard", "Niklas Norgaard", "Paul Waring"]
+    },
+    {
+      "name": "Young Guns (25 & Under)",
+      "sortOrder": 6,
+      "golferNames": ["Ludvig Åberg", "Akshay Bhatia", "Tom Kim", "Chris Gotterup", "Ben James", "Preston Summerhays", "Michael Thorbjornsen", "Aldrich Potgieter", "Ricky Castillo", "Noah Goodwin", "Blaine Hale, Jr.", "William Mouw", "Isaiah Salinda", "Jackson Suber", "Sam Stevens", "John Pak", "Mason Andersen", "Hunter Logan", "Matthew Riedel", "Will Chandler"]
+    },
+    {
+      "name": "The Comeback Trail",
+      "sortOrder": 7,
+      "golferNames": ["Rickie Fowler", "Justin Rose", "Daniel Berger", "Jordan Spieth", "Padraig Harrington", "Zach Johnson", "Matt Kuchar", "Webb Simpson", "Francesco Molinari", "Kevin Kisner", "Gary Woodland", "Jimmy Walker", "Ryan Palmer", "Charley Hoffman", "Camilo Villegas", "Hideki Matsuyama", "Brian Harman", "Matteo Manassero"]
+    },
+    {
+      "name": "The Grinders",
+      "sortOrder": 8,
+      "golferNames": ["Tom Hoge", "Eric Cole", "Keith Mitchell", "J.T. Poston", "Joel Dahmen", "Nick Hardy", "Jake Knapp", "Kurt Kitayama", "Seamus Power", "Andrew Putnam", "Lee Hodges", "Beau Hossler", "Alex Smalley", "Greyson Sigg", "Andrew Novak", "Hayden Buckley", "Patrick Fishburn", "Steven Fisk", "Doug Ghim", "Patton Kizzire", "Ben Kohles", "Patrick Rodgers", "Sam Ryder", "David Lipsky", "Matt Wallace"]
+    },
+    {
+      "name": "Deep Field",
+      "sortOrder": 9,
+      "golferNames": ["Trevor Cone", "Vince Covello", "Will Chandler", "Taylor Dickson", "Ryan Gerard", "Hunter Logan", "Patrick Pockels", "Matthew Riedel", "Thomas Rosenmueller", "Kevin Roy", "Tim Widing", "William Mouw", "Kevin Velo", "Paul Peterson", "Chandler Phillips", "Jeremy Paul", "Vince Whaley", "Austen Christiansen", "Quade Cummins", "Bronson Burgoon"]
+    }
+  ]
+}
