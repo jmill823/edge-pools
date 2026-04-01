@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CategoryEditor, CategoryData, GolferData } from "@/components/CategoryEditor";
+import { Button } from "@/components/ui/Button";
+import { InlineFeedback } from "@/components/ui/InlineFeedback";
+import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
+import { TemplateSelector } from "./_components/TemplateSelector";
+import { CategoryEditor, CategoryData, GolferData } from "./_components/CategoryEditor";
 
 interface Tournament {
   id: string;
@@ -14,11 +18,7 @@ interface Tournament {
 
 interface Template {
   templateName: string;
-  categories: {
-    name: string;
-    sortOrder: number;
-    golferNames: string[];
-  }[];
+  categories: { name: string; sortOrder: number; golferNames: string[] }[];
 }
 
 export default function CreatePoolPage() {
@@ -33,7 +33,7 @@ export default function CreatePoolPage() {
   // Form state
   const [tournamentId, setTournamentId] = useState("");
   const [poolName, setPoolName] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const [selectedTemplate, setSelectedTemplate] = useState("");
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [picksDeadline, setPicksDeadline] = useState("");
   const [maxEntries, setMaxEntries] = useState(1);
@@ -51,190 +51,150 @@ export default function CreatePoolPage() {
       setAllGolfers(g);
       if (t.length > 0) {
         setTournamentId(t[0].id);
-        // Default deadline to tournament start
-        setPicksDeadline(formatDateTimeLocal(t[0].startDate));
+        setPicksDeadline(toDateTimeLocal(t[0].startDate));
       }
       setLoading(false);
-    });
+    }).catch(() => { setError("Failed to load data"); setLoading(false); });
   }, []);
 
   function handleTournamentChange(id: string) {
     setTournamentId(id);
     const t = tournaments.find((x) => x.id === id);
-    if (t) setPicksDeadline(formatDateTimeLocal(t.startDate));
+    if (t) setPicksDeadline(toDateTimeLocal(t.startDate));
   }
 
   function handleTemplateSelect(templateName: string) {
     setSelectedTemplate(templateName);
     const tmpl = templates.find((t) => t.templateName === templateName);
     if (!tmpl) return;
-
     const golferMap = new Map(allGolfers.map((g) => [g.name, g]));
-    const cats: CategoryData[] = tmpl.categories.map((c) => ({
-      name: c.name,
-      sortOrder: c.sortOrder,
-      golfers: c.golferNames
-        .map((name) => golferMap.get(name))
-        .filter((g): g is GolferData => !!g),
-    }));
-    setCategories(cats);
+    setCategories(
+      tmpl.categories.map((c) => ({
+        name: c.name,
+        sortOrder: c.sortOrder,
+        golfers: c.golferNames.map((n) => golferMap.get(n)).filter((g): g is GolferData => !!g),
+      }))
+    );
   }
 
   async function handleSubmit() {
-    if (!tournamentId || !poolName || categories.length === 0) return;
+    if (!tournamentId || !poolName.trim() || categories.length === 0) return;
     setSubmitting(true);
+    setError(null);
 
-    const res = await fetch("/api/pools", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: poolName,
-        tournamentId,
-        categories: categories.map((c) => ({
-          name: c.name,
-          sortOrder: c.sortOrder,
-          golferIds: c.golfers.map((g) => g.id),
-        })),
-        picksDeadline: new Date(picksDeadline).toISOString(),
-        maxEntries: allowMultiple ? maxEntries : 1,
-        rules: rules || undefined,
-      }),
-    });
+    try {
+      const res = await fetch("/api/pools", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: poolName.trim(),
+          tournamentId,
+          categories: categories.map((c) => ({
+            name: c.name,
+            sortOrder: c.sortOrder,
+            golferIds: c.golfers.map((g) => g.id),
+          })),
+          picksDeadline: new Date(picksDeadline).toISOString(),
+          maxEntries: allowMultiple ? maxEntries : 1,
+          rules: rules.trim() || undefined,
+        }),
+      });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: "Failed to create pool" }));
-      setError(err.error || "Failed to create pool");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({ error: "Failed to create pool" }));
+        setError(data.error || "Failed to create pool");
+        setSubmitting(false);
+        return;
+      }
+
+      const { id } = await res.json();
+      router.push(`/pool/${id}/invite`);
+    } catch {
+      setError("Failed to create pool. Check your connection.");
       setSubmitting(false);
-      return;
     }
-
-    const { id } = await res.json();
-    router.push(`/pool/${id}/invite`);
   }
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-12 text-center text-green-600">
-        Loading...
+      <div className="mx-auto max-w-3xl px-4 py-8">
+        <LoadingSkeleton variant="page" lines={6} />
       </div>
     );
   }
 
+  const canSubmit = !!tournamentId && !!poolName.trim() && categories.length > 0 && !submitting;
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="text-2xl font-bold text-green-900">Create a Pool</h1>
-      <p className="mt-1 text-sm text-green-600">
-        Set up your pool in a few steps.
-      </p>
+      <p className="mt-1 text-sm text-green-600">Set up your pool in a few steps.</p>
 
       {error && (
-        <div className="mt-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-medium">
-          {error}
+        <div className="mt-4">
+          <InlineFeedback type="error" message={error} onDismiss={() => setError(null)} />
         </div>
       )}
 
       <div className="mt-8 space-y-8">
         {/* 1. Tournament */}
-        <section>
-          <label className="block text-sm font-semibold text-green-900">
-            1. Select Tournament
-          </label>
+        <Section num="1" label="Select Tournament">
           <select
             value={tournamentId}
             onChange={(e) => handleTournamentChange(e.target.value)}
-            className="mt-2 w-full rounded border border-green-200 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
+            className="w-full rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 min-h-[44px]"
           >
             {tournaments.map((t) => (
               <option key={t.id} value={t.id}>
-                {t.name} — {t.course} ({formatDate(t.startDate)} –{" "}
-                {formatDate(t.endDate)})
+                {t.name} — {t.course} ({fmtDate(t.startDate)} – {fmtDate(t.endDate)})
               </option>
             ))}
           </select>
-        </section>
+        </Section>
 
         {/* 2. Pool name */}
-        <section>
-          <label className="block text-sm font-semibold text-green-900">
-            2. Name Your Pool
-          </label>
+        <Section num="2" label="Name Your Pool">
           <input
             type="text"
             value={poolName}
             onChange={(e) => setPoolName(e.target.value)}
             placeholder="e.g., Mike's Masters Pool 2026"
-            className="mt-2 w-full rounded border border-green-200 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
+            className="w-full rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 min-h-[44px]"
           />
-        </section>
+        </Section>
 
         {/* 3. Template */}
-        <section>
-          <label className="block text-sm font-semibold text-green-900">
-            3. Select Template
-          </label>
-          <div className="mt-2 space-y-2">
-            {templates.map((t) => (
-              <button
-                key={t.templateName}
-                onClick={() => handleTemplateSelect(t.templateName)}
-                className={`w-full rounded-lg border p-4 text-left transition ${
-                  selectedTemplate === t.templateName
-                    ? "border-green-600 bg-green-50"
-                    : "border-green-200 hover:border-green-400"
-                }`}
-              >
-                <div className="font-medium text-green-900">
-                  {t.templateName}
-                </div>
-                <div className="mt-1 text-xs text-green-600">
-                  {t.categories.length} categories:{" "}
-                  {t.categories.map((c) => c.name).join(", ")}
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
+        <Section num="3" label="Select Template">
+          <TemplateSelector templates={templates} selected={selectedTemplate} onSelect={handleTemplateSelect} />
+        </Section>
 
-        {/* 4. Category editor */}
+        {/* 4. Categories */}
         {categories.length > 0 && (
-          <section>
-            <label className="block text-sm font-semibold text-green-900 mb-3">
-              4. Review & Edit Categories
-            </label>
-            <CategoryEditor
-              categories={categories}
-              availableGolfers={allGolfers}
-              onChange={setCategories}
-            />
-          </section>
+          <Section num="4" label="Review & Edit Categories">
+            <CategoryEditor categories={categories} availableGolfers={allGolfers} onChange={setCategories} />
+          </Section>
         )}
 
-        {/* 5. Picks deadline */}
-        <section>
-          <label className="block text-sm font-semibold text-green-900">
-            5. Picks Deadline
-          </label>
+        {/* 5. Deadline */}
+        <Section num="5" label="Picks Deadline">
           <input
             type="datetime-local"
             value={picksDeadline}
             onChange={(e) => setPicksDeadline(e.target.value)}
-            className="mt-2 w-full rounded border border-green-200 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
+            className="w-full rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 min-h-[44px]"
           />
-        </section>
+        </Section>
 
         {/* 6. Max entries */}
-        <section>
-          <label className="flex items-center gap-2 text-sm font-semibold text-green-900">
+        <Section num="6" label="Multiple Entries">
+          <label className="flex items-center gap-2 text-sm text-green-900 min-h-[44px]">
             <input
               type="checkbox"
               checked={allowMultiple}
-              onChange={(e) => {
-                setAllowMultiple(e.target.checked);
-                if (!e.target.checked) setMaxEntries(1);
-              }}
-              className="h-4 w-4 rounded border-green-300 text-green-600 focus:ring-green-500"
+              onChange={(e) => { setAllowMultiple(e.target.checked); if (!e.target.checked) setMaxEntries(1); }}
+              className="h-5 w-5 rounded border-green-300 text-green-600 focus:ring-green-500"
             />
-            6. Allow multiple entries per player?
+            Allow multiple entries per player?
           </label>
           {allowMultiple && (
             <input
@@ -242,47 +202,48 @@ export default function CreatePoolPage() {
               min={2}
               max={5}
               value={maxEntries}
-              onChange={(e) => setMaxEntries(Number(e.target.value))}
-              className="mt-2 w-24 rounded border border-green-200 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
+              onChange={(e) => setMaxEntries(Math.max(2, Math.min(5, Number(e.target.value))))}
+              className="mt-2 w-24 rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none min-h-[44px]"
             />
           )}
-        </section>
+        </Section>
 
         {/* 7. Rules */}
-        <section>
-          <label className="block text-sm font-semibold text-green-900">
-            7. House Rules (optional)
-          </label>
+        <Section num="7" label="House Rules (Optional)">
           <textarea
             value={rules}
             onChange={(e) => setRules(e.target.value)}
             placeholder="Prize structure, tiebreakers, etc."
             rows={3}
-            className="mt-2 w-full rounded border border-green-200 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
+            className="w-full rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
           />
-        </section>
+        </Section>
 
         {/* Submit */}
-        <button
-          onClick={handleSubmit}
-          disabled={!poolName || !tournamentId || categories.length === 0 || submitting}
-          className="w-full rounded-md bg-green-800 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-900 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {submitting ? "Creating Pool..." : "Create Pool"}
-        </button>
+        <Button variant="primary" className="w-full" loading={submitting} disabled={!canSubmit} onClick={handleSubmit}>
+          Create Pool
+        </Button>
       </div>
     </div>
   );
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
+function Section({ num, label, children }: { num: string; label: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <label className="block text-sm font-semibold text-green-900">
+        {num}. {label}
+      </label>
+      <div className="mt-2">{children}</div>
+    </section>
+  );
 }
 
-function formatDateTimeLocal(iso: string) {
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function toDateTimeLocal(iso: string) {
   const d = new Date(iso);
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;

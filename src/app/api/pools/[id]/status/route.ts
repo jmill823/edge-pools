@@ -7,6 +7,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   OPEN: ["LOCKED"],
   LOCKED: ["LIVE"],
   LIVE: ["COMPLETE"],
+  COMPLETE: ["ARCHIVED"],
 };
 
 export async function PATCH(

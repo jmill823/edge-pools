@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { InlineFeedback } from "@/components/ui/InlineFeedback";
 
 interface PoolInfo {
   id: string;
   name: string;
+  status: string;
   inviteCode: string;
   tournament: { name: string };
 }
@@ -13,6 +16,8 @@ interface PoolInfo {
 export default function InvitePage({ params }: { params: { id: string } }) {
   const [pool, setPool] = useState<PoolInfo | null>(null);
   const [copied, setCopied] = useState(false);
+  const [opening, setOpening] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
   useEffect(() => {
     fetch(`/api/pools/${params.id}`)
@@ -20,13 +25,7 @@ export default function InvitePage({ params }: { params: { id: string } }) {
       .then(setPool);
   }, [params.id]);
 
-  if (!pool) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-12 text-center text-green-600">
-        Loading...
-      </div>
-    );
-  }
+  if (!pool) return null; // loading.tsx handles this
 
   const inviteUrl =
     typeof window !== "undefined"
@@ -41,8 +40,31 @@ export default function InvitePage({ params }: { params: { id: string } }) {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  async function openPool() {
+    if (!confirm("Open this pool? Players will be able to join and make picks.")) return;
+    setOpening(true);
+    try {
+      const res = await fetch(`/api/pools/${params.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "OPEN" }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setFeedback({ type: "error", msg: data.error || "Failed to open pool" });
+      } else {
+        setFeedback({ type: "success", msg: "Pool is now open! Players can join and make picks." });
+        setPool((p) => p ? { ...p, status: "OPEN" } : p);
+      }
+    } catch {
+      setFeedback({ type: "error", msg: "Failed to open pool" });
+    }
+    setOpening(false);
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
+      {/* Success header */}
       <div className="text-center">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
           <svg className="h-8 w-8 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,6 +74,12 @@ export default function InvitePage({ params }: { params: { id: string } }) {
         <h1 className="text-2xl font-bold text-green-900">Pool Created!</h1>
         <p className="mt-2 text-green-600">{pool.name}</p>
       </div>
+
+      {feedback && (
+        <div className="mt-4">
+          <InlineFeedback type={feedback.type} message={feedback.msg} onDismiss={() => setFeedback(null)} />
+        </div>
+      )}
 
       <div className="mt-8 space-y-4">
         {/* Invite link */}
@@ -66,12 +94,9 @@ export default function InvitePage({ params }: { params: { id: string } }) {
               value={inviteUrl}
               className="flex-1 rounded border border-green-200 bg-white px-3 py-2 text-sm text-green-900"
             />
-            <button
-              onClick={copyLink}
-              className="shrink-0 rounded bg-green-800 px-4 py-2 text-sm font-medium text-white hover:bg-green-900"
-            >
+            <Button variant="primary" onClick={copyLink}>
               {copied ? "Copied!" : "Copy"}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -85,37 +110,33 @@ export default function InvitePage({ params }: { params: { id: string } }) {
           </p>
         </div>
 
-        {/* Share buttons */}
+        {/* Share */}
         <div className="flex gap-3">
           <a
             href={`sms:?body=${encodeURIComponent(shareText)}`}
-            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50"
+            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] inline-flex items-center justify-center"
           >
             Share via Text
           </a>
           <a
-            href={`mailto:?subject=${encodeURIComponent(
-              `Join my golf pool: ${pool.name}`
-            )}&body=${encodeURIComponent(shareText)}`}
-            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50"
+            href={`mailto:?subject=${encodeURIComponent(`Join my golf pool: ${pool.name}`)}&body=${encodeURIComponent(shareText)}`}
+            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] inline-flex items-center justify-center"
           >
             Share via Email
           </a>
         </div>
 
+        {/* Open Pool — only in SETUP */}
+        {pool.status === "SETUP" && (
+          <Button variant="primary" className="w-full" loading={opening} onClick={openPool}>
+            Open Pool for Players
+          </Button>
+        )}
+
         {/* Navigation */}
         <div className="flex gap-3 pt-4">
-          <Link
-            href={`/pool/${pool.id}/manage`}
-            className="flex-1 rounded-md bg-green-800 py-3 text-center text-sm font-semibold text-white hover:bg-green-900"
-          >
-            Manage Pool
-          </Link>
-          <Link
-            href="/dashboard"
-            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50"
-          >
-            Dashboard
+          <Link href="/dashboard" className="flex-1">
+            <Button variant="secondary" className="w-full">Dashboard</Button>
           </Link>
         </div>
       </div>

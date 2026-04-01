@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
 
 export default function JoinPage() {
   const router = useRouter();
@@ -28,16 +29,12 @@ export default function JoinPage() {
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Enter invite code"
-          className="w-full rounded border border-green-200 px-4 py-3 text-center text-lg font-mono tracking-widest focus:border-green-500 focus:outline-none"
+          className="w-full rounded-md border border-green-200 px-4 py-3 text-center text-lg font-mono tracking-widest focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
           maxLength={8}
         />
-        <button
-          type="submit"
-          disabled={!code.trim()}
-          className="w-full rounded-md bg-green-800 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-900 disabled:opacity-50"
-        >
+        <Button variant="primary" type="submit" disabled={!code.trim()} className="w-full">
           Find Pool
-        </button>
+        </Button>
       </form>
     </div>
   );

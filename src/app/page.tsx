@@ -16,13 +16,13 @@ export default function HomePage() {
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link
             href="/dashboard"
-            className="w-full rounded-md bg-green-800 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-900 sm:w-auto"
+            className="w-full rounded-md bg-green-800 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-900 sm:w-auto min-h-[44px] inline-flex items-center justify-center"
           >
             Create a Pool
           </Link>
           <Link
             href="/join"
-            className="w-full rounded-md border border-green-800 px-6 py-3 text-sm font-semibold text-green-800 hover:bg-green-50 sm:w-auto"
+            className="w-full rounded-md border border-green-800 px-6 py-3 text-sm font-semibold text-green-800 hover:bg-green-50 sm:w-auto min-h-[44px] inline-flex items-center justify-center"
           >
             Join a Pool
           </Link>
@@ -44,12 +44,12 @@ export default function HomePage() {
             <Step
               number="2"
               title="Invite"
-              description="Share a link with your group. They pick their golfers in 15 minutes."
+              description="Share a link with your group. They pick their golfers in minutes."
             />
             <Step
               number="3"
               title="Compete"
-              description="Watch the live leaderboard all tournament long."
+              description="Watch the live leaderboard update all tournament long."
             />
           </div>
         </div>

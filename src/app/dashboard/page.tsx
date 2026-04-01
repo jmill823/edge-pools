@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Button } from "@/components/ui/Button";
 
 interface PoolItem {
   id: string;
@@ -13,192 +17,217 @@ interface PoolItem {
   entryCount: number;
   hasSubmittedPicks: boolean;
   isOrganizer: boolean;
-  tournament: {
-    name: string;
-    status: string;
-  };
+  tournament: { name: string; status: string };
 }
+
+const STATUS_ORDER: Record<string, number> = {
+  LIVE: 0, OPEN: 1, LOCKED: 2, SETUP: 3, COMPLETE: 4, ARCHIVED: 5,
+};
 
 export default function DashboardPage() {
   const { user } = useUser();
+  const router = useRouter();
   const [pools, setPools] = useState<PoolItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [joinCode, setJoinCode] = useState("");
 
   useEffect(() => {
     fetch("/api/pools")
       .then((r) => r.json())
       .then((data) => {
-        setPools(Array.isArray(data) ? data : []);
+        const list = Array.isArray(data) ? data : [];
+        list.sort((a: PoolItem, b: PoolItem) =>
+          (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9)
+        );
+        setPools(list);
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, []);
+
+  const activePools = pools.filter((p) => p.status !== "ARCHIVED");
+  const archivedPools = pools.filter((p) => p.status === "ARCHIVED");
+
+  function handleJoin(e: React.FormEvent) {
+    e.preventDefault();
+    if (joinCode.trim()) router.push(`/join/${joinCode.trim()}`);
+  }
+
+  if (loading) return null; // loading.tsx handles this
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-green-900">
           Welcome, {user?.firstName ?? "Player"}
         </h1>
         <div className="flex gap-3">
-          <Link
-            href="/join"
-            className="rounded-md border border-green-300 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-50"
-          >
-            Join a Pool
-          </Link>
-          <Link
-            href="/dashboard/create"
-            className="rounded-md bg-green-800 px-4 py-2 text-sm font-medium text-white hover:bg-green-900"
-          >
-            Create New Pool
+          <Link href="/dashboard/create">
+            <Button variant="primary">Create New Pool</Button>
           </Link>
         </div>
       </div>
 
-      {loading ? (
-        <p className="mt-8 text-center text-green-600">Loading...</p>
-      ) : pools.length === 0 ? (
-        <div className="mt-12 text-center">
-          <p className="text-green-600">You haven&apos;t joined any pools yet.</p>
-          <p className="mt-2 text-sm text-green-500">
-            Create a new pool or join one with an invite code.
-          </p>
+      {/* Join section */}
+      <form onSubmit={handleJoin} className="mt-6 flex gap-2">
+        <input
+          type="text"
+          value={joinCode}
+          onChange={(e) => setJoinCode(e.target.value)}
+          placeholder="Enter invite code"
+          maxLength={8}
+          className="flex-1 rounded-md border border-green-200 px-4 py-2.5 text-sm font-mono tracking-widest text-center focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 max-w-[200px]"
+        />
+        <Button variant="secondary" type="submit" disabled={!joinCode.trim()}>
+          Join
+        </Button>
+      </form>
+
+      {/* Pool cards */}
+      {activePools.length === 0 && archivedPools.length === 0 ? (
+        <div className="mt-10">
+          <EmptyState
+            title="No pools yet"
+            description="You haven't joined any pools yet. Create one or enter an invite code."
+            action={
+              <Link href="/dashboard/create">
+                <Button>Create Your First Pool</Button>
+              </Link>
+            }
+          />
         </div>
       ) : (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {pools.map((p) => (
-            <PoolCard key={p.id} pool={p} />
-          ))}
-        </div>
+        <>
+          {activePools.length > 0 && (
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              {activePools.map((p) => (
+                <PoolCard key={p.id} pool={p} />
+              ))}
+            </div>
+          )}
+
+          {archivedPools.length > 0 && (
+            <details className="mt-8">
+              <summary className="cursor-pointer text-sm font-medium text-green-600 hover:text-green-800">
+                Past Pools ({archivedPools.length})
+              </summary>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                {archivedPools.map((p) => (
+                  <PoolCard key={p.id} pool={p} />
+                ))}
+              </div>
+            </details>
+          )}
+        </>
       )}
     </div>
   );
 }
 
 function PoolCard({ pool }: { pool: PoolItem }) {
-  const badge = getBadge(pool);
-
   return (
     <div className="rounded-lg border border-green-200 p-4">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="font-semibold text-green-900 truncate">{pool.name}</h3>
           <p className="mt-0.5 text-xs text-green-600">{pool.tournament.name}</p>
         </div>
-        <span
-          className={`shrink-0 ml-2 rounded-full px-2.5 py-0.5 text-xs font-semibold ${badge.style}`}
-        >
-          {badge.label}
-        </span>
+        <StatusBadge status={pool.status} />
       </div>
+
       <div className="mt-3 flex gap-4 text-xs text-green-600">
         <span>{pool.memberCount} members</span>
         <span>{pool.entryCount} entries</span>
       </div>
-      {badge.sub && (
-        <p className="mt-2 text-xs text-green-500">{badge.sub}</p>
-      )}
+
+      <CardSubtext pool={pool} />
+
       <div className="mt-3 flex flex-wrap gap-2">
-        {pool.isOrganizer && (
-          <Link
-            href={`/pool/${pool.id}/manage`}
-            className="inline-block rounded bg-green-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-900"
-          >
-            Manage Pool
-          </Link>
-        )}
-        {(pool.status === "OPEN" || pool.status === "SETUP") &&
-          !pool.hasSubmittedPicks && (
-            <Link
-              href={`/pool/${pool.id}/picks`}
-              className="inline-block rounded bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
-            >
-              Make Picks
-            </Link>
-          )}
-        {pool.hasSubmittedPicks && (
-          <Link
-            href={`/pool/${pool.id}/my-entries`}
-            className="inline-block rounded border border-green-300 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50"
-          >
-            View Picks
-          </Link>
-        )}
-        {pool.status === "LIVE" && (
-          <Link
-            href={`/pool/${pool.id}/leaderboard`}
-            className="inline-block rounded bg-red-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-800 animate-pulse"
-          >
-            Live Leaderboard
-          </Link>
-        )}
-        {(pool.status === "LOCKED" || pool.status === "COMPLETE") && (
-          <Link
-            href={`/pool/${pool.id}/leaderboard`}
-            className="inline-block rounded bg-red-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-800"
-          >
-            Leaderboard
-          </Link>
-        )}
-        {(pool.status === "OPEN" || pool.status === "SETUP") && (
-          <Link
-            href={`/pool/${pool.id}/leaderboard`}
-            className="inline-block rounded border border-green-300 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50"
-          >
-            Leaderboard
-          </Link>
-        )}
+        <CardLinks pool={pool} />
       </div>
     </div>
   );
 }
 
-function getBadge(pool: PoolItem) {
-  if (pool.status === "LIVE" || pool.tournament.status === "LIVE") {
-    return {
-      label: "LIVE",
-      style: "bg-red-100 text-red-700 animate-pulse",
-      sub: "View leaderboard",
-    };
+function CardSubtext({ pool }: { pool: PoolItem }) {
+  if (pool.status === "LIVE") return <p className="mt-2 text-xs text-red-600 font-medium">Tournament in progress</p>;
+  if (pool.status === "OPEN" && !pool.hasSubmittedPicks) {
+    const d = new Date(pool.picksDeadline);
+    return (
+      <p className="mt-2 text-xs text-amber-600">
+        Picks due {d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+      </p>
+    );
   }
-  if (pool.status === "COMPLETE") {
-    return {
-      label: "Complete",
-      style: "bg-gray-100 text-gray-600",
-      sub: "Results",
-    };
+  if (pool.status === "LOCKED") return <p className="mt-2 text-xs text-amber-600">Waiting for tournament</p>;
+  return null;
+}
+
+/** State-matrix-driven link rendering */
+function CardLinks({ pool }: { pool: PoolItem }) {
+  const links: React.ReactNode[] = [];
+
+  // Organizer: Manage link on all active statuses
+  if (pool.isOrganizer && pool.status !== "ARCHIVED") {
+    links.push(
+      <CardLink key="manage" href={`/pool/${pool.id}/manage`} label="Manage" variant="primary" />
+    );
   }
-  if (pool.status === "LOCKED") {
-    return {
-      label: "Locked",
-      style: "bg-amber-100 text-amber-700",
-      sub: "Waiting for tournament",
-    };
+
+  // Status-specific links per state matrix
+  switch (pool.status) {
+    case "SETUP":
+      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Leaderboard" />);
+      break;
+    case "OPEN":
+      if (!pool.hasSubmittedPicks) {
+        links.push(<CardLink key="picks" href={`/pool/${pool.id}/picks`} label="Make Picks" variant="accent" />);
+      }
+      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Leaderboard" />);
+      break;
+    case "LOCKED":
+      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Leaderboard" />);
+      links.push(<CardLink key="entries" href={`/pool/${pool.id}/my-entries`} label="My Entries" />);
+      break;
+    case "LIVE":
+      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Live Leaderboard" variant="live" />);
+      links.push(<CardLink key="entries" href={`/pool/${pool.id}/my-entries`} label="My Entries" />);
+      break;
+    case "COMPLETE":
+      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Results" />);
+      links.push(<CardLink key="entries" href={`/pool/${pool.id}/my-entries`} label="My Entries" />);
+      break;
+    case "ARCHIVED":
+      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="View Archive" />);
+      break;
   }
-  if (
-    (pool.status === "OPEN" || pool.status === "SETUP") &&
-    !pool.hasSubmittedPicks
-  ) {
-    const deadline = new Date(pool.picksDeadline);
-    return {
-      label: "Needs Picks",
-      style: "bg-yellow-100 text-yellow-800",
-      sub: `Picks due ${deadline.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })}`,
-    };
-  }
-  if (pool.hasSubmittedPicks) {
-    return {
-      label: "Picks In",
-      style: "bg-green-100 text-green-700",
-      sub: "Waiting for tournament",
-    };
-  }
-  return {
-    label: pool.status,
-    style: "bg-gray-100 text-gray-600",
-    sub: null,
+
+  return <>{links}</>;
+}
+
+function CardLink({
+  href,
+  label,
+  variant = "default",
+}: {
+  href: string;
+  label: string;
+  variant?: "default" | "primary" | "accent" | "live";
+}) {
+  const styles = {
+    default: "border border-green-300 text-green-700 hover:bg-green-50",
+    primary: "bg-green-800 text-white hover:bg-green-900",
+    accent: "bg-amber-600 text-white hover:bg-amber-700",
+    live: "bg-red-700 text-white hover:bg-red-800 animate-pulse",
   };
+
+  return (
+    <Link
+      href={href}
+      className={`inline-block rounded px-3 py-1.5 text-xs font-medium min-h-[32px] inline-flex items-center ${styles[variant]}`}
+    >
+      {label}
+    </Link>
+  );
 }
