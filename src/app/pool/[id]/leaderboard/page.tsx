@@ -274,6 +274,36 @@ export default function LeaderboardPage({
         </div>
       )}
 
+      {leaderboard.length > 0 && (pool.status === "OPEN" || pool.status === "SETUP") && (
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-center">
+          <p className="text-sm font-medium text-amber-800">
+            Waiting for tournament to start
+          </p>
+          <p className="mt-1 text-xs text-amber-600">
+            Scores will update automatically once the tournament begins.
+          </p>
+        </div>
+      )}
+
+      {leaderboard.length > 0 && pool.status === "LOCKED" && (
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-center">
+          <p className="text-sm font-medium text-amber-800">
+            Picks are locked — tournament starts soon
+          </p>
+          <p className="mt-1 text-xs text-amber-600">
+            Scores will update automatically once the tournament begins.
+          </p>
+        </div>
+      )}
+
+      {leaderboard.length > 0 && pool.status === "LIVE" && !tournament.lastSyncAt && (
+        <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 text-center">
+          <p className="text-sm font-medium text-green-800">
+            Tournament is live — waiting for first score update
+          </p>
+        </div>
+      )}
+
       {/* Nav */}
       <div className="mt-8 pt-4 border-t border-green-200 flex gap-4">
         <Link

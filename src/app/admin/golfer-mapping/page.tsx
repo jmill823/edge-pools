@@ -15,11 +15,18 @@ export default function GolferMappingPage() {
   const [golfers, setGolfers] = useState<Golfer[]>([]);
   const [filter, setFilter] = useState("");
   const [saving, setSaving] = useState<string | null>(null);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/golfer-mapping")
-      .then((r) => r.json())
-      .then(setGolfers);
+      .then((r) => {
+        if (r.status === 403) {
+          setAccessDenied(true);
+          return [];
+        }
+        return r.json();
+      })
+      .then((data) => { if (Array.isArray(data)) setGolfers(data); });
   }, []);
 
   async function updateMapping(id: string, slashGolfId: string) {
@@ -42,6 +49,20 @@ export default function GolferMappingPage() {
   );
 
   const unmapped = golfers.filter((g) => !g.slashGolfId).length;
+
+  if (accessDenied) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-12 text-center">
+        <h1 className="text-xl font-bold text-green-900">Access Denied</h1>
+        <p className="mt-2 text-sm text-green-600">
+          Only pool organizers can access admin tools.
+        </p>
+        <Link href="/dashboard" className="mt-4 inline-block text-sm font-medium text-green-700 hover:text-green-900">
+          &larr; Back to Dashboard
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">

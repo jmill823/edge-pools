@@ -218,13 +218,27 @@ export default function MyEntriesPage({
         )}
       </div>
 
-      <div className="mt-8 pt-4 border-t border-green-200">
+      <div className="mt-8 pt-4 border-t border-green-200 flex flex-wrap gap-4">
         <Link
           href="/dashboard"
           className="text-sm font-medium text-green-700 hover:text-green-900"
         >
-          &larr; Back to Dashboard
+          &larr; Dashboard
         </Link>
+        <Link
+          href={`/pool/${params.id}/leaderboard`}
+          className="text-sm font-medium text-green-700 hover:text-green-900"
+        >
+          Leaderboard
+        </Link>
+        {canEdit && (
+          <Link
+            href={`/pool/${params.id}/picks`}
+            className="text-sm font-medium text-green-700 hover:text-green-900"
+          >
+            {entries.length > 0 ? "Edit Picks" : "Make Picks"}
+          </Link>
+        )}
       </div>
     </div>
   );

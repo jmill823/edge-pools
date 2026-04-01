@@ -61,11 +61,12 @@ export default function JoinPoolPage({
     }
 
     if (data.alreadyMember) {
-      router.push(`/dashboard`);
+      router.push(`/pool/${data.poolId}/picks`);
       return;
     }
 
-    router.push(`/dashboard`);
+    // After joining, redirect to picks
+    router.push(`/pool/${data.poolId}/picks`);
   }
 
   if (notFound) {

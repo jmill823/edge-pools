@@ -9,6 +9,14 @@ export async function PATCH(
   const user = await getOrCreateUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const isOrganizer = await prisma.pool.findFirst({
+    where: { organizerId: user.id },
+    select: { id: true },
+  });
+  if (!isOrganizer) {
+    return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+  }
+
   const { slashGolfId } = await req.json();
 
   const golfer = await prisma.golfer.update({

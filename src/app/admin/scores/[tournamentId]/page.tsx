@@ -28,11 +28,19 @@ export default function ManualScoresPage({
   >(new Map());
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     fetch(`/api/admin/scores/${params.tournamentId}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (r.status === 403) {
+          setAccessDenied(true);
+          return null;
+        }
+        return r.json();
+      })
       .then((data) => {
+        if (!data) return;
         setGolfers(data.golfers);
         setTournamentName(data.tournament.name);
         if (data.golfers.some((g: GolferScore) => g.currentScore)) {
@@ -75,6 +83,20 @@ export default function ManualScoresPage({
     setSaving(false);
     setMessage(`Updated ${result.updated} scores. Standings recalculated.`);
     setTimeout(() => setMessage(""), 3000);
+  }
+
+  if (accessDenied) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-12 text-center">
+        <h1 className="text-xl font-bold text-green-900">Access Denied</h1>
+        <p className="mt-2 text-sm text-green-600">
+          Only pool organizers can access admin tools.
+        </p>
+        <Link href="/dashboard" className="mt-4 inline-block text-sm font-medium text-green-700 hover:text-green-900">
+          &larr; Back to Dashboard
+        </Link>
+      </div>
+    );
   }
 
   return (

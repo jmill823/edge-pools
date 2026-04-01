@@ -124,10 +124,26 @@ function PoolCard({ pool }: { pool: PoolItem }) {
             View Picks
           </Link>
         )}
-        {(pool.status === "LIVE" || pool.status === "LOCKED" || pool.status === "COMPLETE") && (
+        {pool.status === "LIVE" && (
+          <Link
+            href={`/pool/${pool.id}/leaderboard`}
+            className="inline-block rounded bg-red-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-800 animate-pulse"
+          >
+            Live Leaderboard
+          </Link>
+        )}
+        {(pool.status === "LOCKED" || pool.status === "COMPLETE") && (
           <Link
             href={`/pool/${pool.id}/leaderboard`}
             className="inline-block rounded bg-red-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-800"
+          >
+            Leaderboard
+          </Link>
+        )}
+        {(pool.status === "OPEN" || pool.status === "SETUP") && (
+          <Link
+            href={`/pool/${pool.id}/leaderboard`}
+            className="inline-block rounded border border-green-300 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50"
           >
             Leaderboard
           </Link>

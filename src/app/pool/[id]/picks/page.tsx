@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface Golfer {
@@ -41,7 +40,6 @@ export default function PicksPage({
 }: {
   params: { id: string };
 }) {
-  const router = useRouter();
   const [pool, setPool] = useState<PoolInfo | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [existingEntries, setExistingEntries] = useState<ExistingEntry[]>([]);
@@ -52,6 +50,7 @@ export default function PicksPage({
   const [showConfirm, setShowConfirm] = useState(false);
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [notMember, setNotMember] = useState(false);
   const catRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -195,17 +194,23 @@ export default function PicksPage({
       }
 
       if (!res.ok) {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({ error: "Failed to submit picks" }));
         setError(data.error || "Failed to submit picks");
+        setSubmitting(false);
         setShowConfirm(false);
         return;
       }
 
-      // Redirect to my-entries
-      router.push(`/pool/${params.id}/my-entries`);
+      // Show success — no auto-redirect, let user choose next action
+      setShowConfirm(false);
+      setSubmitSuccess(true);
+      // Reload entries so we have updated count for multi-entry
+      const updatedEntries = await fetch(`/api/pools/${params.id}/entries/mine`);
+      if (updatedEntries.ok) {
+        setExistingEntries(await updatedEntries.json());
+      }
     } catch {
-      setError("Failed to submit picks");
-    } finally {
+      setError("Failed to submit picks. Please check your connection and try again.");
       setSubmitting(false);
       setShowConfirm(false);
     }
@@ -306,8 +311,62 @@ export default function PicksPage({
       </div>
 
       {error && (
-        <div className="mt-4 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-medium">
           {error}
+        </div>
+      )}
+
+      {submitSuccess && (
+        <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-6 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+            <svg className="h-6 w-6 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <p className="text-lg font-semibold text-green-800">
+            Picks saved successfully!
+          </p>
+          {pool.maxEntries > 1 && existingEntries.length < pool.maxEntries && (
+            <p className="mt-1 text-sm text-green-600">
+              Entry {existingEntries.length} of {pool.maxEntries} submitted
+            </p>
+          )}
+          {pool.maxEntries > 1 && existingEntries.length >= pool.maxEntries && (
+            <p className="mt-1 text-sm text-green-600">
+              All {pool.maxEntries} entries submitted
+            </p>
+          )}
+          <div className="mt-5 flex flex-col gap-3">
+            <Link
+              href={`/pool/${params.id}/leaderboard`}
+              className="w-full rounded-md bg-green-800 py-2.5 text-sm font-medium text-white hover:bg-green-900"
+            >
+              View Leaderboard
+            </Link>
+            {pool.maxEntries > 1 && existingEntries.length < pool.maxEntries && (
+              <button
+                onClick={() => {
+                  setSubmitSuccess(false);
+                  startNewEntry();
+                }}
+                className="w-full rounded-md border-2 border-green-600 py-2.5 text-sm font-medium text-green-700 hover:bg-green-50"
+              >
+                Add Another Entry ({existingEntries.length + 1} of {pool.maxEntries})
+              </button>
+            )}
+            <Link
+              href={`/pool/${params.id}/my-entries`}
+              className="w-full rounded-md border border-green-300 py-2.5 text-sm font-medium text-green-700 hover:bg-green-50"
+            >
+              View My Entries
+            </Link>
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium text-green-600 hover:text-green-900"
+            >
+              Back to Dashboard
+            </Link>
+          </div>
         </div>
       )}
 
@@ -373,12 +432,12 @@ export default function PicksPage({
                   ref={(el) => { catRefs.current[cat.id] = el; }}
                   className="rounded-lg border border-green-200 bg-white overflow-hidden"
                 >
-                  {/* Category header */}
+                  {/* Category header — sticky so it stays visible while scrolling */}
                   <button
                     onClick={() =>
                       setExpandedCat(isExpanded ? null : cat.id)
                     }
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left"
+                    className="sticky top-0 z-10 flex w-full items-center gap-3 px-4 py-3 text-left bg-white border-b border-green-100"
                   >
                     <span className="text-xs font-mono text-green-500 w-5">
                       {cat.sortOrder}
@@ -554,6 +613,11 @@ export default function PicksPage({
             <h2 className="text-lg font-bold text-green-900">
               {editingEntryId ? "Save Your Picks?" : "Confirm Your Picks"}
             </h2>
+            {error && (
+              <div className="mt-2 rounded-md bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700 font-medium">
+                {error}
+              </div>
+            )}
             <div className="mt-4 space-y-2">
               {categories.map((cat) => {
                 const golfer = cat.golfers.find(

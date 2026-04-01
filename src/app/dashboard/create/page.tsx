@@ -28,6 +28,7 @@ export default function CreatePoolPage() {
   const [allGolfers, setAllGolfers] = useState<GolferData[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Form state
   const [tournamentId, setTournamentId] = useState("");
@@ -94,15 +95,15 @@ export default function CreatePoolPage() {
           sortOrder: c.sortOrder,
           golferIds: c.golfers.map((g) => g.id),
         })),
-        picksDeadline,
+        picksDeadline: new Date(picksDeadline).toISOString(),
         maxEntries: allowMultiple ? maxEntries : 1,
         rules: rules || undefined,
       }),
     });
 
     if (!res.ok) {
-      const err = await res.json();
-      alert(err.error || "Failed to create pool");
+      const err = await res.json().catch(() => ({ error: "Failed to create pool" }));
+      setError(err.error || "Failed to create pool");
       setSubmitting(false);
       return;
     }
@@ -125,6 +126,12 @@ export default function CreatePoolPage() {
       <p className="mt-1 text-sm text-green-600">
         Set up your pool in a few steps.
       </p>
+
+      {error && (
+        <div className="mt-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-medium">
+          {error}
+        </div>
+      )}
 
       <div className="mt-8 space-y-8">
         {/* 1. Tournament */}

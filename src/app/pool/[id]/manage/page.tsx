@@ -40,6 +40,8 @@ export default function ManagePoolPage({
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [polling, setPolling] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
   // Edit form state
   const [editName, setEditName] = useState("");
@@ -77,48 +79,99 @@ export default function ManagePoolPage({
     loadMembers();
   }, [loadPool, loadMembers]);
 
+  function showSuccess(msg: string) {
+    setActionError(null);
+    setActionSuccess(msg);
+    setTimeout(() => setActionSuccess(null), 3000);
+  }
+
   async function togglePaid(memberId: string, hasPaid: boolean) {
-    await fetch(`/api/pools/${params.id}/members/${memberId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hasPaid }),
-    });
-    loadMembers();
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/pools/${params.id}/members/${memberId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hasPaid }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setActionError(data.error || "Failed to update payment status");
+        return;
+      }
+      loadMembers();
+    } catch {
+      setActionError("Failed to update payment status");
+    }
   }
 
   async function updateStatus(newStatus: string) {
-    await fetch(`/api/pools/${params.id}/status`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
-    });
-    loadPool();
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/pools/${params.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setActionError(data.error || "Failed to update status");
+        return;
+      }
+      showSuccess(`Pool status changed to ${newStatus}`);
+      loadPool();
+    } catch {
+      setActionError("Failed to update status");
+    }
   }
 
   async function toggleAccepting(accepting: boolean) {
-    await fetch(`/api/pools/${params.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ acceptingMembers: accepting }),
-    });
-    loadPool();
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/pools/${params.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acceptingMembers: accepting }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setActionError(data.error || "Failed to update");
+        return;
+      }
+      showSuccess(accepting ? "Now accepting members" : "Closed to new members");
+      loadPool();
+    } catch {
+      setActionError("Failed to update");
+    }
   }
 
   async function saveSettings() {
     setSaving(true);
-    await fetch(`/api/pools/${params.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: editName.trim(),
-        picksDeadline: new Date(editDeadline).toISOString(),
-        maxEntries: editMaxEntries,
-        rules: editRules.trim() || null,
-      }),
-    });
-    setSaving(false);
-    setEditing(false);
-    loadPool();
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/pools/${params.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editName.trim(),
+          picksDeadline: new Date(editDeadline).toISOString(),
+          maxEntries: editMaxEntries,
+          rules: editRules.trim() || null,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setActionError(data.error || "Failed to save settings");
+        setSaving(false);
+        return;
+      }
+      showSuccess("Settings saved");
+      setEditing(false);
+      loadPool();
+    } catch {
+      setActionError("Failed to save settings");
+    } finally {
+      setSaving(false);
+    }
   }
 
   function cancelEdit() {
@@ -167,12 +220,20 @@ export default function ManagePoolPage({
 
   async function triggerPollScores() {
     setPolling(true);
+    setActionError(null);
     try {
-      await fetch("/api/cron/poll-scores", {
+      const res = await fetch("/api/cron/poll-scores", {
         method: "POST",
         headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET || "edge-pools-cron-secret-2026"}` },
       });
-    } catch { /* ignore */ }
+      if (res.ok) {
+        showSuccess("Scores polled successfully");
+      } else {
+        setActionError("Score polling failed — try again later");
+      }
+    } catch {
+      setActionError("Score polling failed — check connection");
+    }
     setPolling(false);
     loadPool();
   }
@@ -187,6 +248,18 @@ export default function ManagePoolPage({
         >
           ⚠️ {pool.pendingReplacements} replacement(s) need confirmation →
         </Link>
+      )}
+
+      {/* Action feedback */}
+      {actionError && (
+        <div className="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-medium">
+          {actionError}
+        </div>
+      )}
+      {actionSuccess && (
+        <div className="mb-4 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 font-medium">
+          {actionSuccess}
+        </div>
       )}
 
       {/* Header */}
@@ -498,8 +571,8 @@ export default function ManagePoolPage({
         </div>
       </div>
 
-      {/* View Entries link */}
-      <div className="mt-6">
+      {/* View Entries + Leaderboard links */}
+      <div className="mt-6 flex flex-wrap gap-3">
         <Link
           href={`/pool/${pool.id}/manage/entries`}
           className="inline-flex items-center gap-2 rounded-md border border-green-300 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
@@ -508,6 +581,12 @@ export default function ManagePoolPage({
           <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
             {pool.entryCount}
           </span>
+        </Link>
+        <Link
+          href={`/pool/${pool.id}/leaderboard`}
+          className="inline-flex items-center gap-2 rounded-md border border-green-300 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
+        >
+          View Leaderboard
         </Link>
       </div>
 
@@ -580,12 +659,6 @@ export default function ManagePoolPage({
           className="text-sm font-medium text-green-700 hover:text-green-900"
         >
           &larr; Back to Dashboard
-        </Link>
-        <Link
-          href="/admin/golfer-mapping"
-          className="text-sm font-medium text-green-500 hover:text-green-700"
-        >
-          Golfer Mapping
         </Link>
       </div>
     </div>

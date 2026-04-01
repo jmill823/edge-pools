@@ -34,3 +34,55 @@
 ### 6. Vercel Cron on free tier
 - **Reason:** Vercel Cron requires Pro plan. On free tier, use the manual "Poll Scores Now" button on the manage page. The cron config is in `vercel.json` and will activate automatically on Pro.
 - **Impact:** Manual polling during free-tier usage. Auto-polling on Pro.
+
+## Stabilization (March 31, 2026)
+
+### BUG 1 — Picks Could Not Be Saved (P1)
+- **Root cause:** The create pool page sent `picksDeadline` as a raw `datetime-local` string (e.g., `"2026-04-02T08:00"`) without timezone info. On Vercel (which runs in UTC), `new Date("2026-04-02T08:00")` parsed as 8am UTC instead of the user's local 8am. This could cause the deadline to be hours earlier than intended, leading to "Picks deadline has passed" errors when users tried to submit. Additionally, the error handling on the picks submission flow did not display errors prominently — errors could appear briefly behind the confirmation modal.
+- **Fix:** Convert `picksDeadline` to ISO string on the client (`new Date(picksDeadline).toISOString()`) before sending to the API, ensuring correct UTC conversion from the user's local timezone. Added success state with visible confirmation before redirect. Added error display inside the confirmation modal. The manage page's `saveSettings` already did this conversion correctly — only `create pool` was affected.
+- **Class of bug:** Timezone-unaware date parsing on serverless (UTC) environments. All datetime-local → API conversions must go through `.toISOString()` on the client.
+
+### BUG 2 — Leaderboard Not Accessible (P1)
+- **Root cause:** The leaderboard page existed and worked correctly, but was unreachable from the natural user flow. The dashboard only showed a "Leaderboard" link for pools in LIVE/LOCKED/COMPLETE status. After submitting picks, users were redirected to "My Entries" which had no leaderboard link. The manage page only showed leaderboard in the "Live Scoring" section for LIVE/LOCKED pools.
+- **Fix:** Added leaderboard link to dashboard for OPEN pools (when user has submitted picks). Added leaderboard link to my-entries page. Added success state after pick submission with direct leaderboard link. Added leaderboard link to manage page for all statuses. Leaderboard page now shows "Waiting for tournament to start" message for pre-tournament pools instead of appearing empty.
+- **Class of bug:** Navigation dead-ends. Every user action should lead to a next action.
+
+### BUG 3 — Pool Management Not Accessible from Dashboard (P2)
+- **Root cause:** Dashboard already had "Manage Pool" link for organizers. This was confirmed working. The brief's concern was addressed alongside BUG 2 navigation improvements.
+- **Fix:** No code changes needed — existing implementation was correct. Leaderboard links added per BUG 2 fix complete the navigation picture.
+
+### BUG 4 — Category Context Lost While Scrolling Picks (P2)
+- **Root cause:** Category header buttons in the picks accordion did not have `position: sticky`. When scrolling through a category's golfer list on mobile, the category name scrolled off screen.
+- **Fix:** Added `sticky top-0 z-10 bg-white border-b border-green-100` to category header buttons. The solid background prevents content from showing through, and z-index keeps headers above scrolling content.
+- **Class of bug:** Mobile UX — sticky context headers are mandatory for scrollable lists with sections.
+
+### BUG 5 — Category Editor (P2)
+- **Root cause:** Code review confirmed the category editor implementation is structurally correct. The `CategoryEditor` component manages state locally, and the categories page sends a PUT request that replaces all categories in a transaction (delete old → create new). Rename, add golfer, remove golfer, delete category, and add category all work through this replace-all pattern.
+- **Fix:** No code changes needed. The editor was verified correct through code review.
+
+### Error Handling Audit (Stabilization)
+- **Issue:** Multiple actions in the manage page (togglePaid, updateStatus, toggleAccepting, saveSettings, pollScores) used fire-and-forget `fetch` calls with no error handling. The create pool page used `alert()` for errors. Join pool redirected to dashboard instead of picks.
+- **Fix:** All manage page actions now have try/catch with error state display. Success confirmations added (toast-style messages). Create pool uses inline error display instead of `alert()`. Join pool now redirects to picks page. All form submissions show loading state with disabled buttons.
+
+## Stabilization Round 2 (March 31, 2026)
+
+### WHY ROUND 1 FIXES WERE NOT IN PRODUCTION
+- **Root cause:** Round 1 made all fixes as local file modifications but never committed or deployed them. The files sat as uncommitted changes in the working directory. The founder tested production which still had the pre-Round-1 code.
+- **Fix:** Round 2 incorporates all Round 1 changes, fixes the remaining bugs, and commits everything together.
+
+### BUG A — Leaderboard Not Accessible (P1, re-reported)
+- **Root cause:** Round 1 added leaderboard links for LIVE/LOCKED/COMPLETE pools and for OPEN pools with submitted picks, but missed SETUP status and pools where the user hadn't submitted picks yet. The leaderboard page handles empty states properly — the navigation just wasn't providing access.
+- **Fix:** Dashboard now shows a "Leaderboard" link on every pool card regardless of status. After pick submission, the success screen is now a proper landing page (no auto-redirect) with prominent "View Leaderboard" button. My Entries page already had leaderboard link (from Round 1). Manage page already had leaderboard link (from Round 1). Leaderboard page shows status-appropriate messages for all pool states.
+- **Access points verified:** (1) Dashboard pool card, (2) Post-submission success page, (3) My Entries footer nav, (4) Manage page "View Leaderboard" button, (5) Leaderboard page's own nav links back to entries/dashboard.
+
+### BUG B — Multi-Entry Button Missing After First Submission (P1)
+- **Root cause:** After pick submission, the picks page auto-redirected to My Entries after 1.2 seconds. The redirect was too fast for users to see the success confirmation or any next-action buttons. My Entries page DID have an "Add Another Entry" button, but users never saw the success state long enough to know what to do next.
+- **Fix:** Removed auto-redirect. Pick submission now shows a full success page with: checkmark icon, entry count status ("Entry 1 of 3 submitted"), "View Leaderboard" button, "Add Another Entry (2 of 3)" button (when applicable), "View My Entries" link, "Back to Dashboard" link. When all entries are submitted, shows "All N entries submitted" with no add button. Clicking "Add Another Entry" resets the picks form with empty selections.
+
+### BUG C — Admin Pages Visible to Regular Users (P2)
+- **Root cause:** Three issues: (1) The manage page footer had a hardcoded "Golfer Mapping" link visible to all organizers, (2) The middleware bypassed auth entirely for `/api/admin/` routes, (3) Admin API endpoints only checked auth, not organizer role.
+- **Fix:** (1) Removed "Golfer Mapping" link from manage page footer — admin tools are only accessible via the "Manual Scores" link in the Live Scoring section (which is only visible on LIVE/LOCKED manage pages, already gated by organizer check). (2) Removed middleware bypass for `/api/admin/` — these routes now go through normal auth flow. (3) Added organizer role check to all admin API routes (golfer-mapping GET, golfers PATCH, scores GET/POST) — user must own at least one pool to access. (4) Added client-side 403 handling on admin pages — shows "Access Denied" with redirect to dashboard.
+
+### BUG D — Perceived Slowness Between Actions (P2)
+- **Root cause:** No skeleton loading states between page transitions. Users see a blank screen while client components mount and fetch data. Next.js App Router uses `loading.tsx` files for instant loading UI, but none were defined.
+- **Fix:** Added `loading.tsx` skeleton screens for dashboard, leaderboard, and picks pages. These show immediately on navigation before the page component mounts, eliminating the blank-screen gap. Actual API response times depend on Neon cold starts (free tier) — infrastructure-level optimization would require Vercel Pro + connection pooling, which is documented as a future recommendation.

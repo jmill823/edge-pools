@@ -13,7 +13,7 @@ export default clerkMiddleware(async (auth, req) => {
   // Public pages + public API routes — skip auth entirely
   if (pathname.startsWith('/join/')) return NextResponse.next()
   if (pathname.startsWith('/api/cron/')) return NextResponse.next()
-  if (pathname.startsWith('/api/admin/')) return NextResponse.next()
+  // /api/admin/ routes require auth — handled in route handlers
   if (pathname.startsWith('/api/tournaments')) return NextResponse.next()
   if (pathname.startsWith('/api/templates')) return NextResponse.next()
   if (pathname.startsWith('/api/golfers')) return NextResponse.next()

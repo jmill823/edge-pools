@@ -6,6 +6,15 @@ export async function GET() {
   const user = await getOrCreateUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Only pool organizers can access admin pages
+  const isOrganizer = await prisma.pool.findFirst({
+    where: { organizerId: user.id },
+    select: { id: true },
+  });
+  if (!isOrganizer) {
+    return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+  }
+
   const golfers = await prisma.golfer.findMany({
     orderBy: [{ owgr: "asc" }, { name: "asc" }],
     select: {
