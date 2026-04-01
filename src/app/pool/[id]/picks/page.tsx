@@ -371,7 +371,7 @@ export default function PicksPage({
       )}
 
       {/* Show existing entries if multi-entry and not currently editing */}
-      {pool.maxEntries > 1 && existingEntries.length > 0 && !editingEntryId && Object.keys(selections).length === 0 && (
+      {!submitSuccess && pool.maxEntries > 1 && existingEntries.length > 0 && !editingEntryId && Object.keys(selections).length === 0 && (
         <div className="mt-6 space-y-3">
           <h2 className="text-lg font-semibold text-green-900">
             Your Entries ({existingEntries.length}/{pool.maxEntries})
@@ -410,7 +410,7 @@ export default function PicksPage({
       )}
 
       {/* Category accordion */}
-      {(editingEntryId || Object.keys(selections).length > 0 || existingEntries.length === 0 || (pool.maxEntries === 1 && existingEntries.length === 0)) && (
+      {!submitSuccess && (editingEntryId || Object.keys(selections).length > 0 || existingEntries.length === 0 || (pool.maxEntries === 1 && existingEntries.length === 0)) && (
         <>
           {editingEntryId && pool.maxEntries > 1 && (
             <p className="mt-4 text-sm text-green-600">
@@ -573,7 +573,7 @@ export default function PicksPage({
       )}
 
       {/* Sticky bottom bar */}
-      {(editingEntryId || Object.keys(selections).length > 0 || existingEntries.length === 0) && (
+      {!submitSuccess && (editingEntryId || Object.keys(selections).length > 0 || existingEntries.length === 0) && (
         <div className="fixed bottom-0 left-0 right-0 border-t border-green-200 bg-white px-4 py-3 shadow-lg z-20">
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between">
@@ -658,14 +658,16 @@ export default function PicksPage({
       )}
 
       {/* Nav footer (above sticky bar) */}
-      <div className="mt-8 pt-4 border-t border-green-200">
-        <Link
-          href="/dashboard"
-          className="text-sm font-medium text-green-700 hover:text-green-900"
-        >
-          &larr; Back to Dashboard
-        </Link>
-      </div>
+      {!submitSuccess && (
+        <div className="mt-8 pt-4 border-t border-green-200">
+          <Link
+            href="/dashboard"
+            className="text-sm font-medium text-green-700 hover:text-green-900"
+          >
+            &larr; Back to Dashboard
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
