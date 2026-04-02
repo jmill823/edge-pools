@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
+import { PickStrip } from "@/components/ui/PickStrip";
 import { formatScore, scoreColor, formatRankWithTies } from "../leaderboard/_components/score-utils";
 
 interface PickData {
@@ -27,6 +28,7 @@ interface PoolData {
   name: string;
   status: string;
   picksDeadline: string;
+  maxEntries: number;
   tournamentId: string;
 }
 
@@ -51,6 +53,10 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
 
   const canEdit = pool.status === "OPEN" && new Date(pool.picksDeadline) > new Date();
   const hasScores = ["LIVE", "COMPLETE", "ARCHIVED"].includes(pool.status);
+  const maxEntries = pool.maxEntries ?? 1;
+  const isMultiEntry = maxEntries > 1;
+  const canAddMore = canEdit && entries.length < maxEntries;
+  const allRanks = entries.map((e) => e.rank);
 
   if (entries.length === 0) {
     if (pool.status === "OPEN" && canEdit) {
@@ -74,63 +80,121 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
     );
   }
 
-  const entry = entries[0];
-  const allRanks = entries.map((e) => e.rank);
-
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-green-900">My Picks</h2>
-        {canEdit && (
+        <h2 className="text-lg font-bold text-green-900">
+          {isMultiEntry ? "My Entries" : "My Picks"}
+        </h2>
+        {/* Single-entry: show edit button in header */}
+        {!isMultiEntry && canEdit && (
           <Link href={`/pool/${params.id}/picks`}>
             <Button variant="secondary">Edit Picks</Button>
           </Link>
         )}
       </div>
 
-      {/* Score summary — only when scores exist */}
-      {hasScores && entry.teamScore !== null && (
-        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-green-600">Your Position</span>
-            <span className="block text-lg font-bold text-green-900">
-              {formatRankWithTies(entry.rank, allRanks)}
-            </span>
-          </div>
-          <span className={`text-2xl font-bold ${scoreColor(entry.teamScore)}`}>
-            {formatScore(entry.teamScore)}
-          </span>
-        </div>
-      )}
-
-      <p className="text-xs text-green-500 mb-4">
-        Submitted {new Date(entry.submittedAt).toLocaleDateString("en-US", {
-          month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
-        })}
-      </p>
-
-      <div className="rounded-lg border border-green-200 divide-y divide-green-100">
-        {entry.picks
-          .sort((a, b) => a.category.sortOrder - b.category.sortOrder)
-          .map((pick) => (
-            <div key={pick.category.id} className="flex items-center justify-between px-4 py-3">
-              <div className="min-w-0">
-                <span className="text-xs text-green-500">{pick.category.name}</span>
-                <span className="block text-sm font-medium text-green-900 truncate">{pick.golfer.name}</span>
-              </div>
-              <div className="flex items-center gap-2 shrink-0 text-xs text-green-500">
-                {pick.golfer.country && <span>{pick.golfer.country}</span>}
-                {pick.golfer.owgr && <span>#{pick.golfer.owgr}</span>}
-              </div>
-            </div>
-          ))}
+      {/* Entry cards */}
+      <div className="space-y-4">
+        {entries.map((entry) => (
+          <EntryCard
+            key={entry.id}
+            entry={entry}
+            poolId={params.id}
+            isMultiEntry={isMultiEntry}
+            canEdit={canEdit}
+            hasScores={hasScores}
+            allRanks={allRanks}
+          />
+        ))}
       </div>
 
+      {/* Add another entry button */}
+      {canAddMore && isMultiEntry && (
+        <Link href={`/pool/${params.id}/picks`} className="block mt-4">
+          <div className="rounded-lg border-2 border-dashed border-green-300 p-4 text-center hover:bg-green-50 transition-colors min-h-[44px] flex flex-col items-center justify-center">
+            <span className="text-sm font-medium text-green-700">+ Add Entry {entries.length + 1}</span>
+            <span className="text-xs text-green-500 mt-1">{entries.length} of {maxEntries} entries used</span>
+          </div>
+        </Link>
+      )}
+
+      {/* Leaderboard link */}
       <div className="mt-6">
         <Link href={`/pool/${params.id}/leaderboard`}>
           <Button variant="secondary" className="w-full">View Leaderboard</Button>
         </Link>
       </div>
+    </div>
+  );
+}
+
+function EntryCard({
+  entry,
+  poolId,
+  isMultiEntry,
+  canEdit,
+  hasScores,
+  allRanks,
+}: {
+  entry: EntryData;
+  poolId: string;
+  isMultiEntry: boolean;
+  canEdit: boolean;
+  hasScores: boolean;
+  allRanks: (number | null)[];
+}) {
+  const sortedPicks = entry.picks
+    .slice()
+    .sort((a, b) => a.category.sortOrder - b.category.sortOrder);
+
+  const pickStripData = sortedPicks.map((p) => ({
+    categoryName: p.category.name,
+    golferName: p.golfer.name,
+  }));
+
+  const submittedDate = new Date(entry.submittedAt).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  return (
+    <div className="rounded-lg border border-green-200 overflow-hidden">
+      {/* Header */}
+      <div className="bg-green-50 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="min-w-0">
+            {isMultiEntry && (
+              <span className="text-sm font-semibold text-green-900">Entry {entry.entryNumber}</span>
+            )}
+            <span className={`text-xs text-green-500 ${isMultiEntry ? "ml-2" : ""}`}>
+              Submitted {submittedDate}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          {hasScores && entry.teamScore !== null && (
+            <div className="text-right">
+              <span className={`text-lg font-bold ${scoreColor(entry.teamScore)}`}>
+                {formatScore(entry.teamScore)}
+              </span>
+              {entry.rank !== null && (
+                <span className="ml-2 text-xs text-green-600">
+                  {formatRankWithTies(entry.rank, allRanks)}
+                </span>
+              )}
+            </div>
+          )}
+          {canEdit && isMultiEntry && (
+            <Link href={`/pool/${poolId}/picks?entryId=${entry.id}`}>
+              <Button variant="secondary" className="text-xs px-3 py-1">Edit</Button>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Pick strip */}
+      <PickStrip picks={pickStripData} />
     </div>
   );
 }

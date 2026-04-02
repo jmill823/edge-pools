@@ -83,6 +83,25 @@
 - **Root cause:** Three issues: (1) The manage page footer had a hardcoded "Golfer Mapping" link visible to all organizers, (2) The middleware bypassed auth entirely for `/api/admin/` routes, (3) Admin API endpoints only checked auth, not organizer role.
 - **Fix:** (1) Removed "Golfer Mapping" link from manage page footer — admin tools are only accessible via the "Manual Scores" link in the Live Scoring section (which is only visible on LIVE/LOCKED manage pages, already gated by organizer check). (2) Removed middleware bypass for `/api/admin/` — these routes now go through normal auth flow. (3) Added organizer role check to all admin API routes (golfer-mapping GET, golfers PATCH, scores GET/POST) — user must own at least one pool to access. (4) Added client-side 403 handling on admin pages — shows "Access Denied" with redirect to dashboard.
 
+## Session 4 — Multi-Entry + Edit Picks (April 2, 2026)
+
+### DEV 1 — STATE-MATRIX.md Does Not Exist
+- **Spec said:** Read STATE-MATRIX.md at session start. Every conditional must trace back to it.
+- **What was found:** File does not exist in the repository.
+- **What was done:** Used state logic already implemented in the codebase (dashboard CardLinks, picks page status checks, API route validations) as the effective state matrix. All status-based UI behavior follows the patterns established in Sessions R1-R3.
+- **Why:** State matrix rules are encoded in existing code. No ambiguity in the conditions handled.
+
+### DEV 2 — Max Entries Stepper Default
+- **Spec said:** Replace "whatever input currently exists" with +/- stepper, range 1-5, default 1.
+- **What existed:** Checkbox "Allow multiple entries?" + number input (2-5) that appeared when checked. This sent maxEntries=1 when unchecked.
+- **What was done:** Replaced with a direct +/- stepper that always shows, range 1-5, default 1. Removed the checkbox toggle entirely. Simpler UX — one control instead of two.
+- **Why:** The stepper starting at 1 inherently handles single-entry (the default). No checkbox needed.
+
+### DEV 3 — P2 Items Deferred
+- **Spec said:** P2 items (unified UI polish) ship if time allows.
+- **What was done:** Focused on P1 (multi-entry + edit picks) as required. StatusBadge colors and shared PickStrip component were created as they're foundational for P2 and used by P1 flows. Dashboard, leaderboard, create pool, join, invite, and landing page UI refreshes are deferred to next session.
+- **Why:** Brief explicitly states "P2 items ship in the next session" if time runs short. P1 is complete and passing.
+
 ### BUG D — Perceived Slowness Between Actions (P2)
 - **Root cause:** No skeleton loading states between page transitions. Users see a blank screen while client components mount and fetch data. Next.js App Router uses `loading.tsx` files for instant loading UI, but none were defined.
 - **Fix:** Added `loading.tsx` skeleton screens for dashboard, leaderboard, and picks pages. These show immediately on navigation before the page component mounts, eliminating the blank-screen gap. Actual API response times depend on Neon cold starts (free tier) — infrastructure-level optimization would require Vercel Pro + connection pooling, which is documented as a future recommendation.
