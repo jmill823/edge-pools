@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
+import { formatScore, scoreColor, formatRankWithTies } from "../leaderboard/_components/score-utils";
 
 interface PickData {
   golfer: { id: string; name: string; country: string | null; owgr: number | null };
@@ -14,6 +15,8 @@ interface PickData {
 interface EntryData {
   id: string;
   entryNumber: number;
+  teamScore: number | null;
+  rank: number | null;
   submittedAt: string;
   updatedAt: string;
   picks: PickData[];
@@ -24,6 +27,7 @@ interface PoolData {
   name: string;
   status: string;
   picksDeadline: string;
+  tournamentId: string;
 }
 
 export default function MyEntriesPage({ params }: { params: { id: string } }) {
@@ -46,6 +50,7 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
   if (!pool) return <div className="mx-auto max-w-3xl px-4 py-12 text-center text-red-600">Pool not found</div>;
 
   const canEdit = pool.status === "OPEN" && new Date(pool.picksDeadline) > new Date();
+  const hasScores = ["LIVE", "COMPLETE", "ARCHIVED"].includes(pool.status);
 
   if (entries.length === 0) {
     if (pool.status === "OPEN" && canEdit) {
@@ -54,11 +59,7 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
           <EmptyState
             title="No picks yet"
             description="You haven't submitted picks for this pool."
-            action={
-              <Link href={`/pool/${params.id}/picks`}>
-                <Button>Make Picks</Button>
-              </Link>
-            }
+            action={<Link href={`/pool/${params.id}/picks`}><Button>Make Picks</Button></Link>}
           />
         </div>
       );
@@ -67,18 +68,14 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
       <div className="mx-auto max-w-3xl px-4 py-12">
         <EmptyState
           title="No picks submitted"
-          description={
-            pool.status === "SETUP"
-              ? "This pool is being set up. Picks will open soon."
-              : "You didn't submit picks for this pool."
-          }
+          description={pool.status === "SETUP" ? "This pool is being set up." : "You didn't submit picks for this pool."}
         />
       </div>
     );
   }
 
-  // Single entry (Session 2 — only first entry shown)
   const entry = entries[0];
+  const allRanks = entries.map((e) => e.rank);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
@@ -91,17 +88,25 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
         )}
       </div>
 
+      {/* Score summary — only when scores exist */}
+      {hasScores && entry.teamScore !== null && (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 flex items-center justify-between">
+          <div>
+            <span className="text-xs text-green-600">Your Position</span>
+            <span className="block text-lg font-bold text-green-900">
+              {formatRankWithTies(entry.rank, allRanks)}
+            </span>
+          </div>
+          <span className={`text-2xl font-bold ${scoreColor(entry.teamScore)}`}>
+            {formatScore(entry.teamScore)}
+          </span>
+        </div>
+      )}
+
       <p className="text-xs text-green-500 mb-4">
         Submitted {new Date(entry.submittedAt).toLocaleDateString("en-US", {
           month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
         })}
-        {entry.updatedAt !== entry.submittedAt && (
-          <span>
-            {" "}· Updated {new Date(entry.updatedAt).toLocaleDateString("en-US", {
-              month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
-            })}
-          </span>
-        )}
       </p>
 
       <div className="rounded-lg border border-green-200 divide-y divide-green-100">
