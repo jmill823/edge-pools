@@ -33,16 +33,30 @@ export default function PicksPage({ params }: { params: { id: string } }) {
   const pickCount = pickedGolferIds.size;
 
   useEffect(() => {
-    Promise.all([
-      fetch(`/api/pools/${params.id}`).then((r) => r.json()),
-      fetch(`/api/pools/${params.id}/categories`).then((r) => r.json()),
-      fetch(`/api/pools/${params.id}/entries/mine`).then((r) => r.json()),
-    ]).then(([poolData, cats, entries]) => {
-      setPool(poolData);
-      setCategories(Array.isArray(cats) ? cats : []);
-      // Expand all categories initially
-      if (Array.isArray(cats)) setExpanded(new Set(cats.map((c: Category) => c.id)));
-      // Pre-fill if existing entry
+    // Fetch each independently — one failure doesn't break the others
+    const poolPromise = fetch(`/api/pools/${params.id}`)
+      .then((r) => r.ok ? r.json() : null)
+      .catch(() => null);
+    const catsPromise = fetch(`/api/pools/${params.id}/categories`)
+      .then((r) => r.ok ? r.json() : [])
+      .catch(() => []);
+    const entriesPromise = fetch(`/api/pools/${params.id}/entries/mine`)
+      .then((r) => r.ok ? r.json() : [])
+      .catch(() => []);
+
+    Promise.all([poolPromise, catsPromise, entriesPromise]).then(([poolData, cats, entries]) => {
+      if (poolData && poolData.status) {
+        setPool(poolData);
+        if (poolData.picksDeadline) {
+          const deadline = new Date(poolData.picksDeadline);
+          const now = new Date();
+          if (deadline < now) setExpired(true);
+        }
+      }
+      if (Array.isArray(cats) && cats.length > 0) {
+        setCategories(cats);
+        setExpanded(new Set(cats.map((c: Category) => c.id)));
+      }
       if (Array.isArray(entries) && entries.length > 0) {
         const entry = entries[0];
         setExistingEntry(entry);
@@ -52,9 +66,8 @@ export default function PicksPage({ params }: { params: { id: string } }) {
         });
         setSelections(sels);
       }
-      if (poolData.picksDeadline && new Date(poolData.picksDeadline) < new Date()) setExpired(true);
       setLoading(false);
-    }).catch(() => setLoading(false));
+    });
   }, [params.id]);
 
   const handleSelect = useCallback((categoryId: string, golferId: string) => {
@@ -104,18 +117,34 @@ export default function PicksPage({ params }: { params: { id: string } }) {
   }, [pool, params.id, selections, isEdit, existingEntry]);
 
   if (loading) return <div className="mx-auto max-w-3xl px-4 py-8"><LoadingSkeleton variant="page" lines={5} /></div>;
-  if (!pool) return <div className="mx-auto max-w-3xl px-4 py-12 text-center text-red-600">Pool not found</div>;
+  if (!pool) return <div className="mx-auto max-w-3xl px-4 py-12 text-center text-red-600">Could not load pool data. Try refreshing.</div>;
 
   // Status gates per state matrix
   if (pool.status === "SETUP") return <StatusMsg msg="This pool is being set up. Picks will open soon." />;
   if (pool.status === "ARCHIVED") return <StatusMsg msg="This pool has been archived." />;
+
   const readOnly = pool.status !== "OPEN" || expired;
+
   if (readOnly && !existingEntry) {
-    return <StatusMsg msg={pool.status === "OPEN" ? "The picks deadline has passed." : "Picks are locked."} />;
+    const msg = expired
+      ? "The picks deadline has passed."
+      : pool.status === "LOCKED" ? "Picks are locked. Waiting for the tournament to begin."
+      : pool.status === "LIVE" ? "Picks are locked. Tournament is in progress."
+      : pool.status === "COMPLETE" ? "Tournament complete."
+      : "Picks are not available.";
+    return <StatusMsg msg={msg} />;
   }
 
   if (showSuccess) {
     return <SuccessScreen poolId={pool.id} poolName={pool.name} pickCount={pickCount} isEdit={isEdit} />;
+  }
+
+  if (categories.length === 0) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-12 text-center">
+        <p className="text-sm text-green-600">No categories found for this pool. The organizer may still be setting up.</p>
+      </div>
+    );
   }
 
   const picksForConfirm = categories.map((c) => {
