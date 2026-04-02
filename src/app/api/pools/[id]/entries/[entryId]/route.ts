@@ -33,6 +33,14 @@ export async function PATCH(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  // Pool must be OPEN
+  if (entry.pool.status !== "OPEN") {
+    return NextResponse.json(
+      { error: "Pool is not accepting pick edits" },
+      { status: 400 }
+    );
+  }
+
   // Deadline enforcement
   const now = new Date();
   if (now > entry.pool.picksDeadline) {

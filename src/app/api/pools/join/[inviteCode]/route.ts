@@ -49,6 +49,13 @@ export async function POST(
     return NextResponse.json({ error: "Pool not found" }, { status: 404 });
   }
 
+  if (pool.status !== "OPEN") {
+    return NextResponse.json(
+      { error: "This pool is not currently accepting players" },
+      { status: 400 }
+    );
+  }
+
   if (!pool.acceptingMembers) {
     return NextResponse.json(
       { error: "This pool is no longer accepting new members" },
