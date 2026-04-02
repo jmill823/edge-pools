@@ -114,13 +114,15 @@ export default function InvitePage({ params }: { params: { id: string } }) {
         <div className="flex gap-3">
           <a
             href={`sms:?body=${encodeURIComponent(shareText)}`}
-            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] inline-flex items-center justify-center"
+            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] flex items-center justify-center"
           >
             Share via Text
           </a>
           <a
             href={`mailto:?subject=${encodeURIComponent(`Join my golf pool: ${pool.name}`)}&body=${encodeURIComponent(shareText)}`}
-            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] inline-flex items-center justify-center"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] flex items-center justify-center"
           >
             Share via Email
           </a>

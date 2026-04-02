@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { CategorySection } from "./_components/CategorySection";
-import { SummaryBar } from "./_components/SummaryBar";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { PickStrip } from "./_components/PickStrip";
+import { SelectionGrid } from "./_components/SelectionGrid";
 import { ConfirmModal } from "./_components/ConfirmModal";
 import { SuccessScreen } from "./_components/SuccessScreen";
 import { Countdown } from "./_components/Countdown";
@@ -11,16 +11,14 @@ import { Button } from "@/components/ui/Button";
 
 interface Golfer { id: string; name: string; country: string | null; owgr: number | null; }
 interface Category { id: string; name: string; sortOrder: number; golfers: Golfer[]; }
-interface PoolInfo { id: string; name: string; status: string; picksDeadline: string; inviteCode: string; }
+interface PoolInfo { id: string; name: string; status: string; picksDeadline: string; }
 interface ExistingEntry { id: string; picks: { category: { id: string }; golfer: { id: string } }[]; }
 
 export default function PicksPage({ params }: { params: { id: string } }) {
   const [pool, setPool] = useState<PoolInfo | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [existingEntry, setExistingEntry] = useState<ExistingEntry | null>(null);
-  const [selections, setSelections] = useState<Record<string, string>>({});
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [scrollTarget, setScrollTarget] = useState<string | null>(null);
+  const [selections, setSelections] = useState<Map<string, string>>(new Map());
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -29,41 +27,37 @@ export default function PicksPage({ params }: { params: { id: string } }) {
   const [expired, setExpired] = useState(false);
 
   const isEdit = !!existingEntry;
-  const pickedGolferIds = new Set(Object.values(selections).filter(Boolean));
-  const pickCount = pickedGolferIds.size;
+
+  // Derived state
+  const usedGolferIds = useMemo(() => new Set(selections.values()), [selections]);
+  const pickCount = usedGolferIds.size - (usedGolferIds.has("") ? 1 : 0);
+  const isComplete = pickCount === categories.length && categories.length > 0;
+
+  const golferLookup = useMemo(() => {
+    const map = new Map<string, Golfer>();
+    for (const cat of categories) for (const g of cat.golfers) map.set(g.id, g);
+    return map;
+  }, [categories]);
+
+  const golferCategoryCount = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const cat of categories) for (const g of cat.golfers) map.set(g.id, (map.get(g.id) || 0) + 1);
+    return map;
+  }, [categories]);
 
   useEffect(() => {
-    // Fetch each independently — one failure doesn't break the others
-    const poolPromise = fetch(`/api/pools/${params.id}`)
-      .then((r) => r.ok ? r.json() : null)
-      .catch(() => null);
-    const catsPromise = fetch(`/api/pools/${params.id}/categories`)
-      .then((r) => r.ok ? r.json() : [])
-      .catch(() => []);
-    const entriesPromise = fetch(`/api/pools/${params.id}/entries/mine`)
-      .then((r) => r.ok ? r.json() : [])
-      .catch(() => []);
+    const poolP = fetch(`/api/pools/${params.id}`).then((r) => r.ok ? r.json() : null).catch(() => null);
+    const catsP = fetch(`/api/pools/${params.id}/categories`).then((r) => r.ok ? r.json() : []).catch(() => []);
+    const entP = fetch(`/api/pools/${params.id}/entries/mine`).then((r) => r.ok ? r.json() : []).catch(() => []);
 
-    Promise.all([poolPromise, catsPromise, entriesPromise]).then(([poolData, cats, entries]) => {
-      if (poolData && poolData.status) {
-        setPool(poolData);
-        if (poolData.picksDeadline) {
-          const deadline = new Date(poolData.picksDeadline);
-          const now = new Date();
-          if (deadline < now) setExpired(true);
-        }
-      }
-      if (Array.isArray(cats) && cats.length > 0) {
-        setCategories(cats);
-        setExpanded(new Set(cats.map((c: Category) => c.id)));
-      }
-      if (Array.isArray(entries) && entries.length > 0) {
-        const entry = entries[0];
+    Promise.all([poolP, catsP, entP]).then(([p, c, e]) => {
+      if (p?.status) { setPool(p); if (p.picksDeadline && new Date(p.picksDeadline) < new Date()) setExpired(true); }
+      if (Array.isArray(c) && c.length > 0) setCategories(c);
+      if (Array.isArray(e) && e.length > 0) {
+        const entry = e[0];
         setExistingEntry(entry);
-        const sels: Record<string, string> = {};
-        entry.picks.forEach((p: { category: { id: string }; golfer: { id: string } }) => {
-          sels[p.category.id] = p.golfer.id;
-        });
+        const sels = new Map<string, string>();
+        entry.picks.forEach((pk: { category: { id: string }; golfer: { id: string } }) => sels.set(pk.category.id, pk.golfer.id));
         setSelections(sels);
       }
       setLoading(false);
@@ -72,167 +66,97 @@ export default function PicksPage({ params }: { params: { id: string } }) {
 
   const handleSelect = useCallback((categoryId: string, golferId: string) => {
     setSelections((prev) => {
-      const next = { ...prev };
-      if (golferId) { next[categoryId] = golferId; } else { delete next[categoryId]; }
+      const next = new Map(prev);
+      if (golferId) next.set(categoryId, golferId); else next.delete(categoryId);
       return next;
     });
-    // Auto-scroll to next category
-    if (golferId) {
-      const idx = categories.findIndex((c) => c.id === categoryId);
-      if (idx >= 0 && idx < categories.length - 1) {
-        const nextCat = categories[idx + 1];
-        setExpanded((prev) => new Set(prev).add(nextCat.id));
-        setScrollTarget(nextCat.id);
-        setTimeout(() => setScrollTarget(null), 500);
-      }
-    }
-  }, [categories]);
+  }, []);
 
   const handleSubmit = useCallback(async () => {
     if (!pool) return;
-    setSubmitting(true);
-    setSubmitError(null);
-    const picks = Object.entries(selections).map(([categoryId, golferId]) => ({ categoryId, golferId }));
+    setSubmitting(true); setSubmitError(null);
+    const picks = Array.from(selections.entries()).map(([categoryId, golferId]) => ({ categoryId, golferId }));
     try {
-      const url = isEdit
-        ? `/api/pools/${params.id}/entries/${existingEntry!.id}`
-        : `/api/pools/${params.id}/entries`;
-      const res = await fetch(url, {
-        method: isEdit ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ picks }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setSubmitError(data.error || "Failed to submit picks");
-        setSubmitting(false);
-        return;
-      }
-      setShowConfirm(false);
-      setShowSuccess(true);
-    } catch {
-      setSubmitError("Something went wrong. Please try again.");
-    }
+      const url = isEdit ? `/api/pools/${params.id}/entries/${existingEntry!.id}` : `/api/pools/${params.id}/entries`;
+      const res = await fetch(url, { method: isEdit ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ picks }) });
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setSubmitError(d.error || "Failed to submit"); setSubmitting(false); return; }
+      setShowConfirm(false); setShowSuccess(true);
+    } catch { setSubmitError("Something went wrong. Please try again."); }
     setSubmitting(false);
   }, [pool, params.id, selections, isEdit, existingEntry]);
 
-  if (loading) return <div className="mx-auto max-w-3xl px-4 py-8"><LoadingSkeleton variant="page" lines={5} /></div>;
-  if (!pool) return <div className="mx-auto max-w-3xl px-4 py-12 text-center text-red-600">Could not load pool data. Try refreshing.</div>;
-
-  // Status gates per state matrix
-  if (pool.status === "SETUP") return <StatusMsg msg="This pool is being set up. Picks will open soon." />;
-  if (pool.status === "ARCHIVED") return <StatusMsg msg="This pool has been archived." />;
+  if (loading) return <div className="mx-auto max-w-5xl px-4 py-8"><LoadingSkeleton variant="page" lines={5} /></div>;
+  if (!pool) return <div className="mx-auto max-w-3xl px-4 py-12 text-center text-red-600">Could not load pool data.</div>;
+  if (pool.status === "SETUP") return <Msg text="This pool is being set up. Picks will open soon." />;
+  if (pool.status === "ARCHIVED") return <Msg text="This pool has been archived." />;
 
   const readOnly = pool.status !== "OPEN" || expired;
-
   if (readOnly && !existingEntry) {
-    const msg = expired
-      ? "The picks deadline has passed."
-      : pool.status === "LOCKED" ? "Picks are locked. Waiting for the tournament to begin."
-      : pool.status === "LIVE" ? "Picks are locked. Tournament is in progress."
-      : pool.status === "COMPLETE" ? "Tournament complete."
-      : "Picks are not available.";
-    return <StatusMsg msg={msg} />;
+    return <Msg text={expired ? "The picks deadline has passed." : pool.status === "LIVE" ? "Picks are locked. Tournament is in progress." : "Picks are locked."} />;
   }
-
-  if (showSuccess) {
-    return <SuccessScreen poolId={pool.id} poolName={pool.name} pickCount={pickCount} isEdit={isEdit} />;
-  }
-
-  if (categories.length === 0) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-12 text-center">
-        <p className="text-sm text-green-600">No categories found for this pool. The organizer may still be setting up.</p>
-      </div>
-    );
-  }
+  if (showSuccess) return <SuccessScreen poolId={pool.id} poolName={pool.name} pickCount={pickCount} isEdit={isEdit} />;
+  if (categories.length === 0) return <Msg text="No categories found. The organizer may still be setting up." />;
 
   const picksForConfirm = categories.map((c) => {
-    const golferId = selections[c.id];
-    const golfer = c.golfers.find((g) => g.id === golferId);
-    return { categoryName: c.name, golferName: golfer?.name || "", golferCountry: golfer?.country || null, golferOwgr: golfer?.owgr || null };
+    const gId = selections.get(c.id); const g = gId ? golferLookup.get(gId) : null;
+    return { categoryName: c.name, golferName: g?.name || "", golferCountry: g?.country || null, golferOwgr: g?.owgr || null };
   });
 
   return (
-    <div className="pb-24 sm:pb-4">
+    <div className="flex flex-col h-[calc(100vh-120px)] sm:h-[calc(100vh-180px)]">
       {/* Header */}
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-green-900">{isEdit ? "Edit Picks" : "Make Your Picks"}</h2>
+      <div className="px-4 pt-3 pb-2 flex items-center justify-between shrink-0">
+        <div>
+          <h2 className="text-lg font-bold text-green-900">{isEdit ? "Edit your picks" : "Make your picks"}</h2>
+          <span className="text-xs text-green-600">{pickCount} of {categories.length} complete</span>
+        </div>
         {!readOnly && pool.picksDeadline && <Countdown deadline={pool.picksDeadline} onExpired={() => setExpired(true)} />}
       </div>
 
       {readOnly && existingEntry && (
-        <div className="mx-4 mb-3 rounded bg-amber-50 px-3 py-2 text-xs text-amber-800">
-          {expired ? "The picks deadline has passed. Your picks are locked." : "Picks are locked."}
+        <div className="mx-4 mb-2 rounded bg-amber-50 px-3 py-2 text-xs text-amber-800 shrink-0">
+          {expired ? "Deadline passed. Your picks are locked." : "Picks are locked."}
         </div>
       )}
 
-      {/* Categories */}
-      <div className="divide-y divide-green-100 border-y border-green-100">
-        {categories.map((cat) => {
-          const otherPicks = new Set(
-            Object.entries(selections).filter(([cId]) => cId !== cat.id).map(([, gId]) => gId).filter(Boolean)
-          );
-          return (
-            <CategorySection
-              key={cat.id}
-              categoryId={cat.id}
-              categoryName={cat.name}
-              sortOrder={cat.sortOrder}
-              golfers={cat.golfers}
-              selectedGolferId={selections[cat.id] || null}
-              pickedElsewhere={otherPicks}
-              onSelect={handleSelect}
-              isExpanded={expanded.has(cat.id)}
-              onToggle={() => setExpanded((prev) => { const n = new Set(prev); if (n.has(cat.id)) { n.delete(cat.id); } else { n.add(cat.id); } return n; })}
-              shouldScrollTo={scrollTarget === cat.id}
-              readOnly={readOnly}
-            />
-          );
-        })}
+      {/* Pick strip */}
+      <div className="shrink-0">
+        <PickStrip categories={categories} selections={selections} golferLookup={golferLookup} />
       </div>
 
-      {/* Desktop submit */}
+      {/* Selection grid */}
+      <SelectionGrid
+        categories={categories}
+        selections={selections}
+        golferCategoryCount={golferCategoryCount}
+        usedGolferIds={usedGolferIds}
+        onSelect={handleSelect}
+        readOnly={readOnly}
+      />
+
+      {/* Footer */}
       {!readOnly && (
-        <div className="hidden sm:block px-4 pt-4">
-          <Button variant="primary" className="w-full" disabled={pickCount < categories.length} onClick={() => setShowConfirm(true)}>
-            {isEdit ? `Update Picks (${pickCount}/${categories.length})` : `Submit Picks (${pickCount}/${categories.length})`}
+        <div className="shrink-0 border-t border-green-200 bg-white px-4 py-3 safe-area-pb">
+          <div className="mb-2 flex items-center gap-3 text-[10px] text-green-500">
+            <span><span className="text-green-600 font-bold">●</span> your pick</span>
+            <span><span className="line-through">name</span> already used</span>
+            <span><span className="text-amber-600 font-bold">³</span> multiple categories</span>
+          </div>
+          <Button variant="primary" className="w-full" disabled={!isComplete} onClick={() => setShowConfirm(true)}>
+            {isEdit ? `Update picks (${pickCount}/${categories.length})` : `Submit picks (${pickCount}/${categories.length})`}
           </Button>
         </div>
       )}
 
-      {/* Mobile summary bar */}
-      {!readOnly && (
-        <SummaryBar
-          totalCategories={categories.length}
-          pickCount={pickCount}
-          onSubmit={() => setShowConfirm(true)}
-          submitting={submitting}
-          isEdit={isEdit}
-        />
-      )}
-
-      {/* Confirm modal */}
       {showConfirm && (
-        <ConfirmModal
-          picks={picksForConfirm}
-          poolName={pool.name}
-          isEdit={isEdit}
-          submitting={submitting}
-          error={submitError}
-          onConfirm={handleSubmit}
-          onCancel={() => { setShowConfirm(false); setSubmitError(null); }}
-          onDismissError={() => setSubmitError(null)}
-        />
+        <ConfirmModal picks={picksForConfirm} poolName={pool.name} isEdit={isEdit} submitting={submitting}
+          error={submitError} onConfirm={handleSubmit} onCancel={() => { setShowConfirm(false); setSubmitError(null); }}
+          onDismissError={() => setSubmitError(null)} />
       )}
     </div>
   );
 }
 
-function StatusMsg({ msg }: { msg: string }) {
-  return (
-    <div className="mx-auto max-w-3xl px-4 py-12 text-center">
-      <p className="text-sm text-green-600">{msg}</p>
-    </div>
-  );
+function Msg({ text }: { text: string }) {
+  return <div className="mx-auto max-w-3xl px-4 py-12 text-center"><p className="text-sm text-green-600">{text}</p></div>;
 }
