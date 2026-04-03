@@ -1,70 +1,197 @@
-# CC-LESSONS-LEARNED.md — Do Not Repeat These Mistakes
-### Read this at the start of EVERY session. This is not optional.
+# CC-LESSONS-LEARNED.md
+## Edge Pools | Accumulated Build Knowledge | Started: March 31, 2026
+### Read this alongside CLAUDE.md at the start of every build session.
 
 ---
 
 ## Purpose
 
-This file captures mistakes made in previous CC sessions. Each entry describes what went wrong, why, and the rule to follow going forward. If you make a mistake that's already documented here, that is a critical failure.
+CLAUDE.md has the rules. This file has the experience. Every lesson here was learned from a real build failure, regression, or discovery across the rebuild sessions. The next session should not repeat mistakes from previous sessions.
+
+**How this file grows:** After every build session, any new lesson gets appended to the relevant section with the session name and date. This file only gets longer.
 
 ---
 
-## Lesson 1: Test With Fresh State, Not Existing State
-**Date:** March 31, 2026
-**What happened:** CC tested picks flow on a pool that already had entries. Picks worked for editing existing entries but broke when creating a new entry on a fresh pool. The regression shipped.
-**Why:** CC reused test state from a previous session instead of testing the first-time user experience.
-**Rule:** Every session's regression check must include a **fresh-state test**: create a new pool, join as a new user, submit picks for the first time. Never test only against pools/users that already have data.
+## 1. TESTING LESSONS
+
+### Test With Fresh State, Not Existing State
+- Always test first-time user experience on a new pool/user, not reused data.
+- Session 3 picks regression was invisible when testing with an existing entry but broke on a fresh OPEN pool with no entries. (R3, Apr 1)
+
+### Self-Reported QA Is Not Verification
+- QA must produce evidence (flow traces, SHAs, URLs). "PASS" without proof is not acceptable.
+- Three stabilization sessions reported "FIXED" on bugs that were never committed, never deployed, or actively broken. This is why the Gate system replaced checklists. (Pre-rebuild, Mar 31)
+
+### Test All Pool Statuses, Not Just OPEN
+- Every page renders differently across SETUP → OPEN → LOCKED → LIVE → COMPLETE → ARCHIVED. If you only test OPEN, you miss broken states.
+- STATE-MATRIX.md is the canonical reference. Every conditional in the UI traces back to it. (R1, Apr 1)
+
+### Test at 375px AND 1440px
+- Mobile-first doesn't mean desktop-never. Session 4 P2 pages looked acceptable on mobile but were uncentered and blown out on desktop — no max-width containers applied. (R4, Apr 2)
 
 ---
 
-## Lesson 2: Commits That Aren't Deployed Don't Count
-**Date:** March 31, 2026
-**What happened:** Stabilization Round 1 completed all fixes but changes were never committed to git or deployed to Vercel. CC reported "FIXED" based on local file state. The founder tested production and found the pre-fix version.
-**Rule:** "Fixed" means deployed to a URL and verified at that URL. Before reporting any bug as fixed, verify: (1) changes are committed, (2) changes are pushed, (3) Vercel deploy completed, (4) the fix works at the deployed URL.
+## 2. CODE QUALITY LESSONS
+
+### Commits That Aren't Deployed Don't Count
+- "Fixed" means committed, pushed, deployed, and verified at the live URL.
+- Stabilization Round 1 had fixes that were never committed. Round 2 discovered Round 1 was uncommitted. (Pre-rebuild, Mar 31)
+
+### Fixing One Thing Must Not Break Another on the Same Page
+- Read the ENTIRE file before modifying. Test ALL functionality on the page, not just your diff.
+- Session 3 picks fix broke the leaderboard fetch — cascading failure from a shared API pattern. (R3, Apr 1)
+
+### Page.tsx Under 200 Lines
+- Extract complexity to `_components/`. No hard limit on component files.
+- Long page files are where regressions hide — hard to review, easy to break. (Standing rule, CLAUDE.md)
+
+### Read Full File Before Modifying
+- If you're changing ANY part of a file, read the entire file first. This prevents regressions.
+- Multiple instances of CC modifying one function and unknowingly breaking another in the same file. (R1-R3, Apr 1)
 
 ---
 
-## Lesson 3: Fixing One Thing Must Not Break Another on the Same Page
-**Date:** March 31, 2026
-**What happened:** Stabilization Round 2 added a post-submission success screen to the picks page. The changes broke the golfer selection UI — an "X" icon replaced the selection radio buttons for all golfers. CC fixed the new feature but broke the existing feature on the same file.
-**Rule:** Before modifying any file, read the ENTIRE file. After modifying, verify ALL functionality on that page — not just the part you changed. If the file has a selection UI, test selection. If it has a form, test submission. If it has navigation, test navigation. Test the whole page, not just your diff.
+## 3. NAVIGATION LESSONS
+
+### Navigation Must Be Tested End-to-End, Not Page-by-Page
+- If a user can't reach a page from the dashboard without typing a URL, it's unreachable.
+- Original build had leaderboard unreachable from pool pages — no PoolNav, no links. (Pre-rebuild, Mar 31)
+
+### PoolNav Must Be in Layout, Not Per-Page
+- Pool-level nav (Picks, Leaderboard, My Entries, Manage) lives in `src/app/pool/[id]/layout.tsx`. If it's in individual page files, some pages will miss it.
+- The rebuild fixed this structurally — layout-level component means you can't be on a pool page without seeing the nav. (R1, Apr 1)
+
+### Manage Tab Only Visible to Organizer
+- Non-organizers should not see the Manage tab in PoolNav. Check `PoolRole.ORGANIZER` for the current pool.
+- Admin = organizer for MVP. No separate admin role. (Standing rule)
 
 ---
 
-## Lesson 4: Self-Reported QA Is Not Verification
-**Date:** March 31, 2026
-**What happened:** CC filled out QA checklists marking items as "PASS" that were objectively broken in production. The leaderboard was marked "accessible" when no link to it existed on any page.
-**Rule:** QA verification must produce evidence: flow traces describing what a user sees, commit SHAs, preview URLs. "PASS" without a description of what was actually tested and observed is not acceptable.
+## 4. DATA & API LESSONS
+
+### Timezone Bugs Are Real
+- All datetimes stored and compared using `.toISOString()`. No raw datetime-local strings.
+- Picks deadline enforcement broke when comparing local datetime strings vs. UTC. (Pre-rebuild, Mar 30)
+
+### Invalid Date Display
+- If a datetime field is null, missing, or unparseable, display "—" not "Invalid Date."
+- Session 4 manage page showed "Picks are open until Invalid Date" because picksDeadline was null in test data. (R4, Apr 2)
+
+### API Routes Must Validate Pool Membership
+- Every pool-specific API route must verify the requesting user is a member of that pool.
+- Organizer-only routes must additionally check `PoolRole.ORGANIZER` for that specific pool.
+- Cross-pool admin access (golfer mapping, manual scores): check if user is organizer of ANY pool. (Standing rule)
+
+### No-Reuse Logic Is Per-Entry, Not Per-User
+- In multi-entry pools, the no-reuse rule (can't pick the same golfer in two categories) applies WITHIN each entry, NOT across entries.
+- Entry 1 and Entry 2 can both pick Scheffler — just not in two categories within the same entry. (D4, locked Mar 29)
 
 ---
 
-## Lesson 5: Navigation Must Be Tested End-to-End, Not Page-by-Page
-**Date:** March 31, 2026
-**What happened:** The leaderboard page existed at `/pool/[id]/leaderboard` and rendered correctly when accessed directly. But no link or button on any other page pointed to it. CC verified the page rendered — not that a user could find it.
-**Rule:** When building or verifying navigation, test the complete chain: can a user get from the dashboard to this page without typing a URL? If not, the page is unreachable regardless of whether it renders.
+## 5. UI/UX LESSONS
+
+### Placeholder Pages Are Not Acceptable
+- A page that shows nothing (blank screen, "coming soon") is a broken page from the user's perspective. If a page exists in the nav, it must show useful content or redirect.
+- Session 4 manage page was a blank placeholder until CC was told to build a minimal version. (R4, Apr 2)
+
+### Loading + Success + Error States on Every Action
+- Silent failures are P1. If a user taps something and nothing happens, the product is broken.
+- Every user action has three states: idle, loading, result (success or error). (Standing rule, CLAUDE.md)
+
+### Multi-Entry UI Must Be Invisible When maxEntries = 1
+- When a pool allows only 1 entry (the default), no entry numbering, no "Add Another Entry" button, no "Entry 1 of 1" label. Just "Your Picks."
+- Multi-entry complexity should only appear when the organizer opts into it. (D4/R4, Apr 2)
+
+### Horizontal Scroll Strips Must Work on Mobile
+- CSS `overflow-x: auto` with `-webkit-overflow-scrolling: touch` for momentum scrolling.
+- No horizontal scroll on the PAGE itself — only within designated strips.
+- Pick strips, category previews, and metric strips use this pattern. (Design spec, Apr 2)
 
 ---
 
-## Lesson 6: Timezone Bugs Are Real
-**Date:** March 31, 2026
-**What happened:** The picks deadline was stored as a raw datetime-local string and compared on the server in UTC. On Vercel (UTC), the deadline appeared to have already passed when it hadn't in the user's local timezone. Picks could not be saved.
-**Rule:** ALL datetimes must be stored and compared using `.toISOString()`. No raw datetime-local strings. No `new Date(stringWithoutTimezone)`. Convert to ISO at the point of form submission, store as ISO, compare as ISO.
+## 6. DESIGN SYSTEM LESSONS
+
+### Three Fonts Only — No Substitutions
+- Space Grotesk (headers, nav, column headers), Work Sans (body, team names, labels), Space Mono (scores, ranks, data).
+- No fourth font. No serifs. No generic fonts (Inter, Roboto, Arial, system-ui).
+- CC defaults to system fonts or Inter when no design direction is given. The design spec prevents this. (Design system, Apr 2)
+
+### Warm Cream Background, Never Pure White
+- Page background is `#FDFBF7` on every page. Pure white (`#FFFFFF`) is only for cards and elevated elements.
+- This is the single most visible design decision — if it's wrong, every page looks wrong. (Design spec, Apr 2)
+
+### No Cold Grays
+- All gray values must have warm undertone. The color tokens in the design spec use warm grays (#E2DDD5, #6B6560, #A39E96).
+- Tailwind's default gray scale is cold. Don't use `gray-100`, `gray-200`, etc. — use the custom tokens. (Design spec, Apr 2)
+
+### Max-Width Containers on Every Page
+- Content: 720px. Leaderboard: 800px. Landing hero: 960px. Picks grid: full width.
+- Desktop without max-width looks broken — content stretches to 1440px and becomes unreadable. (R4 phone test, Apr 2)
+
+### Status Badge Colors Are Exact
+- SETUP: gray. OPEN: amber (#FDF4E3 / #8A6B1E). LOCKED: gray. LIVE: red (#FCEAE9 / #8B2D27). COMPLETE: teal (#E8F3ED / #1B5E3B). ARCHIVED: gray.
+- These are not suggestions — CC must use these exact values. (Design spec, Apr 2)
+
+### Score Colors Follow Meaning
+- Under par: accent-success (#2D7A4F). Over par: accent-danger (#A3342D). Even par: text-secondary (#6B6560).
+- %ToWin: accent-secondary/gold (#C4973B). Cut%: amber for at-risk, red for high-risk, green for safe.
+- Color = meaning, never decoration. (Design spec, Apr 2)
 
 ---
 
-## How to Use This File
+## 7. BUILD SESSION PATTERNS
 
-1. **Read every lesson before starting work.** Not skimming — reading.
-2. **Before submitting Gate B**, check your work against every lesson:
-   - Did I test with fresh state? (Lesson 1)
-   - Are my changes committed and deployed? (Lesson 2)
-   - Did I test the full page, not just my changes? (Lesson 3)
-   - Am I providing evidence, not just checkboxes? (Lesson 4)
-   - Can a user navigate to every page I built? (Lesson 5)
-   - Am I handling datetimes correctly? (Lesson 6)
-3. **When a new mistake is discovered**, Jeff or Claude will add it here. Check for updates at session start.
+### Visual-Only Sessions Must Not Touch Logic
+- When a session brief says "visual pass only," that means CSS, typography, layout, and component styling.
+- Do NOT change API routes, database queries, business logic, state transitions, or scoring.
+- If a visual change requires a logic change, STOP and document in DEVIATIONS.md. (Design system session, Apr 3)
+
+### P1/P2 Split — Complete P1 Before Starting P2
+- When a brief splits into P1 (must ship) and P2 (ship if time), finish ALL of P1 before touching P2.
+- Do not partially implement P2 items — each P2 item should be complete or not started.
+- Session 4 followed this correctly. (R4, Apr 2)
+
+### Preview Branch Before Main — Always
+- Push to a named branch. Vercel generates a preview URL. Jeff tests on his phone. If it passes, merge to main.
+- Never push directly to main. Gate B exists because CC's self-reported QA is unreliable. (Gate system, Mar 31)
+
+### New CC Session for Each Brief
+- Clean context = fewer regressions. Each session brief is self-contained.
+- Don't continue a CC session after a brief is complete — start fresh for the next one. (Standing practice, Apr 1)
 
 ---
 
-*Edge Pools | CC-LESSONS-LEARNED.md | March 31, 2026*
-*This file grows over time. Every mistake is documented once and never repeated.*
+## 8. DEVIATION DOCUMENTATION
+
+### Document Every Deviation
+- If the build differs from the brief in ANY way, document it in DEVIATIONS.md.
+- What the spec said → what you found → what you did instead → why.
+- Do NOT silently correct deviations. Jeff needs to know what changed and why. (Standing rule, CLAUDE.md)
+
+### Good Deviations Exist
+- SSE downgraded to client-side polling due to Vercel serverless limits — correct call, properly documented.
+- Not every deviation is a failure. But undocumented deviations are always a failure. (R3, Apr 1)
+
+---
+
+## Appendix: Session Build Log
+
+| Session | Date | Scope | Key Lesson |
+|---|---|---|---|
+| Original Phases 1-4a | Mar 29 | Full stack in one marathon | Speed over quality caused rebuild. No testing between phases. |
+| Stabilization 1 | Mar 31 | Bug fixes | Fixes never committed. "FIXED" was a lie. |
+| Stabilization 2 | Mar 31 | Bug fixes | Found Stab 1 uncommitted. Fixed 4 bugs, introduced 1 regression. |
+| Stabilization 3 | Mar 31 | Bug fixes | New regression in picks. Decided to rebuild. |
+| R1 | Apr 1 | Pool shell + create + dashboard + shared UI | Clean session. Gate system worked. |
+| R2 | Apr 1 | Invite + join + single-entry picks | Clean session. |
+| R3 | Apr 1 | Leaderboard + mock scoring + entries | Picks regression on fresh pool. QA system installed after. |
+| Picks redesign | Apr 1 | Grid replacing accordion | Clean. Grid is the product DNA. |
+| R4 P1 | Apr 2 | Multi-entry + edit picks | Clean. Stepper, add entry, independent picks all work. |
+| R4 P2 | Apr 2 | Unified UI polish | Functional but design quality low. Led to design system spec. |
+| R4 Manage | Apr 2 | Minimal manage page | Placeholder was blank — built minimal functional version. |
+| Design inputs | Apr 3 | Install design skills + reference | frontend-design skill is built-in (private repo). Others installed fine. |
+
+---
+
+*CC-LESSONS-LEARNED.md | Edge Pools | April 3, 2026*
+*This file grows with every build. Never delete lessons — only add.*
