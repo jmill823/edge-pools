@@ -116,7 +116,7 @@ export default function CreatePoolPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-8">
+      <div className="mx-auto max-w-content px-4 py-8">
         <LoadingSkeleton variant="page" lines={6} />
       </div>
     );
@@ -125,9 +125,9 @@ export default function CreatePoolPage() {
   const canSubmit = !!tournamentId && !!poolName.trim() && categories.length > 0 && !submitting;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-2xl font-bold text-green-900">Create a Pool</h1>
-      <p className="mt-1 text-sm text-green-600">Set up your pool in a few steps.</p>
+    <div className="mx-auto max-w-content px-4 py-8">
+      <h1 className="font-display text-2xl font-bold text-text-primary">Create a Pool</h1>
+      <p className="mt-1 font-body text-sm text-text-secondary">Set up your pool in a few steps.</p>
 
       {error && (
         <div className="mt-4">
@@ -141,7 +141,7 @@ export default function CreatePoolPage() {
           <select
             value={tournamentId}
             onChange={(e) => handleTournamentChange(e.target.value)}
-            className="w-full rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 min-h-[44px]"
+            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px]"
           >
             {tournaments.map((t) => (
               <option key={t.id} value={t.id}>
@@ -158,7 +158,7 @@ export default function CreatePoolPage() {
             value={poolName}
             onChange={(e) => setPoolName(e.target.value)}
             placeholder="e.g., Mike's Masters Pool 2026"
-            className="w-full rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 min-h-[44px]"
+            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px]"
           />
         </Section>
 
@@ -174,41 +174,42 @@ export default function CreatePoolPage() {
           </Section>
         )}
 
-        {/* 5. Deadline */}
-        <Section num="5" label="Picks Deadline">
-          <input
-            type="datetime-local"
-            value={picksDeadline}
-            onChange={(e) => setPicksDeadline(e.target.value)}
-            className="w-full rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 min-h-[44px]"
-          />
-        </Section>
+        {/* 5. Deadline + Max entries side by side */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <Section num="5" label="Picks Deadline">
+            <input
+              type="datetime-local"
+              value={picksDeadline}
+              onChange={(e) => setPicksDeadline(e.target.value)}
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px]"
+            />
+          </Section>
 
-        {/* 6. Max entries */}
-        <Section num="6" label="Max Entries per Player">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => setMaxEntries((v) => Math.max(1, v - 1))}
-              disabled={maxEntries <= 1}
-              className="flex h-11 w-11 items-center justify-center rounded-md border border-green-200 text-lg font-bold text-green-700 hover:bg-green-50 disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              &minus;
-            </button>
-            <span className="text-lg font-bold text-green-900 w-6 text-center">{maxEntries}</span>
-            <button
-              type="button"
-              onClick={() => setMaxEntries((v) => Math.min(5, v + 1))}
-              disabled={maxEntries >= 5}
-              className="flex h-11 w-11 items-center justify-center rounded-md border border-green-200 text-lg font-bold text-green-700 hover:bg-green-50 disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              +
-            </button>
-          </div>
-          {maxEntries > 1 && (
-            <p className="mt-2 text-xs text-green-500">Players can submit up to {maxEntries} entries</p>
-          )}
-        </Section>
+          <Section num="6" label="Max Entries per Player">
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setMaxEntries((v) => Math.max(1, v - 1))}
+                disabled={maxEntries <= 1}
+                className="flex h-11 w-11 items-center justify-center rounded-btn border border-border font-body text-lg font-bold text-text-secondary hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
+              >
+                &minus;
+              </button>
+              <span className="font-mono text-lg font-bold text-text-primary w-6 text-center">{maxEntries}</span>
+              <button
+                type="button"
+                onClick={() => setMaxEntries((v) => Math.min(5, v + 1))}
+                disabled={maxEntries >= 5}
+                className="flex h-11 w-11 items-center justify-center rounded-btn border border-border font-body text-lg font-bold text-text-secondary hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
+              >
+                +
+              </button>
+            </div>
+            {maxEntries > 1 && (
+              <p className="mt-2 font-body text-xs text-text-muted">Players can submit up to {maxEntries} entries</p>
+            )}
+          </Section>
+        </div>
 
         {/* 7. Rules */}
         <Section num="7" label="House Rules (Optional)">
@@ -217,7 +218,7 @@ export default function CreatePoolPage() {
             onChange={(e) => setRules(e.target.value)}
             placeholder="Prize structure, tiebreakers, etc."
             rows={3}
-            className="w-full rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
           />
         </Section>
 
@@ -233,7 +234,7 @@ export default function CreatePoolPage() {
 function Section({ num, label, children }: { num: string; label: string; children: React.ReactNode }) {
   return (
     <section>
-      <label className="block text-sm font-semibold text-green-900">
+      <label className="block font-body text-xs font-medium text-text-secondary mb-1">
         {num}. {label}
       </label>
       <div className="mt-2">{children}</div>

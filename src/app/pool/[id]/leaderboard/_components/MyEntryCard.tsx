@@ -35,29 +35,29 @@ export function MyEntryCard({
   }));
 
   return (
-    <div className="rounded-lg border-2 border-blue-300 bg-[#E6F1FB] overflow-hidden">
+    <div className="rounded-card border-[1.5px] border-accent-primary bg-[#F0F5F2] overflow-hidden">
       <button
         onClick={onTap}
-        className="w-full p-3 text-left min-h-[44px]"
+        className="w-full p-3 text-left min-h-[44px] cursor-pointer"
       >
-        <span className="text-xs font-medium text-blue-600">My Entry</span>
+        <span className="font-body text-xs font-medium text-accent-primary">My Entry</span>
         <div className="flex items-baseline justify-between gap-2 mt-0.5">
           <div className="flex items-baseline gap-2 min-w-0">
-            <span className="text-2xl font-bold text-green-900">
+            <span className="font-mono text-2xl font-bold text-text-primary">
               {formatRankWithTies(rank, allRanks)}
             </span>
-            <span className="text-sm text-green-700 truncate">
+            <span className="font-body text-sm text-text-secondary truncate">
               {displayName}
-              {maxEntries > 1 && <span className="text-green-500"> · E{entryNumber}</span>}
+              {maxEntries > 1 && <span className="text-text-muted"> · E{entryNumber}</span>}
             </span>
           </div>
-          <span className={`text-2xl font-bold ${scoreColor(teamScore)}`}>
+          <span className={`font-mono text-2xl font-bold ${scoreColor(teamScore)}`}>
             {formatScore(teamScore)}
           </span>
         </div>
       </button>
       {pickStripData.length > 0 && (
-        <div className="border-t border-blue-200">
+        <div className="border-t border-border">
           <PickStrip picks={pickStripData} />
         </div>
       )}

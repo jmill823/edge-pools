@@ -58,9 +58,9 @@ export default function DashboardPage() {
   if (loading) return null; // loading.tsx handles this
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-content px-4 py-8">
       {/* Header */}
-      <h1 className="text-2xl font-bold text-green-900">
+      <h1 className="font-display text-2xl font-bold text-text-primary">
         Welcome, {user?.firstName ?? "Player"}
       </h1>
 
@@ -76,7 +76,7 @@ export default function DashboardPage() {
             onChange={(e) => setJoinCode(e.target.value)}
             placeholder="Invite code"
             maxLength={8}
-            className="rounded-md border border-green-200 px-3 py-2 text-sm font-mono tracking-widest text-center focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 w-[130px] min-h-[44px]"
+            className="rounded-btn border border-border bg-surface px-3 py-2 font-mono text-sm tracking-widest text-center focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 w-[130px] min-h-[44px]"
           />
           <Button variant="secondary" type="submit" disabled={!joinCode.trim()}>
             Join
@@ -101,7 +101,7 @@ export default function DashboardPage() {
         <>
           {activePools.length > 0 && (
             <>
-              <h2 className="mt-8 text-sm font-semibold text-green-700 uppercase tracking-wide">Active</h2>
+              <h2 className="mt-8 font-display text-xs font-medium text-text-muted uppercase tracking-[0.5px]">Active</h2>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
                 {activePools.map((p) => (
                   <PoolCard key={p.id} pool={p} />
@@ -112,7 +112,7 @@ export default function DashboardPage() {
 
           {archivedPools.length > 0 && (
             <details className="mt-8">
-              <summary className="cursor-pointer text-sm font-medium text-green-600 hover:text-green-800">
+              <summary className="cursor-pointer font-body text-sm font-medium text-text-secondary hover:text-text-primary transition-colors duration-200">
                 Past Pools ({archivedPools.length})
               </summary>
               <div className="mt-3 grid gap-4 sm:grid-cols-2 opacity-70">
@@ -136,19 +136,19 @@ function PoolCard({ pool }: { pool: PoolItem }) {
       : `/pool/${pool.id}/leaderboard`;
 
   return (
-    <Link href={href} className="block">
-      <div className="rounded-lg border border-green-200 p-4 hover:border-green-400 transition-colors">
+    <Link href={href} className="block cursor-pointer">
+      <div className="rounded-card border border-border bg-surface p-4 hover:border-accent-primary/40 transition-colors duration-200 shadow-subtle">
         {/* Top: name + badge */}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h3 className="font-semibold text-green-900 truncate">{pool.name}</h3>
-            <p className="mt-0.5 text-xs text-green-600">{pool.tournament.name}</p>
+            <h3 className="font-display font-semibold text-text-primary truncate">{pool.name}</h3>
+            <p className="mt-0.5 font-body text-xs text-text-secondary">{pool.tournament.name}</p>
           </div>
           <StatusBadge status={pool.status} />
         </div>
 
         {/* Mini status strip */}
-        <div className="mt-3 flex gap-2 overflow-x-auto -webkit-overflow-scrolling-touch">
+        <div className="mt-3 flex gap-2 overflow-x-auto">
           <MiniStripItems pool={pool} />
         </div>
       </div>
@@ -167,28 +167,28 @@ function MiniStripItems({ pool }: { pool: PoolItem }) {
       const deadlineStr = hoursLeft <= 48
         ? `${hoursLeft}h left`
         : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      chips.push({ label: deadlineStr, style: "bg-[#FAEEDA] text-[#633806]" });
+      chips.push({ label: deadlineStr, style: "bg-[#FDF4E3] text-[#8A6B1E]" });
       chips.push({ label: `${pool.entryCount} entries` });
       if (!pool.hasSubmittedPicks) {
-        chips.push({ label: "No picks yet", style: "bg-amber-100 text-amber-700" });
+        chips.push({ label: "No picks yet", style: "bg-[#FDF4E3] text-[#8A6B1E]" });
       }
       break;
     }
     case "LIVE": {
       if (pool.myBestRank !== null && pool.myBestScore !== null) {
         const score = pool.myBestScore > 0 ? `+${pool.myBestScore}` : pool.myBestScore === 0 ? "E" : `${pool.myBestScore}`;
-        chips.push({ label: `T${pool.myBestRank} ${score}`, style: "bg-[#E6F1FB] text-blue-800 font-bold" });
+        chips.push({ label: `T${pool.myBestRank} ${score}`, style: "bg-[#F0F5F2] text-accent-primary font-bold" });
       }
       chips.push({ label: `${pool.entryCount} entries` });
       if (pool.tournament.currentRound) {
-        chips.push({ label: `R${pool.tournament.currentRound} live`, style: "bg-[#FCEBEB] text-[#791F1F]" });
+        chips.push({ label: `R${pool.tournament.currentRound} live`, style: "bg-[#FCEAE9] text-[#8B2D27]" });
       }
       break;
     }
     case "COMPLETE": {
       if (pool.myBestRank !== null && pool.myBestScore !== null) {
         const score = pool.myBestScore > 0 ? `+${pool.myBestScore}` : pool.myBestScore === 0 ? "E" : `${pool.myBestScore}`;
-        chips.push({ label: `Finished ${pool.myBestRank}${ordSuffix(pool.myBestRank)} (${score})`, style: "bg-[#E1F5EE] text-[#085041]" });
+        chips.push({ label: `Finished ${pool.myBestRank}${ordSuffix(pool.myBestRank)} (${score})`, style: "bg-[#E8F3ED] text-accent-primary" });
       }
       chips.push({ label: `${pool.entryCount} entries` });
       break;
@@ -207,7 +207,7 @@ function MiniStripItems({ pool }: { pool: PoolItem }) {
   }
 
   if (pool.isOrganizer) {
-    chips.push({ label: "Organizer", style: "bg-green-100 text-green-700" });
+    chips.push({ label: "Organizer", style: "bg-[#E8F3ED] text-accent-primary" });
   }
 
   return (
@@ -215,8 +215,8 @@ function MiniStripItems({ pool }: { pool: PoolItem }) {
       {chips.map((chip, i) => (
         <span
           key={i}
-          className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${
-            chip.style || "bg-gray-100 text-gray-600"
+          className={`shrink-0 rounded-data px-2.5 py-1 font-mono text-[11px] font-medium ${
+            chip.style || "bg-surface-alt text-text-secondary"
           }`}
         >
           {chip.label}

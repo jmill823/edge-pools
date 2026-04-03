@@ -35,24 +35,24 @@ export function PoolNav({ poolId, poolName, isOrganizer }: Omit<PoolNavProps, "p
 
   return (
     <>
-      {/* Pool header — visible on all pool pages */}
-      <div className="border-b border-green-200 bg-white px-4 pt-4 pb-0">
-        <div className="mx-auto max-w-3xl">
-          <h1 className="text-lg font-bold text-green-900 truncate">{poolName}</h1>
+      {/* Pool header */}
+      <div className="border-b border-border bg-surface px-4 pt-4 pb-0">
+        <div className="mx-auto max-w-leaderboard">
+          <h1 className="font-display text-lg font-bold text-text-primary truncate">{poolName}</h1>
         </div>
       </div>
 
       {/* Desktop tabs — sticky top */}
-      <nav className="hidden sm:block sticky top-0 z-30 border-b border-green-200 bg-white">
-        <div className="mx-auto max-w-3xl flex">
+      <nav className="hidden sm:block sticky top-0 z-30 border-b border-border bg-surface">
+        <div className="mx-auto max-w-leaderboard flex">
           {visibleTabs.map((tab) => (
             <Link
               key={tab.segment}
               href={tab.href}
-              className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+              className={`flex-1 text-center px-4 py-3 font-display text-[13px] font-medium transition-colors duration-200 border-b-2 cursor-pointer ${
                 isActive(tab.segment)
-                  ? "border-green-700 text-green-900"
-                  : "border-transparent text-green-600 hover:text-green-900 hover:border-green-300"
+                  ? "border-accent-primary text-accent-primary"
+                  : "border-transparent text-text-secondary hover:text-text-primary hover:border-border"
               }`}
             >
               {tab.label}
@@ -62,16 +62,16 @@ export function PoolNav({ poolId, poolName, isOrganizer }: Omit<PoolNavProps, "p
       </nav>
 
       {/* Mobile bottom tab bar */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-green-200 bg-white safe-area-pb">
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-surface safe-area-pb">
         <div className="flex">
           {visibleTabs.map((tab) => (
             <Link
               key={tab.segment}
               href={tab.href}
-              className={`flex-1 flex flex-col items-center justify-center py-2 min-h-[56px] text-xs font-medium transition-colors ${
+              className={`flex-1 flex flex-col items-center justify-center py-2 min-h-[56px] font-display text-xs font-medium transition-colors duration-200 cursor-pointer ${
                 isActive(tab.segment)
-                  ? "text-green-900 bg-green-50"
-                  : "text-green-500 hover:text-green-900"
+                  ? "text-accent-primary"
+                  : "text-text-muted hover:text-text-primary"
               }`}
             >
               <TabIcon segment={tab.segment} active={isActive(tab.segment)} />
@@ -85,7 +85,7 @@ export function PoolNav({ poolId, poolName, isOrganizer }: Omit<PoolNavProps, "p
 }
 
 function TabIcon({ segment, active }: { segment: string; active: boolean }) {
-  const cls = `h-5 w-5 ${active ? "text-green-800" : "text-green-400"}`;
+  const cls = `h-5 w-5 ${active ? "text-accent-primary" : "text-text-muted"}`;
 
   switch (segment) {
     case "picks":

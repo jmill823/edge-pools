@@ -110,3 +110,35 @@
 ### BUG D — Perceived Slowness Between Actions (P2)
 - **Root cause:** No skeleton loading states between page transitions. Users see a blank screen while client components mount and fetch data. Next.js App Router uses `loading.tsx` files for instant loading UI, but none were defined.
 - **Fix:** Added `loading.tsx` skeleton screens for dashboard, leaderboard, and picks pages. These show immediately on navigation before the page component mounts, eliminating the blank-screen gap. Actual API response times depend on Neon cold starts (free tier) — infrastructure-level optimization would require Vercel Pro + connection pooling, which is documented as a future recommendation.
+
+## Design System Session (April 3, 2026)
+
+### DEV DS-1 — Emoji Icons Replaced on Invite Share Buttons
+- **Spec said:** No emoji as icons — Lucide SVG only.
+- **What existed:** The invite page used emoji (💬, 📧, 📱) for Text, Email, and WhatsApp share buttons.
+- **What was done:** Replaced all emoji icons with inline SVG icons (chat bubble, envelope, phone).
+- **Why:** Direct anti-pattern compliance.
+
+### DEV DS-2 — `isEvenRow` Prop Added to EntryRow
+- **Spec said:** Alternating row background: `Surface-alt` on even rows.
+- **What existed:** EntryRow did not receive row index information.
+- **What was done:** Added `isEvenRow` prop to EntryRow, passed from leaderboard page for alternating backgrounds.
+- **Why:** Minimal component structure change to implement spec requirement. No logic changed.
+
+### DEV DS-3 — Column Headers Added to Leaderboard
+- **Spec said:** Column headers: Space Grotesk, 9px, ALL CAPS, letter-spacing 0.5px.
+- **What existed:** No column header row on the leaderboard.
+- **What was done:** Added Rank/Team/Score header row above entry list when scores are present.
+- **Why:** Visual addition only — improves readability per spec.
+
+### DEV DS-4 — Geist Fonts Removed
+- **Spec said:** Three fonts only: Space Grotesk, Work Sans, Space Mono. No fourth font.
+- **What existed:** Layout loaded Geist Sans and Geist Mono local fonts.
+- **What was done:** Replaced both Geist fonts with the three Google Fonts from the design system. Local font files remain in the fonts directory but are no longer imported.
+- **Why:** Direct spec compliance. No fourth font.
+
+### DEV DS-5 — STATE-MATRIX.md Still Missing
+- **Spec said:** Read STATE-MATRIX.md at session start.
+- **What exists:** File does not exist in the repository (same as Session 4).
+- **What was done:** Proceeded with design system application without state matrix reference. State-based UI behavior preserved from existing code. No conditional logic changed.
+- **Why:** This is a visual-only pass. All status-based styling (badge colors, banners) matches the spec's color table exactly.

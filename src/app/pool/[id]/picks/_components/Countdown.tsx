@@ -23,7 +23,7 @@ export function Countdown({ deadline, onExpired }: CountdownProps) {
   }, [deadline, onExpired]);
 
   if (remaining.total <= 0) {
-    return <span className="text-xs font-medium text-red-600">Picks are locked</span>;
+    return <span className="font-mono text-xs font-medium text-accent-danger">Picks are locked</span>;
   }
 
   const parts: string[] = [];
@@ -33,7 +33,7 @@ export function Countdown({ deadline, onExpired }: CountdownProps) {
   if (remaining.days === 0) parts.push(`${remaining.seconds}s`);
 
   return (
-    <span className="text-xs font-medium text-amber-700">
+    <span className="font-mono text-xs font-medium text-[#8A6B1E]">
       Picks lock in {parts.join(" ")}
     </span>
   );

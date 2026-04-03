@@ -32,18 +32,18 @@ export function InlineFeedback({
 
   const styles =
     type === "success"
-      ? "bg-green-50 border-green-200 text-green-800"
-      : "bg-red-50 border-red-200 text-red-800";
+      ? "bg-[#E8F3ED] border-accent-success text-accent-success"
+      : "bg-[#FCEAE9] border-accent-danger text-accent-danger";
 
   return (
-    <div className={`flex items-start justify-between gap-2 rounded-md border px-4 py-3 text-sm font-medium ${styles}`}>
+    <div className={`flex items-start justify-between gap-2 rounded-btn border px-4 py-3 font-body text-sm font-medium ${styles}`}>
       <span>{message}</span>
       <button
         onClick={() => {
           setVisible(false);
           onDismiss?.();
         }}
-        className="shrink-0 rounded p-0.5 opacity-60 hover:opacity-100"
+        className="shrink-0 rounded p-0.5 opacity-60 hover:opacity-100 cursor-pointer transition-opacity duration-200"
         aria-label="Dismiss"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

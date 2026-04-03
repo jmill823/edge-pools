@@ -25,23 +25,23 @@ export function PickStrip({ picks, maxVisible }: PickStripProps) {
         {visible.map((pick, i) => (
           <div
             key={i}
-            className="shrink-0 rounded-md bg-green-50 border border-green-200 px-2.5 py-1.5 min-w-[90px] max-w-[130px]"
+            className="shrink-0 rounded-data bg-surface-alt border border-border px-2.5 py-1.5 min-w-[90px] max-w-[130px]"
           >
-            <div className="text-[9px] text-green-500 truncate leading-tight">
+            <div className="font-body text-[9px] text-text-muted uppercase tracking-[0.5px] truncate leading-tight">
               {pick.categoryName}
             </div>
-            <div className="text-[11px] font-bold text-green-900 truncate mt-0.5 leading-tight">
+            <div className="font-body text-xs font-medium text-text-primary truncate mt-0.5 leading-tight">
               {lastName(pick.golferName)}
             </div>
             {pick.score !== undefined && pick.score !== null && (
-              <div className={`text-[10px] font-medium mt-0.5 leading-tight ${scoreColor(pick.score)}`}>
+              <div className={`font-mono text-[11px] font-medium mt-0.5 leading-tight ${scoreColor(pick.score)}`}>
                 {formatScore(pick.score)}
               </div>
             )}
           </div>
         ))}
         {remaining > 0 && (
-          <div className="shrink-0 flex items-center px-2 text-[10px] text-green-500 font-medium">
+          <div className="shrink-0 flex items-center px-2 font-body text-[10px] text-text-muted font-medium">
             +{remaining} more
           </div>
         )}
@@ -56,9 +56,9 @@ function lastName(name: string): string {
 }
 
 function scoreColor(score: number): string {
-  if (score < 0) return "text-[#0F6E56]"; // under par — green
-  if (score > 0) return "text-[#854F0B]"; // over par — amber
-  return "text-gray-500"; // even
+  if (score < 0) return "text-accent-success";
+  if (score > 0) return "text-accent-danger";
+  return "text-text-secondary";
 }
 
 function formatScore(score: number): string {

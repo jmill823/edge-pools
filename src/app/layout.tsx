@@ -1,18 +1,26 @@
 import type { Metadata } from "next";
 import { ClerkProvider, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import localFont from "next/font/local";
+import { Space_Grotesk, Work_Sans, Space_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  display: "swap",
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+
+const workSans = Work_Sans({
+  subsets: ["latin"],
+  variable: "--font-work-sans",
+  display: "swap",
+});
+
+const spaceMono = Space_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-space-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -30,14 +38,14 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+          className={`${spaceGrotesk.variable} ${workSans.variable} ${spaceMono.variable} font-body antialiased min-h-screen flex flex-col bg-background text-text-primary`}
         >
           {/* Header */}
-          <header className="border-b border-green-900/10 bg-white">
-            <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+          <header className="border-b border-border bg-surface">
+            <div className="mx-auto flex h-14 max-w-content items-center justify-between px-4">
               <Link
                 href="/"
-                className="text-lg font-bold tracking-tight text-green-900"
+                className="font-display text-lg font-bold tracking-tight text-accent-primary"
               >
                 Edge Pools
               </Link>
@@ -45,13 +53,13 @@ export default function RootLayout({
                 <SignedOut>
                   <Link
                     href="/sign-in"
-                    className="text-sm font-medium text-green-800 hover:text-green-900"
+                    className="font-body text-sm font-medium text-text-secondary hover:text-text-primary transition-colors duration-200"
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/sign-up"
-                    className="rounded-md bg-green-800 px-4 py-2 text-sm font-medium text-white hover:bg-green-900"
+                    className="rounded-btn bg-accent-primary px-4 py-2 font-body text-sm font-medium text-white hover:opacity-90 transition-opacity duration-200 min-h-[44px] inline-flex items-center justify-center"
                   >
                     Sign Up
                   </Link>
@@ -59,7 +67,7 @@ export default function RootLayout({
                 <SignedIn>
                   <Link
                     href="/dashboard"
-                    className="text-sm font-medium text-green-800 hover:text-green-900"
+                    className="font-body text-sm font-medium text-text-secondary hover:text-text-primary transition-colors duration-200"
                   >
                     Dashboard
                   </Link>
@@ -73,10 +81,10 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
 
           {/* Footer */}
-          <footer className="border-t border-green-900/10 bg-white py-6">
-            <div className="mx-auto max-w-5xl px-4 text-center text-sm text-green-800/60">
-              <p className="font-medium text-green-900">Edge Pools</p>
-              <p className="mt-1">&copy; 2026</p>
+          <footer className="border-t border-border bg-surface py-6">
+            <div className="mx-auto max-w-content px-4 text-center">
+              <p className="font-display text-sm font-semibold text-accent-primary">Edge Pools</p>
+              <p className="mt-1 font-body text-xs text-text-muted">&copy; 2026</p>
             </div>
           </footer>
         </body>

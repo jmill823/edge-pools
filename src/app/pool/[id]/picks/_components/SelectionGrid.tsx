@@ -42,7 +42,7 @@ export function SelectionGrid({
             {categories.map((cat) => (
               <th
                 key={cat.id}
-                className="bg-green-50 border-b border-r border-green-200 px-2 py-2 text-[10px] font-semibold text-green-600 text-center uppercase tracking-wide min-w-[100px] max-w-[120px]"
+                className="bg-surface border-b border-r border-border px-2 py-2 font-display text-[9px] font-medium text-text-muted text-center uppercase tracking-[0.5px] min-w-[100px] max-w-[120px]"
               >
                 {cat.name}
               </th>
@@ -56,7 +56,7 @@ export function SelectionGrid({
                 const golfer = cat.golfers[rowIdx];
                 if (!golfer) {
                   return (
-                    <td key={cat.id} className="border-r border-green-100 min-w-[100px] max-w-[120px]" />
+                    <td key={cat.id} className="border-r border-border/50 min-w-[100px] max-w-[120px]" />
                   );
                 }
 
@@ -69,13 +69,13 @@ export function SelectionGrid({
                 return (
                   <td
                     key={`${cat.id}-${golfer.id}`}
-                    className={`border-r border-b border-green-100 min-w-[100px] max-w-[120px] ${
+                    className={`border-r border-b border-border/50 min-w-[100px] max-w-[120px] ${
                       isSelected
-                        ? "bg-green-100"
+                        ? "bg-accent-primary"
                         : isUsedElsewhere
-                          ? "bg-gray-50"
+                          ? "bg-surface-alt"
                           : isMultiCat
-                            ? "bg-amber-50/50"
+                            ? "bg-[#FDF4E3]/50"
                             : ""
                     }`}
                   >
@@ -85,24 +85,24 @@ export function SelectionGrid({
                         onSelect(cat.id, isSelected ? "" : golfer.id);
                       }}
                       disabled={!canTap}
-                      className={`w-full text-left px-2 py-2.5 min-h-[44px] text-xs leading-tight ${
-                        canTap ? "cursor-pointer active:bg-green-200" : "cursor-default"
+                      className={`w-full text-left px-2 py-2.5 min-h-[44px] font-body text-[13px] leading-tight ${
+                        canTap ? "cursor-pointer active:bg-accent-primary/20" : "cursor-default"
                       }`}
                     >
                       <span
                         className={`block truncate ${
                           isSelected
-                            ? "font-bold text-green-800"
+                            ? "font-bold text-white"
                             : isUsedElsewhere
-                              ? "text-gray-400 line-through"
-                              : "text-green-900"
+                              ? "text-text-muted line-through"
+                              : "text-text-primary"
                         }`}
                       >
-                        {isSelected && <span className="text-green-600">● </span>}
+                        {isSelected && <span className="text-white">● </span>}
                         {golfer.name}
                       </span>
                       {isMultiCat && !isUsedElsewhere && !isSelected && (
-                        <span className="text-[9px] font-bold text-amber-600 align-super ml-0.5">
+                        <span className="font-mono text-[9px] font-bold text-accent-secondary align-super ml-0.5">
                           {catCount}
                         </span>
                       )}
