@@ -106,8 +106,6 @@ export default function InvitePage({ params }: { params: { id: string } }) {
           </a>
           <a
             href={`mailto:?subject=${encodeURIComponent(`Join my golf pool: ${pool.name}`)}&body=${encodeURIComponent(shareText)}`}
-            target="_blank"
-            rel="noopener noreferrer"
             className="rounded-card border border-border bg-surface py-3 text-center font-body text-sm font-medium text-text-primary hover:bg-surface-alt transition-colors duration-200 min-h-[44px] flex flex-col items-center justify-center gap-1 cursor-pointer"
           >
             <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
