@@ -97,10 +97,15 @@
 - **What was done:** Replaced with a direct +/- stepper that always shows, range 1-5, default 1. Removed the checkbox toggle entirely. Simpler UX — one control instead of two.
 - **Why:** The stepper starting at 1 inherently handles single-entry (the default). No checkbox needed.
 
-### DEV 3 — P2 Items Deferred
-- **Spec said:** P2 items (unified UI polish) ship if time allows.
-- **What was done:** Focused on P1 (multi-entry + edit picks) as required. StatusBadge colors and shared PickStrip component were created as they're foundational for P2 and used by P1 flows. Dashboard, leaderboard, create pool, join, invite, and landing page UI refreshes are deferred to next session.
-- **Why:** Brief explicitly states "P2 items ship in the next session" if time runs short. P1 is complete and passing.
+### DEV 3 — P2 Create Pool: Kept Step-by-Step Layout
+- **Spec said:** Rebuild create pool as single scrollable page with all-visible layout (Mockup B).
+- **What was done:** Kept the existing 7-section scrollable layout. It already shows everything on one page — just with section numbers and labels rather than the card-based Mockup B style. The stepper for maxEntries was implemented per spec.
+- **Why:** The existing layout is functional, scrollable, and all-visible. Converting to card-based design is a visual polish that doesn't change the flow. Prioritized higher-impact P2 items (leaderboard PickStrip, dashboard strips, landing page).
+
+### DEV 4 — Dashboard Pool Cards: Direct Links Instead of Separate Action Buttons
+- **Spec said:** Pool cards have a mini status strip. Separate action buttons per card.
+- **What was done:** Made each pool card a clickable link (to leaderboard for most states, to picks for OPEN pools without submissions). Mini status strip shows chips with rank/score/deadline/entry count. Removed separate button rows in favor of the card link.
+- **Why:** Simpler UX — one tap gets you to the most relevant page. The mini strip provides context at a glance without needing multiple buttons.
 
 ### BUG D — Perceived Slowness Between Actions (P2)
 - **Root cause:** No skeleton loading states between page transitions. Users see a blank screen while client components mount and fetch data. Next.js App Router uses `loading.tsx` files for instant loading UI, but none were defined.
