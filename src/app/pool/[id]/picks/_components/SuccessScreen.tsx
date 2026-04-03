@@ -29,20 +29,20 @@ export function SuccessScreen({
 
   return (
     <div className="mx-auto max-w-md px-4 py-16 text-center">
-      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-        <svg className="h-8 w-8 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F3ED]">
+        <svg className="h-8 w-8 text-accent-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
         </svg>
       </div>
-      <h2 className="text-2xl font-bold text-green-900">
+      <h2 className="font-display text-2xl font-bold text-text-primary">
         {isEdit ? "Picks Updated!" : showEntryNumber ? `Entry ${entryNumber} Submitted!` : "Picks Submitted!"}
       </h2>
-      <p className="mt-2 text-green-600">
+      <p className="mt-2 font-body text-text-secondary">
         You picked {pickCount} golfers for {poolName}.
       </p>
 
       {canAddMore && (
-        <p className="mt-1 text-xs text-green-500">
+        <p className="mt-1 font-mono text-xs text-text-muted">
           You can submit up to {maxEntries} entries ({currentEntryCount} of {maxEntries} used)
         </p>
       )}

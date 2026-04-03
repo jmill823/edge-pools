@@ -145,8 +145,8 @@ export default function PicksPage({ params }: { params: { id: string } }) {
     if (entry) loadEntrySelections(entry);
   }, [allEntries]);
 
-  if (loading) return <div className="mx-auto max-w-5xl px-4 py-8"><LoadingSkeleton variant="page" lines={5} /></div>;
-  if (!pool) return <div className="mx-auto max-w-3xl px-4 py-12 text-center text-red-600">Could not load pool data.</div>;
+  if (loading) return <div className="mx-auto max-w-content px-4 py-8"><LoadingSkeleton variant="page" lines={5} /></div>;
+  if (!pool) return <div className="mx-auto max-w-content px-4 py-12 text-center font-body text-accent-danger">Could not load pool data.</div>;
   if (pool.status === "SETUP") return <Msg text="This pool is being set up. Picks will open soon." />;
   if (pool.status === "ARCHIVED") return <Msg text="This pool has been archived." />;
 
@@ -187,8 +187,8 @@ export default function PicksPage({ params }: { params: { id: string } }) {
       <div className="px-4 pt-3 pb-2 shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-green-900">{headerLabel}</h2>
-            <span className="text-xs text-green-600">{pickCount} of {categories.length} complete</span>
+            <h2 className="font-display text-lg font-bold text-text-primary">{headerLabel}</h2>
+            <span className="font-mono text-xs text-text-secondary">{pickCount} of {categories.length} complete</span>
           </div>
           {!readOnly && pool.picksDeadline && <Countdown deadline={pool.picksDeadline} onExpired={() => setExpired(true)} />}
         </div>
@@ -200,10 +200,10 @@ export default function PicksPage({ params }: { params: { id: string } }) {
               <button
                 key={e.id}
                 onClick={() => handleEntrySwitch(e.id)}
-                className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium min-h-[32px] ${
+                className={`shrink-0 rounded-data px-3 py-1 font-body text-xs font-medium min-h-[32px] cursor-pointer transition-colors duration-200 ${
                   editingEntry?.id === e.id
-                    ? "bg-green-800 text-white"
-                    : "bg-green-50 text-green-700 border border-green-200"
+                    ? "bg-accent-primary text-white"
+                    : "bg-surface-alt text-text-secondary border border-border"
                 }`}
               >
                 Entry {e.entryNumber}
@@ -214,7 +214,7 @@ export default function PicksPage({ params }: { params: { id: string } }) {
       </div>
 
       {readOnly && allEntries.length > 0 && (
-        <div className="mx-4 mb-2 rounded bg-amber-50 px-3 py-2 text-xs text-amber-800 shrink-0">
+        <div className="mx-4 mb-2 rounded-data bg-[#FDF4E3] px-3 py-2 font-body text-xs text-[#8A6B1E] shrink-0">
           {expired ? "Deadline passed. Your picks are locked." : "Picks are locked."}
         </div>
       )}
@@ -236,11 +236,11 @@ export default function PicksPage({ params }: { params: { id: string } }) {
 
       {/* Footer */}
       {!readOnly && (
-        <div className="shrink-0 border-t border-green-200 bg-white px-4 py-3 safe-area-pb">
-          <div className="mb-2 flex items-center gap-3 text-[10px] text-green-500">
-            <span><span className="text-green-600 font-bold">●</span> your pick</span>
+        <div className="shrink-0 border-t border-border bg-surface px-4 py-3 safe-area-pb">
+          <div className="mb-2 flex items-center gap-3 font-body text-[10px] text-text-muted">
+            <span><span className="text-accent-primary font-bold">●</span> your pick</span>
             <span><span className="line-through">name</span> already used</span>
-            <span><span className="text-amber-600 font-bold">³</span> multiple categories</span>
+            <span><span className="text-accent-secondary font-bold">³</span> multiple categories</span>
           </div>
           <Button variant="primary" className="w-full" disabled={!isComplete} onClick={() => setShowConfirm(true)}>
             {isEdit ? `Save changes (${pickCount}/${categories.length})` : `Submit picks (${pickCount}/${categories.length})`}
@@ -258,5 +258,5 @@ export default function PicksPage({ params }: { params: { id: string } }) {
 }
 
 function Msg({ text }: { text: string }) {
-  return <div className="mx-auto max-w-3xl px-4 py-12 text-center"><p className="text-sm text-green-600">{text}</p></div>;
+  return <div className="mx-auto max-w-content px-4 py-12 text-center"><p className="font-body text-sm text-text-secondary">{text}</p></div>;
 }

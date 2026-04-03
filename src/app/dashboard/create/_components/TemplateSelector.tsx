@@ -22,14 +22,14 @@ export function TemplateSelector({ templates, selected, onSelect }: TemplateSele
         <button
           key={t.templateName}
           onClick={() => onSelect(t.templateName)}
-          className={`w-full rounded-lg border p-4 text-left transition min-h-[44px] ${
+          className={`w-full rounded-card border p-4 text-left transition-colors duration-200 min-h-[44px] cursor-pointer ${
             selected === t.templateName
-              ? "border-green-600 bg-green-50 ring-1 ring-green-600"
-              : "border-green-200 hover:border-green-400"
+              ? "border-accent-primary bg-[#E8F3ED]"
+              : "border-border hover:border-accent-primary/40"
           }`}
         >
-          <div className="font-medium text-green-900">{t.templateName}</div>
-          <div className="mt-1 text-xs text-green-600">
+          <div className="font-body font-medium text-text-primary">{t.templateName}</div>
+          <div className="mt-1 font-body text-xs text-text-secondary">
             {t.categories.length} categories:{" "}
             {t.categories.map((c) => c.name).join(", ")}
           </div>

@@ -88,8 +88,8 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.pool.status, load]);
 
-  if (loading) return <div className="mx-auto max-w-3xl px-4 py-8"><LoadingSkeleton variant="page" lines={6} /></div>;
-  if (error) return <div className="mx-auto max-w-3xl px-4 py-12 text-center text-red-600">{error}</div>;
+  if (loading) return <div className="mx-auto max-w-leaderboard px-4 py-8"><LoadingSkeleton variant="page" lines={6} /></div>;
+  if (error) return <div className="mx-auto max-w-leaderboard px-4 py-12 text-center font-body text-accent-danger">{error}</div>;
   if (!data) return null;
 
   const { pool, tournament, onCourse, leaderboard } = data;
@@ -103,17 +103,17 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
     : null;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-4">
+    <div className="mx-auto max-w-leaderboard px-4 py-4">
       {/* Tournament info */}
       <div className="mb-1">
-        <p className="text-sm text-green-600">
+        <p className="font-body text-sm text-text-secondary">
           {tournament.name}
           {tournament.currentRound && hasScores && (
             <span> · Round {tournament.currentRound}{onCourse > 0 && ` — ${onCourse} on course`}</span>
           )}
         </p>
         {hasScores && tournament.lastSyncAt && (
-          <p className="text-xs text-green-500 mt-0.5">
+          <p className="font-mono text-xs text-text-muted mt-0.5">
             Updated {new Date(tournament.lastSyncAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
           </p>
         )}
@@ -147,10 +147,19 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
         </div>
       )}
 
+      {/* Column headers */}
+      {leaderboard.length > 0 && hasScores && (
+        <div className="flex items-center px-3 py-2 border-b border-border mb-0.5">
+          <span className="w-10 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Rank</span>
+          <span className="flex-1 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
+          <span className="w-16 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Score</span>
+        </div>
+      )}
+
       {/* Entry list */}
       {leaderboard.length > 0 ? (
         <div className="space-y-0.5">
-          {leaderboard.map((entry) => (
+          {leaderboard.map((entry, idx) => (
             <EntryRow
               key={entry.id}
               entryId={entry.id}
@@ -167,19 +176,20 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
               hasScores={hasScores}
               submittedAt={entry.submittedAt}
               onToggle={() => setExpanded(expanded === entry.id ? null : entry.id)}
+              isEvenRow={idx % 2 === 0}
             />
           ))}
         </div>
       ) : (
-        <div className="py-12 text-center text-sm text-green-500">
+        <div className="py-12 text-center font-body text-sm text-text-muted">
           No entries yet. Picks will appear on the leaderboard after submission.
         </div>
       )}
 
       {/* Stale data footer */}
       {hasScores && staleMinutes !== null && staleMinutes >= 2 && (
-        <div className={`mt-4 rounded-lg px-3 py-2 text-center text-xs ${
-          staleMinutes > 5 ? "bg-[#FAEEDA] text-[#633806]" : "bg-gray-50 text-gray-500"
+        <div className={`mt-4 rounded-data px-3 py-2 text-center font-mono text-xs ${
+          staleMinutes > 5 ? "bg-[#FDF4E3] text-[#8A6B1E]" : "bg-surface-alt text-text-muted"
         }`}>
           Updated {staleMinutes} min ago
         </div>

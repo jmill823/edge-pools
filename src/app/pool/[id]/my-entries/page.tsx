@@ -48,8 +48,8 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
     }).catch(() => setLoading(false));
   }, [params.id]);
 
-  if (loading) return <div className="mx-auto max-w-3xl px-4 py-8"><LoadingSkeleton variant="page" lines={5} /></div>;
-  if (!pool) return <div className="mx-auto max-w-3xl px-4 py-12 text-center text-red-600">Pool not found</div>;
+  if (loading) return <div className="mx-auto max-w-content px-4 py-8"><LoadingSkeleton variant="page" lines={5} /></div>;
+  if (!pool) return <div className="mx-auto max-w-content px-4 py-12 text-center font-body text-accent-danger">Pool not found</div>;
 
   const canEdit = pool.status === "OPEN" && new Date(pool.picksDeadline) > new Date();
   const hasScores = ["LIVE", "COMPLETE", "ARCHIVED"].includes(pool.status);
@@ -61,7 +61,7 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
   if (entries.length === 0) {
     if (pool.status === "OPEN" && canEdit) {
       return (
-        <div className="mx-auto max-w-3xl px-4 py-12">
+        <div className="mx-auto max-w-content px-4 py-12">
           <EmptyState
             title="No picks yet"
             description="You haven't submitted picks for this pool."
@@ -71,7 +71,7 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
       );
     }
     return (
-      <div className="mx-auto max-w-3xl px-4 py-12">
+      <div className="mx-auto max-w-content px-4 py-12">
         <EmptyState
           title="No picks submitted"
           description={pool.status === "SETUP" ? "This pool is being set up." : "You didn't submit picks for this pool."}
@@ -81,9 +81,9 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
+    <div className="mx-auto max-w-content px-4 py-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-green-900">
+        <h2 className="font-display text-lg font-bold text-text-primary">
           {isMultiEntry ? "My Entries" : "My Picks"}
         </h2>
         {/* Single-entry: show edit button in header */}
@@ -112,9 +112,9 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
       {/* Add another entry button */}
       {canAddMore && isMultiEntry && (
         <Link href={`/pool/${params.id}/picks`} className="block mt-4">
-          <div className="rounded-lg border-2 border-dashed border-green-300 p-4 text-center hover:bg-green-50 transition-colors min-h-[44px] flex flex-col items-center justify-center">
-            <span className="text-sm font-medium text-green-700">+ Add Entry {entries.length + 1}</span>
-            <span className="text-xs text-green-500 mt-1">{entries.length} of {maxEntries} entries used</span>
+          <div className="rounded-card border-2 border-dashed border-border p-4 text-center hover:bg-surface-alt transition-colors duration-200 min-h-[44px] flex flex-col items-center justify-center cursor-pointer">
+            <span className="font-body text-sm font-medium text-accent-primary">+ Add Entry {entries.length + 1}</span>
+            <span className="font-mono text-xs text-text-muted mt-1">{entries.length} of {maxEntries} entries used</span>
           </div>
         </Link>
       )}
@@ -159,15 +159,15 @@ function EntryCard({
   });
 
   return (
-    <div className="rounded-lg border border-green-200 overflow-hidden">
+    <div className="rounded-card border border-border bg-surface overflow-hidden shadow-subtle">
       {/* Header */}
-      <div className="bg-green-50 px-4 py-3 flex items-center justify-between">
+      <div className="bg-surface-alt px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3 min-w-0">
           <div className="min-w-0">
             {isMultiEntry && (
-              <span className="text-sm font-semibold text-green-900">Entry {entry.entryNumber}</span>
+              <span className="font-body text-sm font-medium text-text-primary">Entry {entry.entryNumber}</span>
             )}
-            <span className={`text-xs text-green-500 ${isMultiEntry ? "ml-2" : ""}`}>
+            <span className={`font-mono text-[10px] text-text-muted ${isMultiEntry ? "ml-2" : ""}`}>
               Submitted {submittedDate}
             </span>
           </div>
@@ -175,11 +175,11 @@ function EntryCard({
         <div className="flex items-center gap-3 shrink-0">
           {hasScores && entry.teamScore !== null && (
             <div className="text-right">
-              <span className={`text-lg font-bold ${scoreColor(entry.teamScore)}`}>
+              <span className={`font-mono text-lg font-bold ${scoreColor(entry.teamScore)}`}>
                 {formatScore(entry.teamScore)}
               </span>
               {entry.rank !== null && (
-                <span className="ml-2 text-xs text-green-600">
+                <span className="ml-2 font-mono text-xs text-text-secondary">
                   {formatRankWithTies(entry.rank, allRanks)}
                 </span>
               )}
