@@ -136,6 +136,7 @@ model Entry {
   poolId      String
   userId      String
   entryNumber Int      @default(1)
+  teamName    String   @default("")
   teamScore   Float?
   rank        Int?
   previousRank Int?

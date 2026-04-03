@@ -142,3 +142,27 @@
 - **What exists:** File does not exist in the repository (same as Session 4).
 - **What was done:** Proceeded with design system application without state matrix reference. State-based UI behavior preserved from existing code. No conditional logic changed.
 - **Why:** This is a visual-only pass. All status-based styling (badge colors, banners) matches the spec's color table exactly.
+
+## Features Session D10-D14 (April 3, 2026)
+
+### DEV D10-1 — STATE-MATRIX.md Still Missing
+- **Spec said:** Read STATE-MATRIX.md at session start.
+- **What exists:** File does not exist in the repository (same as prior sessions).
+- **What was done:** Used existing code state logic as the effective state matrix. All status-based behavior follows patterns from prior sessions.
+- **Why:** No ambiguity in the conditions handled.
+
+### DEV D10-2 — Migration via `prisma db push` Instead of `prisma migrate dev`
+- **Spec said:** Run `npx prisma migrate dev --name add-team-name`.
+- **What was found:** `prisma migrate dev` requires an interactive TTY and fails in non-interactive environments. The CC shell does not support interactive prompts.
+- **What was done:** Used `prisma db push` to sync schema changes, then ran a SQL backfill script to set `teamName` to the user's `displayName` for existing entries. The `teamName` field has `@default("")` in the schema.
+- **Why:** `prisma db push` achieves the same schema sync. Backfill ensures existing entries display correctly.
+
+### DEV D10-3 — Single-Entry Edit Remains Navigation-Based
+- **Spec said:** Inline editing on My Entries replaces the navigation-based "Edit" link.
+- **What was done:** For multi-entry pools, inline editing works as specified — expand in place, edit, save, collapse. For single-entry pools, the header "Edit Picks" button still navigates to the picks page (preserved from prior session behavior).
+- **Why:** Single-entry pools only have one card, and the picks page provides the full-height grid experience with the team name input. Inline editing adds the most value for multi-entry pools where navigating away loses context of which entry you're editing.
+
+### DEV D12-1 — SelectionGrid Moved to Shared Location
+- **Spec said:** Refactor SelectionGrid to be importable outside picks page.
+- **What was done:** Moved the component to `src/components/ui/SelectionGrid.tsx` and re-exported from the original picks location for backward compatibility.
+- **Why:** Both picks page and my-entries inline edit need the same component. Shared location is cleaner than cross-page imports.

@@ -14,7 +14,7 @@ interface EntryRowProps {
   entryId: string;
   rank: number | null;
   previousRank: number | null;
-  displayName: string;
+  teamName: string;
   teamScore: number | null;
   entryNumber: number;
   maxEntries: number;
@@ -24,14 +24,23 @@ interface EntryRowProps {
   picks: PickDetail[];
   hasScores: boolean;
   submittedAt: string;
+  winProbability: number | null;
+  cutProbability: number | null;
   onToggle: () => void;
   isEvenRow?: boolean;
 }
 
+function cutPercentColor(cutPct: number | null): string {
+  if (cutPct === null) return "text-text-muted";
+  if (cutPct === 0) return "text-accent-success";
+  if (cutPct <= 25) return "text-accent-secondary";
+  if (cutPct <= 50) return "text-accent-secondary";
+  return "text-accent-danger";
+}
+
 export function EntryRow({
   rank,
-  previousRank,
-  displayName,
+  teamName,
   teamScore,
   entryNumber,
   maxEntries,
@@ -41,6 +50,8 @@ export function EntryRow({
   picks,
   hasScores,
   submittedAt,
+  winProbability,
+  cutProbability,
   onToggle,
   isEvenRow,
 }: EntryRowProps) {
@@ -48,53 +59,64 @@ export function EntryRow({
     <div>
       <button
         onClick={onToggle}
-        className={`w-full flex items-center justify-between px-3 py-3 text-left rounded-data transition-colors duration-150 min-h-[44px] cursor-pointer ${
+        className={`w-full flex items-center px-3 py-3 text-left rounded-data transition-colors duration-150 min-h-[44px] cursor-pointer ${
           isCurrentUser
-            ? "bg-[#F0F5F2] border-l-[3px] border-accent-primary font-semibold"
+            ? "bg-[#F0F5F2] border-l-[3px] border-accent-primary"
             : isEvenRow
               ? "bg-surface-alt"
               : "hover:bg-surface-alt"
         }`}
       >
-        <div className="flex items-center gap-3 min-w-0">
-          {hasScores && (
-            <span className="w-8 text-right font-mono text-sm font-bold text-text-primary shrink-0">
+        {hasScores ? (
+          <>
+            {/* Rank */}
+            <span className="w-[30px] shrink-0 font-mono text-xs font-bold text-text-primary">
               {formatRankWithTies(rank, allRanks)}
             </span>
-          )}
-          {/* Movement arrow */}
-          {hasScores && (
-            <MovementArrow rank={rank} previousRank={previousRank} />
-          )}
-          <div className="min-w-0">
-            <span className="block font-body text-sm font-medium text-text-primary truncate">
-              {displayName}
-              {maxEntries > 1 && <span className="text-text-muted"> · E{entryNumber}</span>}
+            {/* Cut% */}
+            <span className={`w-[36px] shrink-0 font-mono text-[10px] ${cutPercentColor(cutProbability)}`}>
+              {cutProbability !== null ? `${cutProbability}%` : "\u2014"}
             </span>
-            {!hasScores && (
+            {/* Team Name */}
+            <span className={`flex-1 min-w-0 truncate font-body text-sm ${
+              isCurrentUser ? "font-semibold" : "font-medium"
+            } text-text-primary`}>
+              {teamName}
+              {maxEntries > 1 && <span className="text-text-muted text-xs"> · E{entryNumber}</span>}
+            </span>
+            {/* Score */}
+            <span className={`w-[40px] shrink-0 text-right font-mono text-[13px] font-bold ${scoreColor(teamScore)}`}>
+              {formatScore(teamScore)}
+            </span>
+            {/* %Win */}
+            <span className="w-[44px] shrink-0 text-right font-mono text-[11px] text-accent-secondary">
+              {winProbability !== null ? `${winProbability}%` : "\u2014"}
+            </span>
+          </>
+        ) : (
+          <>
+            {/* Pre-scores: just team name and submitted time */}
+            <div className="flex-1 min-w-0">
+              <span className={`block font-body text-sm ${isCurrentUser ? "font-semibold" : "font-medium"} text-text-primary truncate`}>
+                {teamName}
+                {maxEntries > 1 && <span className="text-text-muted text-xs"> · E{entryNumber}</span>}
+              </span>
               <span className="font-mono text-xs text-text-muted">
                 Submitted {new Date(submittedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
               </span>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {hasScores && (
-            <span className={`font-mono text-sm font-bold ${scoreColor(teamScore)}`}>
-              {formatScore(teamScore)}
-            </span>
-          )}
-          <svg
-            className={`h-4 w-4 text-text-muted transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+            </div>
+          </>
+        )}
+        <svg
+          className={`h-4 w-4 text-text-muted transition-transform duration-200 ml-1 shrink-0 ${isExpanded ? "rotate-180" : ""}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
 
       {isExpanded && (
-        <div className="ml-11 mb-2 rounded-b border-l-2 border-border pl-3 py-2 space-y-1.5">
+        <div className="ml-4 mb-2 rounded-b border-l-2 border-border pl-3 py-2 space-y-1.5">
           {picks.map((pick, i) => (
             <div key={i} className="flex items-center justify-between font-body text-xs">
               <div className="min-w-0">
@@ -123,33 +145,15 @@ export function EntryRow({
               </span>
             </div>
           ))}
+          {/* Timestamp at bottom of expansion */}
+          <div className="pt-1 border-t border-border/50">
+            <span className="font-mono text-[10px] text-text-muted">
+              Submitted {new Date(submittedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })},{" "}
+              {new Date(submittedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+            </span>
+          </div>
         </div>
       )}
     </div>
   );
-}
-
-function MovementArrow({ rank, previousRank }: { rank: number | null; previousRank: number | null }) {
-  if (rank === null || previousRank === null || previousRank === 0) {
-    return <span className="w-6 text-center font-mono text-[10px] text-text-muted shrink-0">&mdash;</span>;
-  }
-
-  const diff = previousRank - rank; // positive = moved up
-
-  if (diff > 0) {
-    return (
-      <span className="w-6 text-center font-mono text-[10px] font-bold text-accent-success shrink-0">
-        &#9650;{diff}
-      </span>
-    );
-  }
-  if (diff < 0) {
-    return (
-      <span className="w-6 text-center font-mono text-[10px] font-bold text-accent-danger shrink-0">
-        &#9660;{Math.abs(diff)}
-      </span>
-    );
-  }
-
-  return <span className="w-6 text-center font-mono text-[10px] text-text-muted shrink-0">&mdash;</span>;
 }

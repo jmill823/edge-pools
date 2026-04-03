@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOrCreateUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { calculateMockWinProbability } from "@/lib/scoring/mock-win-probability";
+import { calculateMockCutProbability } from "@/lib/scoring/mock-cut-probability";
 
 export async function GET(
   _req: NextRequest,
@@ -80,18 +82,11 @@ export async function GET(
     where: { poolId: pool.id, status: "PENDING" },
   });
 
+  const isScored = ["LIVE", "COMPLETE", "ARCHIVED"].includes(pool.status);
+
   // Format leaderboard
-  const leaderboard = entries.map((entry) => ({
-    id: entry.id,
-    userId: entry.userId,
-    displayName: entry.user.displayName,
-    entryNumber: entry.entryNumber,
-    teamScore: entry.teamScore,
-    rank: entry.rank,
-    previousRank: entry.previousRank,
-    submittedAt: entry.submittedAt,
-    isCurrentUser: entry.userId === user.id,
-    picks: entry.picks
+  const leaderboard = entries.map((entry) => {
+    const sortedPicks = entry.picks
       .sort((a, b) => a.category.sortOrder - b.category.sortOrder)
       .map((pick) => {
         const score = scoreMap.get(pick.golferId);
@@ -106,8 +101,34 @@ export async function GET(
           isReplacement: pick.isReplacement,
           originalGolferName: pick.originalGolfer?.name ?? null,
         };
-      }),
-  }));
+      });
+
+    // Calculate mock probabilities (only when pool is scored)
+    const winProbability = isScored
+      ? calculateMockWinProbability(entry.teamScore, entry.rank, entries.length)
+      : null;
+    const cutProbability = isScored
+      ? calculateMockCutProbability(
+          sortedPicks.map((p) => ({ totalScore: p.golferScore, position: p.golferPosition }))
+        )
+      : null;
+
+    return {
+      id: entry.id,
+      userId: entry.userId,
+      displayName: entry.user.displayName,
+      teamName: entry.teamName || entry.user.displayName,
+      entryNumber: entry.entryNumber,
+      teamScore: entry.teamScore,
+      rank: entry.rank,
+      previousRank: entry.previousRank,
+      submittedAt: entry.submittedAt,
+      isCurrentUser: entry.userId === user.id,
+      winProbability,
+      cutProbability,
+      picks: sortedPicks,
+    };
+  });
 
   return NextResponse.json({
     pool: {
@@ -115,6 +136,8 @@ export async function GET(
       name: pool.name,
       status: pool.status,
       maxEntries: pool.maxEntries,
+      picksDeadline: pool.picksDeadline,
+      inviteCode: pool.inviteCode,
     },
     tournament: {
       name: pool.tournament.name,

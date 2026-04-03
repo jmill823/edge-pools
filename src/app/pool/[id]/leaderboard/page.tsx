@@ -22,12 +22,15 @@ interface LeaderboardEntry {
   id: string;
   userId: string;
   displayName: string;
+  teamName: string;
   entryNumber: number;
   teamScore: number | null;
   rank: number | null;
   previousRank: number | null;
   isCurrentUser: boolean;
   submittedAt: string;
+  winProbability: number | null;
+  cutProbability: number | null;
   picks: PickDetail[];
 }
 
@@ -136,23 +139,34 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
         <div className="mb-4">
           <MyEntryCard
             rank={myEntry.rank}
-            displayName={myEntry.displayName}
+            teamName={myEntry.teamName}
             teamScore={myEntry.teamScore}
             entryNumber={myEntry.entryNumber}
             maxEntries={pool.maxEntries}
             allRanks={allRanks}
             picks={myEntry.picks}
+            winProbability={myEntry.winProbability}
+            cutProbability={myEntry.cutProbability}
             onTap={() => setExpanded(expanded === myEntry.id ? null : myEntry.id)}
           />
         </div>
       )}
 
-      {/* Column headers */}
+      {/* Column headers — 5 columns */}
       {leaderboard.length > 0 && hasScores && (
-        <div className="flex items-center px-3 py-2 border-b border-border mb-0.5">
-          <span className="w-10 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Rank</span>
+        <div className="flex items-center bg-surface-alt px-3 py-2 border-b border-border mb-0.5">
+          <span className="w-[30px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Rank</span>
+          <span className="w-[36px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Cut%</span>
           <span className="flex-1 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
-          <span className="w-16 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Score</span>
+          <span className="w-[40px] text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Score</span>
+          <span className="w-[44px] text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">%Win</span>
+        </div>
+      )}
+
+      {/* No-scores header */}
+      {leaderboard.length > 0 && !hasScores && (
+        <div className="flex items-center px-3 py-2 border-b border-border mb-0.5">
+          <span className="flex-1 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
         </div>
       )}
 
@@ -165,7 +179,7 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
               entryId={entry.id}
               rank={entry.rank}
               previousRank={entry.previousRank}
-              displayName={entry.displayName}
+              teamName={entry.teamName}
               teamScore={entry.teamScore}
               entryNumber={entry.entryNumber}
               maxEntries={pool.maxEntries}
@@ -175,6 +189,8 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
               picks={entry.picks}
               hasScores={hasScores}
               submittedAt={entry.submittedAt}
+              winProbability={entry.winProbability}
+              cutProbability={entry.cutProbability}
               onToggle={() => setExpanded(expanded === entry.id ? null : entry.id)}
               isEvenRow={idx % 2 === 0}
             />

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button";
 interface Golfer { id: string; name: string; country: string | null; owgr: number | null; }
 interface Category { id: string; name: string; sortOrder: number; golfers: Golfer[]; }
 interface PoolInfo { id: string; name: string; status: string; picksDeadline: string; maxEntries: number; }
-interface ExistingEntry { id: string; entryNumber: number; picks: { category: { id: string }; golfer: { id: string } }[]; }
+interface ExistingEntry { id: string; entryNumber: number; teamName: string; picks: { category: { id: string }; golfer: { id: string } }[]; }
 
 export default function PicksPage({ params }: { params: { id: string } }) {
   const searchParams = useSearchParams();
@@ -23,6 +23,7 @@ export default function PicksPage({ params }: { params: { id: string } }) {
   const [allEntries, setAllEntries] = useState<ExistingEntry[]>([]);
   const [editingEntry, setEditingEntry] = useState<ExistingEntry | null>(null);
   const [selections, setSelections] = useState<Map<string, string>>(new Map());
+  const [teamName, setTeamName] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -39,7 +40,7 @@ export default function PicksPage({ params }: { params: { id: string } }) {
   // Derived state
   const usedGolferIds = useMemo(() => new Set(selections.values()), [selections]);
   const pickCount = usedGolferIds.size - (usedGolferIds.has("") ? 1 : 0);
-  const isComplete = pickCount === categories.length && categories.length > 0;
+  const isComplete = pickCount === categories.length && categories.length > 0 && teamName.trim().length > 0;
 
   const golferLookup = useMemo(() => {
     const map = new Map<string, Golfer>();
@@ -89,6 +90,7 @@ export default function PicksPage({ params }: { params: { id: string } }) {
 
   function loadEntrySelections(entry: ExistingEntry) {
     setEditingEntry(entry);
+    setTeamName(entry.teamName || "");
     const sels = new Map<string, string>();
     entry.picks.forEach((pk) => sels.set(pk.category.id, pk.golfer.id));
     setSelections(sels);
@@ -108,7 +110,7 @@ export default function PicksPage({ params }: { params: { id: string } }) {
     const picks = Array.from(selections.entries()).map(([categoryId, golferId]) => ({ categoryId, golferId }));
     try {
       const url = isEdit ? `/api/pools/${params.id}/entries/${editingEntry!.id}` : `/api/pools/${params.id}/entries`;
-      const res = await fetch(url, { method: isEdit ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ picks }) });
+      const res = await fetch(url, { method: isEdit ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ picks, teamName: teamName.trim() }) });
       if (!res.ok) { const d = await res.json().catch(() => ({})); setSubmitError(d.error || "Failed to submit"); setSubmitting(false); return; }
 
       // Track the entry number for the success screen
@@ -117,19 +119,20 @@ export default function PicksPage({ params }: { params: { id: string } }) {
       } else {
         setLastSubmittedEntryNumber(entryCount + 1);
         // Update allEntries count so SuccessScreen shows correct count
-        setAllEntries((prev) => [...prev, { id: "temp", entryNumber: entryCount + 1, picks: [] }]);
+        setAllEntries((prev) => [...prev, { id: "temp", entryNumber: entryCount + 1, teamName: teamName.trim(), picks: [] }]);
       }
 
       setShowConfirm(false); setShowSuccess(true);
     } catch { setSubmitError("Something went wrong. Please try again."); }
     setSubmitting(false);
-  }, [pool, params.id, selections, isEdit, editingEntry, entryCount]);
+  }, [pool, params.id, selections, isEdit, editingEntry, entryCount, teamName]);
 
   // "Add Another Entry" handler — resets to fresh state
   const handleAddAnother = useCallback(() => {
     setShowSuccess(false);
     setEditingEntry(null);
     setSelections(new Map());
+    setTeamName("");
     setSubmitError(null);
     setShowConfirm(false);
     // Refresh entries list
@@ -206,12 +209,32 @@ export default function PicksPage({ params }: { params: { id: string } }) {
                     : "bg-surface-alt text-text-secondary border border-border"
                 }`}
               >
-                Entry {e.entryNumber}
+                {e.teamName || `Entry ${e.entryNumber}`}
               </button>
             ))}
           </div>
         )}
       </div>
+
+      {/* Team name input */}
+      {!readOnly && (
+        <div className="px-4 pb-2 shrink-0">
+          <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+            Name your team
+          </label>
+          <input
+            type="text"
+            value={teamName}
+            onChange={(e) => setTeamName(e.target.value.slice(0, 30))}
+            placeholder="Danny's Daggers, The Long Shot Squad..."
+            className="w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 font-body text-sm text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
+            maxLength={30}
+          />
+          <span className="block mt-0.5 font-mono text-[10px] text-text-muted text-right">
+            {teamName.length}/30
+          </span>
+        </div>
+      )}
 
       {readOnly && allEntries.length > 0 && (
         <div className="mx-4 mb-2 rounded-data bg-[#FDF4E3] px-3 py-2 font-body text-xs text-[#8A6B1E] shrink-0">

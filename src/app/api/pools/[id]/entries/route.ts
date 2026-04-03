@@ -112,7 +112,22 @@ export async function POST(
   }
 
   const body = await req.json();
+  const teamName: string | undefined = body.teamName;
   const picks: { categoryId: string; golferId: string }[] = body.picks;
+
+  // teamName is required
+  if (!teamName || typeof teamName !== "string" || teamName.trim().length === 0) {
+    return NextResponse.json(
+      { error: "Team name is required" },
+      { status: 400 }
+    );
+  }
+  if (teamName.trim().length > 30) {
+    return NextResponse.json(
+      { error: "Team name must be 30 characters or less" },
+      { status: 400 }
+    );
+  }
 
   if (!Array.isArray(picks) || picks.length === 0) {
     return NextResponse.json(
@@ -164,6 +179,7 @@ export async function POST(
         poolId: params.id,
         userId: user.id,
         entryNumber,
+        teamName: teamName.trim(),
       },
     });
 

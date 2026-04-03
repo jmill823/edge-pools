@@ -9,23 +9,26 @@ interface PickDetail {
 
 interface MyEntryCardProps {
   rank: number | null;
-  displayName: string;
+  teamName: string;
   teamScore: number | null;
   entryNumber: number;
   maxEntries: number;
   allRanks: (number | null)[];
   picks: PickDetail[];
+  winProbability: number | null;
+  cutProbability: number | null;
   onTap: () => void;
 }
 
 export function MyEntryCard({
   rank,
-  displayName,
+  teamName,
   teamScore,
   entryNumber,
   maxEntries,
   allRanks,
   picks,
+  winProbability,
   onTap,
 }: MyEntryCardProps) {
   const pickStripData = picks.map((p) => ({
@@ -46,14 +49,19 @@ export function MyEntryCard({
             <span className="font-mono text-2xl font-bold text-text-primary">
               {formatRankWithTies(rank, allRanks)}
             </span>
-            <span className="font-body text-sm text-text-secondary truncate">
-              {displayName}
-              {maxEntries > 1 && <span className="text-text-muted"> · E{entryNumber}</span>}
+            <span className="font-body text-sm font-semibold text-text-primary truncate">
+              {teamName}
+              {maxEntries > 1 && <span className="text-text-muted font-normal"> · E{entryNumber}</span>}
             </span>
           </div>
-          <span className={`font-mono text-2xl font-bold ${scoreColor(teamScore)}`}>
-            {formatScore(teamScore)}
-          </span>
+          <div className="flex items-baseline gap-2 shrink-0">
+            {winProbability !== null && (
+              <span className="font-mono text-xs text-accent-secondary">{winProbability}%</span>
+            )}
+            <span className={`font-mono text-2xl font-bold ${scoreColor(teamScore)}`}>
+              {formatScore(teamScore)}
+            </span>
+          </div>
         </div>
       </button>
       {pickStripData.length > 0 && (
