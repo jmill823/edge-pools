@@ -97,6 +97,11 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
   const myEntry = leaderboard.find((e) => e.isCurrentUser);
   const allRanks = leaderboard.map((e) => e.rank);
 
+  // Stale data calculation
+  const staleMinutes = tournament.lastSyncAt
+    ? Math.floor((Date.now() - new Date(tournament.lastSyncAt).getTime()) / 60000)
+    : null;
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-4">
       {/* Tournament info */}
@@ -136,6 +141,7 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
             entryNumber={myEntry.entryNumber}
             maxEntries={pool.maxEntries}
             allRanks={allRanks}
+            picks={myEntry.picks}
             onTap={() => setExpanded(expanded === myEntry.id ? null : myEntry.id)}
           />
         </div>
@@ -149,6 +155,7 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
               key={entry.id}
               entryId={entry.id}
               rank={entry.rank}
+              previousRank={entry.previousRank}
               displayName={entry.displayName}
               teamScore={entry.teamScore}
               entryNumber={entry.entryNumber}
@@ -166,6 +173,15 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
       ) : (
         <div className="py-12 text-center text-sm text-green-500">
           No entries yet. Picks will appear on the leaderboard after submission.
+        </div>
+      )}
+
+      {/* Stale data footer */}
+      {hasScores && staleMinutes !== null && staleMinutes >= 2 && (
+        <div className={`mt-4 rounded-lg px-3 py-2 text-center text-xs ${
+          staleMinutes > 5 ? "bg-[#FAEEDA] text-[#633806]" : "bg-gray-50 text-gray-500"
+        }`}>
+          Updated {staleMinutes} min ago
         </div>
       )}
     </div>

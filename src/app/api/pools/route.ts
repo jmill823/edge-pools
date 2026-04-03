@@ -29,12 +29,21 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  // Get user's entries to determine pick status
+  // Get user's entries to determine pick status + best rank/score
   const entries = await prisma.entry.findMany({
     where: { userId: user.id, poolId: { in: pools.map((p) => p.id) } },
-    select: { poolId: true },
+    select: { poolId: true, rank: true, teamScore: true },
+    orderBy: { rank: "asc" },
   });
   const poolsWithPicks = new Set(entries.map((e) => e.poolId));
+
+  // Best entry per pool (lowest rank)
+  const bestEntry = new Map<string, { rank: number | null; teamScore: number | null }>();
+  for (const e of entries) {
+    if (!bestEntry.has(e.poolId)) {
+      bestEntry.set(e.poolId, { rank: e.rank, teamScore: e.teamScore });
+    }
+  }
 
   const result = pools.map((p) => ({
     ...p,
@@ -42,6 +51,8 @@ export async function GET() {
     entryCount: p._count.entries,
     hasSubmittedPicks: poolsWithPicks.has(p.id),
     isOrganizer: p.organizerId === user.id,
+    myBestRank: bestEntry.get(p.id)?.rank ?? null,
+    myBestScore: bestEntry.get(p.id)?.teamScore ?? null,
   }));
 
   return NextResponse.json(result);

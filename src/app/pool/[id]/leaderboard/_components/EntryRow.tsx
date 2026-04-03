@@ -13,6 +13,7 @@ interface PickDetail {
 interface EntryRowProps {
   entryId: string;
   rank: number | null;
+  previousRank: number | null;
   displayName: string;
   teamScore: number | null;
   entryNumber: number;
@@ -28,6 +29,7 @@ interface EntryRowProps {
 
 export function EntryRow({
   rank,
+  previousRank,
   displayName,
   teamScore,
   entryNumber,
@@ -45,7 +47,7 @@ export function EntryRow({
       <button
         onClick={onToggle}
         className={`w-full flex items-center justify-between px-3 py-3 text-left rounded transition min-h-[44px] ${
-          isCurrentUser ? "bg-green-50 border border-green-200" : "hover:bg-gray-50"
+          isCurrentUser ? "bg-[#E6F1FB] border border-blue-200" : "hover:bg-gray-50"
         }`}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -53,6 +55,10 @@ export function EntryRow({
             <span className="w-8 text-right text-sm font-bold text-green-900 shrink-0">
               {formatRankWithTies(rank, allRanks)}
             </span>
+          )}
+          {/* Movement arrow */}
+          {hasScores && (
+            <MovementArrow rank={rank} previousRank={previousRank} />
           )}
           <div className="min-w-0">
             <span className="block text-sm font-medium text-green-900 truncate">
@@ -115,4 +121,29 @@ export function EntryRow({
       )}
     </div>
   );
+}
+
+function MovementArrow({ rank, previousRank }: { rank: number | null; previousRank: number | null }) {
+  if (rank === null || previousRank === null || previousRank === 0) {
+    return <span className="w-6 text-center text-[10px] text-gray-400 shrink-0">&mdash;</span>;
+  }
+
+  const diff = previousRank - rank; // positive = moved up
+
+  if (diff > 0) {
+    return (
+      <span className="w-6 text-center text-[10px] font-bold text-[#0F6E56] shrink-0">
+        &#9650;{diff}
+      </span>
+    );
+  }
+  if (diff < 0) {
+    return (
+      <span className="w-6 text-center text-[10px] font-bold text-[#A32D2D] shrink-0">
+        &#9660;{Math.abs(diff)}
+      </span>
+    );
+  }
+
+  return <span className="w-6 text-center text-[10px] text-gray-400 shrink-0">&mdash;</span>;
 }

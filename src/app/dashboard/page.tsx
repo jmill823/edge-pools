@@ -17,7 +17,9 @@ interface PoolItem {
   entryCount: number;
   hasSubmittedPicks: boolean;
   isOrganizer: boolean;
-  tournament: { name: string; status: string };
+  myBestRank: number | null;
+  myBestScore: number | null;
+  tournament: { name: string; status: string; currentRound?: number };
 }
 
 const STATUS_ORDER: Record<string, number> = {
@@ -58,31 +60,29 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold text-green-900">
-          Welcome, {user?.firstName ?? "Player"}
-        </h1>
-        <div className="flex gap-3">
-          <Link href="/dashboard/create">
-            <Button variant="primary">Create New Pool</Button>
-          </Link>
-        </div>
-      </div>
+      <h1 className="text-2xl font-bold text-green-900">
+        Welcome, {user?.firstName ?? "Player"}
+      </h1>
 
-      {/* Join section */}
-      <form onSubmit={handleJoin} className="mt-6 flex gap-2">
-        <input
-          type="text"
-          value={joinCode}
-          onChange={(e) => setJoinCode(e.target.value)}
-          placeholder="Enter invite code"
-          maxLength={8}
-          className="flex-1 rounded-md border border-green-200 px-4 py-2.5 text-sm font-mono tracking-widest text-center focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 max-w-[200px]"
-        />
-        <Button variant="secondary" type="submit" disabled={!joinCode.trim()}>
-          Join
-        </Button>
-      </form>
+      {/* Action strip */}
+      <div className="mt-4 flex gap-3 items-center">
+        <Link href="/dashboard/create">
+          <Button variant="primary">+ Create Pool</Button>
+        </Link>
+        <form onSubmit={handleJoin} className="flex gap-2">
+          <input
+            type="text"
+            value={joinCode}
+            onChange={(e) => setJoinCode(e.target.value)}
+            placeholder="Invite code"
+            maxLength={8}
+            className="rounded-md border border-green-200 px-3 py-2 text-sm font-mono tracking-widest text-center focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 w-[130px] min-h-[44px]"
+          />
+          <Button variant="secondary" type="submit" disabled={!joinCode.trim()}>
+            Join
+          </Button>
+        </form>
+      </div>
 
       {/* Pool cards */}
       {activePools.length === 0 && archivedPools.length === 0 ? (
@@ -100,11 +100,14 @@ export default function DashboardPage() {
       ) : (
         <>
           {activePools.length > 0 && (
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {activePools.map((p) => (
-                <PoolCard key={p.id} pool={p} />
-              ))}
-            </div>
+            <>
+              <h2 className="mt-8 text-sm font-semibold text-green-700 uppercase tracking-wide">Active</h2>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                {activePools.map((p) => (
+                  <PoolCard key={p.id} pool={p} />
+                ))}
+              </div>
+            </>
           )}
 
           {archivedPools.length > 0 && (
@@ -112,7 +115,7 @@ export default function DashboardPage() {
               <summary className="cursor-pointer text-sm font-medium text-green-600 hover:text-green-800">
                 Past Pools ({archivedPools.length})
               </summary>
-              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+              <div className="mt-3 grid gap-4 sm:grid-cols-2 opacity-70">
                 {archivedPools.map((p) => (
                   <PoolCard key={p.id} pool={p} />
                 ))}
@@ -126,108 +129,105 @@ export default function DashboardPage() {
 }
 
 function PoolCard({ pool }: { pool: PoolItem }) {
+  const href = pool.status === "LIVE"
+    ? `/pool/${pool.id}/leaderboard`
+    : pool.status === "OPEN" && !pool.hasSubmittedPicks
+      ? `/pool/${pool.id}/picks`
+      : `/pool/${pool.id}/leaderboard`;
+
   return (
-    <div className="rounded-lg border border-green-200 p-4">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <h3 className="font-semibold text-green-900 truncate">{pool.name}</h3>
-          <p className="mt-0.5 text-xs text-green-600">{pool.tournament.name}</p>
+    <Link href={href} className="block">
+      <div className="rounded-lg border border-green-200 p-4 hover:border-green-400 transition-colors">
+        {/* Top: name + badge */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="font-semibold text-green-900 truncate">{pool.name}</h3>
+            <p className="mt-0.5 text-xs text-green-600">{pool.tournament.name}</p>
+          </div>
+          <StatusBadge status={pool.status} />
         </div>
-        <StatusBadge status={pool.status} />
+
+        {/* Mini status strip */}
+        <div className="mt-3 flex gap-2 overflow-x-auto -webkit-overflow-scrolling-touch">
+          <MiniStripItems pool={pool} />
+        </div>
       </div>
-
-      <div className="mt-3 flex gap-4 text-xs text-green-600">
-        <span>{pool.memberCount} members</span>
-        <span>{pool.entryCount} entries</span>
-      </div>
-
-      <CardSubtext pool={pool} />
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        <CardLinks pool={pool} />
-      </div>
-    </div>
-  );
-}
-
-function CardSubtext({ pool }: { pool: PoolItem }) {
-  if (pool.status === "LIVE") return <p className="mt-2 text-xs text-red-600 font-medium">Tournament in progress</p>;
-  if (pool.status === "OPEN" && !pool.hasSubmittedPicks) {
-    const d = new Date(pool.picksDeadline);
-    return (
-      <p className="mt-2 text-xs text-amber-600">
-        Picks due {d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-      </p>
-    );
-  }
-  if (pool.status === "LOCKED") return <p className="mt-2 text-xs text-amber-600">Waiting for tournament</p>;
-  return null;
-}
-
-/** State-matrix-driven link rendering */
-function CardLinks({ pool }: { pool: PoolItem }) {
-  const links: React.ReactNode[] = [];
-
-  // Organizer: Manage link on all active statuses
-  if (pool.isOrganizer && pool.status !== "ARCHIVED") {
-    links.push(
-      <CardLink key="manage" href={`/pool/${pool.id}/manage`} label="Manage" variant="primary" />
-    );
-  }
-
-  // Status-specific links per state matrix
-  switch (pool.status) {
-    case "SETUP":
-      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Leaderboard" />);
-      break;
-    case "OPEN":
-      if (!pool.hasSubmittedPicks) {
-        links.push(<CardLink key="picks" href={`/pool/${pool.id}/picks`} label="Make Picks" variant="accent" />);
-      }
-      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Leaderboard" />);
-      break;
-    case "LOCKED":
-      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Leaderboard" />);
-      links.push(<CardLink key="entries" href={`/pool/${pool.id}/my-entries`} label="My Entries" />);
-      break;
-    case "LIVE":
-      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Live Leaderboard" variant="live" />);
-      links.push(<CardLink key="entries" href={`/pool/${pool.id}/my-entries`} label="My Entries" />);
-      break;
-    case "COMPLETE":
-      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="Results" />);
-      links.push(<CardLink key="entries" href={`/pool/${pool.id}/my-entries`} label="My Entries" />);
-      break;
-    case "ARCHIVED":
-      links.push(<CardLink key="lb" href={`/pool/${pool.id}/leaderboard`} label="View Archive" />);
-      break;
-  }
-
-  return <>{links}</>;
-}
-
-function CardLink({
-  href,
-  label,
-  variant = "default",
-}: {
-  href: string;
-  label: string;
-  variant?: "default" | "primary" | "accent" | "live";
-}) {
-  const styles = {
-    default: "border border-green-300 text-green-700 hover:bg-green-50",
-    primary: "bg-green-800 text-white hover:bg-green-900",
-    accent: "bg-amber-600 text-white hover:bg-amber-700",
-    live: "bg-red-700 text-white hover:bg-red-800 animate-pulse",
-  };
-
-  return (
-    <Link
-      href={href}
-      className={`inline-block rounded px-3 py-1.5 text-xs font-medium min-h-[32px] inline-flex items-center ${styles[variant]}`}
-    >
-      {label}
     </Link>
   );
+}
+
+function MiniStripItems({ pool }: { pool: PoolItem }) {
+  const chips: { label: string; style?: string }[] = [];
+
+  switch (pool.status) {
+    case "OPEN": {
+      const d = new Date(pool.picksDeadline);
+      const now = new Date();
+      const hoursLeft = Math.max(0, Math.floor((d.getTime() - now.getTime()) / 3600000));
+      const deadlineStr = hoursLeft <= 48
+        ? `${hoursLeft}h left`
+        : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      chips.push({ label: deadlineStr, style: "bg-[#FAEEDA] text-[#633806]" });
+      chips.push({ label: `${pool.entryCount} entries` });
+      if (!pool.hasSubmittedPicks) {
+        chips.push({ label: "No picks yet", style: "bg-amber-100 text-amber-700" });
+      }
+      break;
+    }
+    case "LIVE": {
+      if (pool.myBestRank !== null && pool.myBestScore !== null) {
+        const score = pool.myBestScore > 0 ? `+${pool.myBestScore}` : pool.myBestScore === 0 ? "E" : `${pool.myBestScore}`;
+        chips.push({ label: `T${pool.myBestRank} ${score}`, style: "bg-[#E6F1FB] text-blue-800 font-bold" });
+      }
+      chips.push({ label: `${pool.entryCount} entries` });
+      if (pool.tournament.currentRound) {
+        chips.push({ label: `R${pool.tournament.currentRound} live`, style: "bg-[#FCEBEB] text-[#791F1F]" });
+      }
+      break;
+    }
+    case "COMPLETE": {
+      if (pool.myBestRank !== null && pool.myBestScore !== null) {
+        const score = pool.myBestScore > 0 ? `+${pool.myBestScore}` : pool.myBestScore === 0 ? "E" : `${pool.myBestScore}`;
+        chips.push({ label: `Finished ${pool.myBestRank}${ordSuffix(pool.myBestRank)} (${score})`, style: "bg-[#E1F5EE] text-[#085041]" });
+      }
+      chips.push({ label: `${pool.entryCount} entries` });
+      break;
+    }
+    case "LOCKED":
+      chips.push({ label: "Picks locked" });
+      chips.push({ label: `${pool.entryCount} entries` });
+      break;
+    case "SETUP":
+      chips.push({ label: "Setting up" });
+      chips.push({ label: `${pool.memberCount} members` });
+      break;
+    case "ARCHIVED":
+      chips.push({ label: `${pool.entryCount} entries` });
+      break;
+  }
+
+  if (pool.isOrganizer) {
+    chips.push({ label: "Organizer", style: "bg-green-100 text-green-700" });
+  }
+
+  return (
+    <>
+      {chips.map((chip, i) => (
+        <span
+          key={i}
+          className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+            chip.style || "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {chip.label}
+        </span>
+      ))}
+    </>
+  );
+}
+
+function ordSuffix(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
 }

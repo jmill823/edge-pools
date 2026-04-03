@@ -11,7 +11,11 @@ export async function GET(
     include: {
       tournament: true,
       organizer: { select: { displayName: true } },
-      _count: { select: { members: true, categories: true } },
+      categories: {
+        orderBy: { sortOrder: "asc" },
+        include: { _count: { select: { golfers: true } } },
+      },
+      _count: { select: { members: true } },
     },
   });
 
@@ -23,12 +27,19 @@ export async function GET(
     id: pool.id,
     name: pool.name,
     tournamentName: pool.tournament.name,
+    tournamentCourse: pool.tournament.course,
     organizerName: pool.organizer.displayName,
-    categoryCount: pool._count.categories,
+    categoryCount: pool.categories.length,
+    categories: pool.categories.map((c) => ({
+      name: c.name,
+      golferCount: c._count.golfers,
+    })),
     memberCount: pool._count.members,
+    maxEntries: pool.maxEntries,
     picksDeadline: pool.picksDeadline,
     acceptingMembers: pool.acceptingMembers,
     status: pool.status,
+    rules: pool.rules,
   });
 }
 
