@@ -40,9 +40,9 @@ export default function RootLayout({
         <body
           className={`${spaceGrotesk.variable} ${workSans.variable} ${spaceMono.variable} font-body antialiased min-h-screen flex flex-col bg-background text-text-primary`}
         >
-          {/* Header */}
-          <header className="border-b border-border bg-surface">
-            <div className="mx-auto flex h-14 max-w-content items-center justify-between px-4">
+          {/* Header — no border, no background, floats on cream */}
+          <header>
+            <div className="mx-auto flex h-14 items-center justify-between px-4 w-full sm:max-w-[80%]">
               <Link
                 href="/"
                 className="font-display text-lg font-bold tracking-tight text-accent-primary"
@@ -67,9 +67,10 @@ export default function RootLayout({
                 <SignedIn>
                   <Link
                     href="/dashboard"
-                    className="font-body text-sm font-medium text-text-secondary hover:text-text-primary transition-colors duration-200"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-primary text-white font-display text-xs font-bold cursor-pointer hover:brightness-90 transition-all duration-200"
+                    title="Dashboard"
                   >
-                    Dashboard
+                    <UserInitials />
                   </Link>
                   <UserButton afterSignOutUrl="/" />
                 </SignedIn>
@@ -90,5 +91,20 @@ export default function RootLayout({
         </body>
       </html>
     </ClerkProvider>
+  );
+}
+
+/**
+ * Client-side component that shows user initials.
+ * Falls back to "EP" if no user data available.
+ */
+function UserInitials() {
+  // UserButton from Clerk handles the avatar display.
+  // This is the dashboard-link avatar — just show a generic icon.
+  // On the server we can't access user data, so we use a dashboard icon.
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+    </svg>
   );
 }

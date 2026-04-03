@@ -35,16 +35,16 @@ export function PoolNav({ poolId, poolName, isOrganizer }: Omit<PoolNavProps, "p
 
   return (
     <>
-      {/* Pool header */}
-      <div className="border-b border-border bg-surface px-4 pt-4 pb-0">
-        <div className="mx-auto max-w-leaderboard">
+      {/* Pool name — no border, no background, floats on cream */}
+      <div className="px-4 pt-4 pb-1">
+        <div className="mx-auto w-full sm:max-w-[60%] text-center">
           <h1 className="font-display text-lg font-bold text-text-primary truncate">{poolName}</h1>
         </div>
       </div>
 
-      {/* Desktop tabs — sticky top */}
-      <nav className="hidden sm:block sticky top-0 z-30 border-b border-border bg-surface">
-        <div className="mx-auto max-w-leaderboard flex">
+      {/* Desktop tabs — no background, no border on the nav itself */}
+      <nav className="hidden sm:block sticky top-0 z-30">
+        <div className="mx-auto max-w-[70%] flex">
           {visibleTabs.map((tab) => (
             <Link
               key={tab.segment}
@@ -52,7 +52,7 @@ export function PoolNav({ poolId, poolName, isOrganizer }: Omit<PoolNavProps, "p
               className={`flex-1 text-center px-4 py-3 font-display text-[13px] font-medium transition-colors duration-200 border-b-2 cursor-pointer ${
                 isActive(tab.segment)
                   ? "border-accent-primary text-accent-primary"
-                  : "border-transparent text-text-secondary hover:text-text-primary hover:border-border"
+                  : "border-transparent text-text-secondary hover:text-text-primary"
               }`}
             >
               {tab.label}
@@ -61,7 +61,7 @@ export function PoolNav({ poolId, poolName, isOrganizer }: Omit<PoolNavProps, "p
         </div>
       </nav>
 
-      {/* Mobile bottom tab bar */}
+      {/* Mobile bottom tab bar — unchanged, full width */}
       <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-surface safe-area-pb">
         <div className="flex">
           {visibleTabs.map((tab) => (
