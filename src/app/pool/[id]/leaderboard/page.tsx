@@ -152,21 +152,14 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
         </div>
       )}
 
-      {/* Column headers — 5 columns */}
-      {leaderboard.length > 0 && hasScores && (
+      {/* Column headers — always 5 columns when entries exist */}
+      {leaderboard.length > 0 && (
         <div className="flex items-center bg-surface-alt px-3 py-2 border-b border-border mb-0.5">
           <span className="w-[30px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Rank</span>
           <span className="w-[36px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Cut%</span>
           <span className="flex-1 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
           <span className="w-[40px] text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Score</span>
           <span className="w-[44px] text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">%Win</span>
-        </div>
-      )}
-
-      {/* No-scores header */}
-      {leaderboard.length > 0 && !hasScores && (
-        <div className="flex items-center px-3 py-2 border-b border-border mb-0.5">
-          <span className="flex-1 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
         </div>
       )}
 

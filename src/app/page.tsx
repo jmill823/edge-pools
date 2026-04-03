@@ -6,11 +6,10 @@ export default function HomePage() {
       {/* Hero */}
       <section className="mx-auto max-w-hero px-4 py-20 text-center sm:py-28">
         <h1 className="font-display text-[22px] font-bold tracking-tight text-text-primary sm:text-[36px] leading-tight">
-          Stop using a spreadsheet
-          <br className="hidden sm:block" /> to run your golf pool.
+          Ready to ditch the spreadsheet?
         </h1>
         <p className="mx-auto mt-6 max-w-xl font-body text-base text-text-secondary">
-          3-minute setup <span className="text-text-muted">|</span> Live leaderboard <span className="text-text-muted">|</span> Custom categories
+          3-Minute Setup <span className="text-text-muted">|</span> Real-Time Leaderboard <span className="text-text-muted">|</span> Custom Category Creation
         </p>
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link

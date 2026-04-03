@@ -67,46 +67,29 @@ export function EntryRow({
               : "hover:bg-surface-alt"
         }`}
       >
-        {hasScores ? (
-          <>
-            {/* Rank */}
-            <span className="w-[30px] shrink-0 font-mono text-xs font-bold text-text-primary">
-              {formatRankWithTies(rank, allRanks)}
-            </span>
-            {/* Cut% */}
-            <span className={`w-[36px] shrink-0 font-mono text-[10px] ${cutPercentColor(cutProbability)}`}>
-              {cutProbability !== null ? `${cutProbability}%` : "\u2014"}
-            </span>
-            {/* Team Name */}
-            <span className={`flex-1 min-w-0 truncate font-body text-sm ${
-              isCurrentUser ? "font-semibold" : "font-medium"
-            } text-text-primary`}>
-              {teamName}
-              {maxEntries > 1 && <span className="text-text-muted text-xs"> · E{entryNumber}</span>}
-            </span>
-            {/* Score */}
-            <span className={`w-[40px] shrink-0 text-right font-mono text-[13px] font-bold ${scoreColor(teamScore)}`}>
-              {formatScore(teamScore)}
-            </span>
-            {/* %Win */}
-            <span className="w-[44px] shrink-0 text-right font-mono text-[11px] text-accent-secondary">
-              {winProbability !== null ? `${winProbability}%` : "\u2014"}
-            </span>
-          </>
-        ) : (
-          <>
-            {/* Pre-scores: just team name and submitted time */}
-            <div className="flex-1 min-w-0">
-              <span className={`block font-body text-sm ${isCurrentUser ? "font-semibold" : "font-medium"} text-text-primary truncate`}>
-                {teamName}
-                {maxEntries > 1 && <span className="text-text-muted text-xs"> · E{entryNumber}</span>}
-              </span>
-              <span className="font-mono text-xs text-text-muted">
-                Submitted {new Date(submittedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
-              </span>
-            </div>
-          </>
-        )}
+        {/* Rank — always show column, dash when no scores */}
+        <span className={`w-[30px] shrink-0 font-mono text-xs font-bold ${hasScores ? "text-text-primary" : "text-text-muted"}`}>
+          {hasScores ? formatRankWithTies(rank, allRanks) : "\u2014"}
+        </span>
+        {/* Cut% */}
+        <span className={`w-[36px] shrink-0 font-mono text-[10px] ${hasScores ? cutPercentColor(cutProbability) : "text-text-muted"}`}>
+          {hasScores && cutProbability !== null ? `${cutProbability}%` : "\u2014"}
+        </span>
+        {/* Team Name */}
+        <span className={`flex-1 min-w-0 truncate font-body text-sm ${
+          isCurrentUser ? "font-semibold" : "font-medium"
+        } text-text-primary`}>
+          {teamName}
+          {maxEntries > 1 && <span className="text-text-muted text-xs"> · E{entryNumber}</span>}
+        </span>
+        {/* Score */}
+        <span className={`w-[40px] shrink-0 text-right font-mono text-[13px] font-bold ${hasScores ? scoreColor(teamScore) : "text-text-muted"}`}>
+          {hasScores ? formatScore(teamScore) : "\u2014"}
+        </span>
+        {/* %Win */}
+        <span className={`w-[44px] shrink-0 text-right font-mono text-[11px] ${hasScores ? "text-accent-secondary" : "text-text-muted"}`}>
+          {hasScores && winProbability !== null ? `${winProbability}%` : "\u2014"}
+        </span>
         <svg
           className={`h-4 w-4 text-text-muted transition-transform duration-200 ml-1 shrink-0 ${isExpanded ? "rotate-180" : ""}`}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
