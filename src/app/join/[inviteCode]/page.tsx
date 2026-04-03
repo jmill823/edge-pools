@@ -5,19 +5,24 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { InlineFeedback } from "@/components/ui/InlineFeedback";
+
+interface CategoryPreview { name: string; golferCount: number; }
 
 interface PoolInfo {
   id: string;
   name: string;
   tournamentName: string;
+  tournamentCourse: string | null;
   organizerName: string;
   categoryCount: number;
+  categories: CategoryPreview[];
   memberCount: number;
+  maxEntries: number;
   picksDeadline: string;
   acceptingMembers: boolean;
   status: string;
+  rules: string | null;
 }
 
 export default function JoinPoolPage({ params }: { params: { inviteCode: string } }) {
@@ -78,51 +83,85 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
     : !pool.acceptingMembers ? "This pool is no longer accepting new members."
     : null;
 
+  const deadline = new Date(pool.picksDeadline);
+  const now = new Date();
+  const hoursLeft = Math.max(0, Math.floor((deadline.getTime() - now.getTime()) / 3600000));
+  const deadlineStr = deadline.toLocaleDateString("en-US", {
+    weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+  });
+
   return (
     <div className="mx-auto max-w-md px-4 py-12">
-      <div className="rounded-lg border border-green-200 p-6">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <h1 className="text-xl font-bold text-green-900">{pool.name}</h1>
-            <p className="mt-1 text-sm text-green-600">{pool.tournamentName}</p>
-          </div>
-          <StatusBadge status={pool.status} />
-        </div>
-
-        <div className="mt-6 space-y-3 text-sm">
-          <Row label="Organizer" value={pool.organizerName} />
-          <Row label="Categories" value={String(pool.categoryCount)} />
-          <Row label="Members" value={String(pool.memberCount)} />
-          <Row label="Picks Due" value={new Date(pool.picksDeadline).toLocaleDateString("en-US", {
-            weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
-          })} />
-        </div>
-
-        {error && (
-          <div className="mt-4">
-            <InlineFeedback type="error" message={error} onDismiss={() => setError(null)} />
-          </div>
-        )}
-
-        {closedReason ? (
-          <div className="mt-6 rounded bg-amber-50 px-3 py-3 text-sm text-amber-800">{closedReason}</div>
-        ) : (
-          <div className="mt-6">
-            <Button variant="primary" className="w-full" loading={joining} onClick={handleJoin}>
-              {isSignedIn ? "Join Pool" : "Sign In to Join"}
-            </Button>
-          </div>
-        )}
+      {/* Header */}
+      <div className="text-center mb-6">
+        <p className="text-sm text-green-600">You&apos;re invited to</p>
+        <h1 className="text-2xl font-bold text-green-900 mt-1">{pool.name}</h1>
+        <p className="text-sm text-green-600 mt-1">hosted by {pool.organizerName}</p>
       </div>
+
+      {/* Info strip */}
+      <div className="flex gap-2 overflow-x-auto mb-4">
+        <InfoChip label={pool.tournamentName} />
+        {pool.tournamentCourse && <InfoChip label={pool.tournamentCourse} />}
+        <InfoChip label={`${pool.categoryCount} categories`} />
+        <InfoChip label={`${pool.memberCount} players`} />
+        {pool.maxEntries > 1 && <InfoChip label={`Up to ${pool.maxEntries} entries`} />}
+      </div>
+
+      {/* Category preview strip */}
+      {pool.categories.length > 0 && (
+        <div className="overflow-x-auto mb-4">
+          <div className="flex gap-2 min-w-max">
+            {pool.categories.map((cat) => (
+              <div key={cat.name} className="shrink-0 rounded-md bg-green-50 border border-green-200 px-3 py-2 min-w-[100px]">
+                <div className="text-xs font-medium text-green-900">{cat.name}</div>
+                <div className="text-[10px] text-green-500 mt-0.5">{cat.golferCount} golfers</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Deadline callout */}
+      {pool.status === "OPEN" && (
+        <div className="rounded-lg bg-[#FAEEDA] border border-amber-200 px-4 py-3 mb-4">
+          <p className="text-sm font-medium text-[#633806]">Picks due {deadlineStr}</p>
+          {hoursLeft <= 48 && hoursLeft > 0 && (
+            <p className="text-xs text-[#633806] mt-0.5">{hoursLeft} hours remaining</p>
+          )}
+        </div>
+      )}
+
+      {/* House rules */}
+      {pool.rules && (
+        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 mb-4">
+          <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">House Rules</p>
+          <p className="text-sm text-green-800 whitespace-pre-wrap">{pool.rules}</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-4">
+          <InlineFeedback type="error" message={error} onDismiss={() => setError(null)} />
+        </div>
+      )}
+
+      {/* CTA */}
+      {closedReason ? (
+        <div className="rounded bg-amber-50 px-3 py-3 text-sm text-amber-800">{closedReason}</div>
+      ) : (
+        <Button variant="primary" className="w-full" loading={joining} onClick={handleJoin}>
+          {isSignedIn ? "Join This Pool" : "Sign In to Join"}
+        </Button>
+      )}
     </div>
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function InfoChip({ label }: { label: string }) {
   return (
-    <div className="flex justify-between">
-      <span className="text-green-600">{label}</span>
-      <span className="font-medium text-green-900">{value}</span>
-    </div>
+    <span className="shrink-0 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700">
+      {label}
+    </span>
   );
 }

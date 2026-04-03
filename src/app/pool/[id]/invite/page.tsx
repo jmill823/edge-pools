@@ -82,50 +82,54 @@ export default function InvitePage({ params }: { params: { id: string } }) {
       )}
 
       <div className="mt-8 space-y-4">
-        {/* Invite link */}
-        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-          <label className="block text-xs font-semibold text-green-700 uppercase tracking-wide">
+        {/* Invite link card */}
+        <div className="rounded-lg border-2 border-blue-300 bg-[#E6F1FB] p-5 text-center">
+          <label className="block text-xs font-semibold text-blue-600 uppercase tracking-wide">
             Invite Link
           </label>
-          <div className="mt-2 flex gap-2">
-            <input
-              type="text"
-              readOnly
-              value={inviteUrl}
-              className="flex-1 rounded border border-green-200 bg-white px-3 py-2 text-sm text-green-900"
-            />
-            <Button variant="primary" onClick={copyLink}>
-              {copied ? "Copied!" : "Copy"}
-            </Button>
-          </div>
+          <p className="mt-2 text-sm text-blue-900 break-all font-mono">{inviteUrl}</p>
+          <Button variant="primary" className="mt-3" onClick={copyLink}>
+            {copied ? "Copied!" : "Copy Link"}
+          </Button>
         </div>
 
-        {/* Invite code */}
-        <div className="rounded-lg border border-green-200 p-4 text-center">
-          <label className="block text-xs font-semibold text-green-700 uppercase tracking-wide">
-            Invite Code
-          </label>
-          <p className="mt-2 text-2xl font-mono font-bold text-green-900 tracking-widest">
-            {pool.inviteCode}
-          </p>
-        </div>
-
-        {/* Share */}
-        <div className="flex gap-3">
+        {/* Share buttons */}
+        <div className="grid grid-cols-3 gap-3">
           <a
             href={`sms:?body=${encodeURIComponent(shareText)}`}
-            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] flex items-center justify-center"
+            className="rounded-lg border border-green-200 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] flex flex-col items-center justify-center gap-1"
           >
-            Share via Text
+            <span className="text-lg">💬</span>
+            <span>Text</span>
           </a>
           <a
             href={`mailto:?subject=${encodeURIComponent(`Join my golf pool: ${pool.name}`)}&body=${encodeURIComponent(shareText)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 rounded-md border border-green-300 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] flex items-center justify-center"
+            className="rounded-lg border border-green-200 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] flex flex-col items-center justify-center gap-1"
           >
-            Share via Email
+            <span className="text-lg">📧</span>
+            <span>Email</span>
           </a>
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-green-200 py-3 text-center text-sm font-medium text-green-800 hover:bg-green-50 min-h-[44px] flex flex-col items-center justify-center gap-1"
+          >
+            <span className="text-lg">📱</span>
+            <span>WhatsApp</span>
+          </a>
+        </div>
+
+        {/* Invite code fallback */}
+        <div className="rounded-lg border border-green-200 p-4 text-center">
+          <label className="block text-xs font-semibold text-green-700 uppercase tracking-wide">
+            Invite Code
+          </label>
+          <p className="mt-2 text-3xl font-mono font-bold text-green-900 tracking-[0.3em]">
+            {pool.inviteCode}
+          </p>
         </div>
 
         {/* Open Pool — only in SETUP */}
@@ -136,9 +140,12 @@ export default function InvitePage({ params }: { params: { id: string } }) {
         )}
 
         {/* Navigation */}
-        <div className="flex gap-3 pt-4">
+        <div className="flex gap-3 pt-2">
           <Link href="/dashboard" className="flex-1">
             <Button variant="secondary" className="w-full">Dashboard</Button>
+          </Link>
+          <Link href={`/pool/${pool.id}/manage`} className="flex-1">
+            <Button variant="secondary" className="w-full">Manage Pool</Button>
           </Link>
         </div>
       </div>

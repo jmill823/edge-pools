@@ -37,7 +37,6 @@ export default function CreatePoolPage() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [picksDeadline, setPicksDeadline] = useState("");
   const [maxEntries, setMaxEntries] = useState(1);
-  const [allowMultiple, setAllowMultiple] = useState(false);
   const [rules, setRules] = useState("");
 
   useEffect(() => {
@@ -95,7 +94,7 @@ export default function CreatePoolPage() {
             golferIds: c.golfers.map((g) => g.id),
           })),
           picksDeadline: new Date(picksDeadline).toISOString(),
-          maxEntries: allowMultiple ? maxEntries : 1,
+          maxEntries,
           rules: rules.trim() || undefined,
         }),
       });
@@ -186,25 +185,28 @@ export default function CreatePoolPage() {
         </Section>
 
         {/* 6. Max entries */}
-        <Section num="6" label="Multiple Entries">
-          <label className="flex items-center gap-2 text-sm text-green-900 min-h-[44px]">
-            <input
-              type="checkbox"
-              checked={allowMultiple}
-              onChange={(e) => { setAllowMultiple(e.target.checked); if (!e.target.checked) setMaxEntries(1); }}
-              className="h-5 w-5 rounded border-green-300 text-green-600 focus:ring-green-500"
-            />
-            Allow multiple entries per player?
-          </label>
-          {allowMultiple && (
-            <input
-              type="number"
-              min={2}
-              max={5}
-              value={maxEntries}
-              onChange={(e) => setMaxEntries(Math.max(2, Math.min(5, Number(e.target.value))))}
-              className="mt-2 w-24 rounded-md border border-green-200 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none min-h-[44px]"
-            />
+        <Section num="6" label="Max Entries per Player">
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => setMaxEntries((v) => Math.max(1, v - 1))}
+              disabled={maxEntries <= 1}
+              className="flex h-11 w-11 items-center justify-center rounded-md border border-green-200 text-lg font-bold text-green-700 hover:bg-green-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              &minus;
+            </button>
+            <span className="text-lg font-bold text-green-900 w-6 text-center">{maxEntries}</span>
+            <button
+              type="button"
+              onClick={() => setMaxEntries((v) => Math.min(5, v + 1))}
+              disabled={maxEntries >= 5}
+              className="flex h-11 w-11 items-center justify-center rounded-md border border-green-200 text-lg font-bold text-green-700 hover:bg-green-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              +
+            </button>
+          </div>
+          {maxEntries > 1 && (
+            <p className="mt-2 text-xs text-green-500">Players can submit up to {maxEntries} entries</p>
           )}
         </Section>
 

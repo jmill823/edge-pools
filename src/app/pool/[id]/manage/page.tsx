@@ -1,16 +1,76 @@
-export default function ManagePlaceholder() {
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/db";
+import { getOrCreateUser } from "@/lib/auth";
+import { ManagePanel } from "./_components/ManagePanel";
+
+export default async function ManagePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const user = await getOrCreateUser();
+  if (!user) redirect("/sign-in");
+
+  const pool = await prisma.pool.findUnique({
+    where: { id: params.id },
+    include: {
+      tournament: { select: { name: true, startDate: true, endDate: true, course: true } },
+      _count: { select: { members: true, entries: true } },
+    },
+  });
+
+  if (!pool) redirect("/dashboard");
+
+  // Organizer-only page
+  const isOrganizer = pool.organizerId === user.id;
+  if (!isOrganizer) redirect(`/pool/${pool.id}/leaderboard`);
+
+  const members = await prisma.poolMember.findMany({
+    where: { poolId: pool.id },
+    include: { user: { select: { displayName: true, email: true } } },
+    orderBy: { joinedAt: "asc" },
+  });
+
+  const entries = await prisma.entry.groupBy({
+    by: ["userId"],
+    where: { poolId: pool.id },
+    _count: true,
+  });
+  const entryCountMap = new Map(entries.map((e) => [e.userId, e._count]));
+
+  const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://edgepools.com"}/join/${pool.inviteCode}`;
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 text-center">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      </div>
-      <h2 className="text-lg font-semibold text-green-900">Pool Management</h2>
-      <p className="mt-2 text-sm text-green-600">
-        Pool management coming soon.
-      </p>
-    </div>
+    <ManagePanel
+      pool={{
+        id: pool.id,
+        name: pool.name,
+        status: pool.status,
+        acceptingMembers: pool.acceptingMembers,
+        inviteCode: pool.inviteCode,
+        maxEntries: pool.maxEntries,
+        picksDeadline: pool.picksDeadline.toISOString(),
+        rules: pool.rules,
+        tournament: {
+          name: pool.tournament.name,
+          startDate: pool.tournament.startDate.toISOString(),
+          endDate: pool.tournament.endDate.toISOString(),
+          course: pool.tournament.course,
+        },
+        memberCount: pool._count.members,
+        entryCount: pool._count.entries,
+      }}
+      members={members.map((m) => ({
+        id: m.id,
+        userId: m.userId,
+        displayName: m.user.displayName,
+        email: m.user.email,
+        role: m.role,
+        hasPaid: m.hasPaid,
+        joinedAt: m.joinedAt.toISOString(),
+        entriesSubmitted: entryCountMap.get(m.userId) || 0,
+      }))}
+      inviteUrl={inviteUrl}
+    />
   );
 }

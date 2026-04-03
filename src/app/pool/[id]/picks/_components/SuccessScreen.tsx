@@ -8,9 +8,25 @@ interface SuccessScreenProps {
   poolName: string;
   pickCount: number;
   isEdit: boolean;
+  entryNumber: number;
+  maxEntries: number;
+  currentEntryCount: number;
+  onAddAnother?: () => void;
 }
 
-export function SuccessScreen({ poolId, poolName, pickCount, isEdit }: SuccessScreenProps) {
+export function SuccessScreen({
+  poolId,
+  poolName,
+  pickCount,
+  isEdit,
+  entryNumber,
+  maxEntries,
+  currentEntryCount,
+  onAddAnother,
+}: SuccessScreenProps) {
+  const canAddMore = maxEntries > 1 && currentEntryCount < maxEntries;
+  const showEntryNumber = maxEntries > 1;
+
   return (
     <div className="mx-auto max-w-md px-4 py-16 text-center">
       <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
@@ -19,14 +35,26 @@ export function SuccessScreen({ poolId, poolName, pickCount, isEdit }: SuccessSc
         </svg>
       </div>
       <h2 className="text-2xl font-bold text-green-900">
-        {isEdit ? "Picks Updated!" : "Picks Submitted!"}
+        {isEdit ? "Picks Updated!" : showEntryNumber ? `Entry ${entryNumber} Submitted!` : "Picks Submitted!"}
       </h2>
       <p className="mt-2 text-green-600">
         You picked {pickCount} golfers for {poolName}.
       </p>
+
+      {canAddMore && (
+        <p className="mt-1 text-xs text-green-500">
+          You can submit up to {maxEntries} entries ({currentEntryCount} of {maxEntries} used)
+        </p>
+      )}
+
       <div className="mt-8 space-y-3">
+        {canAddMore && onAddAnother && (
+          <Button variant="primary" className="w-full" onClick={onAddAnother}>
+            Add Another Entry
+          </Button>
+        )}
         <Link href={`/pool/${poolId}/leaderboard`}>
-          <Button variant="primary" className="w-full">View Leaderboard</Button>
+          <Button variant={canAddMore ? "secondary" : "primary"} className="w-full">View Leaderboard</Button>
         </Link>
         <Link href={`/pool/${poolId}/my-entries`}>
           <Button variant="secondary" className="w-full">View My Entries</Button>

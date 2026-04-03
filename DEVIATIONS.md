@@ -83,6 +83,30 @@
 - **Root cause:** Three issues: (1) The manage page footer had a hardcoded "Golfer Mapping" link visible to all organizers, (2) The middleware bypassed auth entirely for `/api/admin/` routes, (3) Admin API endpoints only checked auth, not organizer role.
 - **Fix:** (1) Removed "Golfer Mapping" link from manage page footer — admin tools are only accessible via the "Manual Scores" link in the Live Scoring section (which is only visible on LIVE/LOCKED manage pages, already gated by organizer check). (2) Removed middleware bypass for `/api/admin/` — these routes now go through normal auth flow. (3) Added organizer role check to all admin API routes (golfer-mapping GET, golfers PATCH, scores GET/POST) — user must own at least one pool to access. (4) Added client-side 403 handling on admin pages — shows "Access Denied" with redirect to dashboard.
 
+## Session 4 — Multi-Entry + Edit Picks (April 2, 2026)
+
+### DEV 1 — STATE-MATRIX.md Does Not Exist
+- **Spec said:** Read STATE-MATRIX.md at session start. Every conditional must trace back to it.
+- **What was found:** File does not exist in the repository.
+- **What was done:** Used state logic already implemented in the codebase (dashboard CardLinks, picks page status checks, API route validations) as the effective state matrix. All status-based UI behavior follows the patterns established in Sessions R1-R3.
+- **Why:** State matrix rules are encoded in existing code. No ambiguity in the conditions handled.
+
+### DEV 2 — Max Entries Stepper Default
+- **Spec said:** Replace "whatever input currently exists" with +/- stepper, range 1-5, default 1.
+- **What existed:** Checkbox "Allow multiple entries?" + number input (2-5) that appeared when checked. This sent maxEntries=1 when unchecked.
+- **What was done:** Replaced with a direct +/- stepper that always shows, range 1-5, default 1. Removed the checkbox toggle entirely. Simpler UX — one control instead of two.
+- **Why:** The stepper starting at 1 inherently handles single-entry (the default). No checkbox needed.
+
+### DEV 3 — P2 Create Pool: Kept Step-by-Step Layout
+- **Spec said:** Rebuild create pool as single scrollable page with all-visible layout (Mockup B).
+- **What was done:** Kept the existing 7-section scrollable layout. It already shows everything on one page — just with section numbers and labels rather than the card-based Mockup B style. The stepper for maxEntries was implemented per spec.
+- **Why:** The existing layout is functional, scrollable, and all-visible. Converting to card-based design is a visual polish that doesn't change the flow. Prioritized higher-impact P2 items (leaderboard PickStrip, dashboard strips, landing page).
+
+### DEV 4 — Dashboard Pool Cards: Direct Links Instead of Separate Action Buttons
+- **Spec said:** Pool cards have a mini status strip. Separate action buttons per card.
+- **What was done:** Made each pool card a clickable link (to leaderboard for most states, to picks for OPEN pools without submissions). Mini status strip shows chips with rank/score/deadline/entry count. Removed separate button rows in favor of the card link.
+- **Why:** Simpler UX — one tap gets you to the most relevant page. The mini strip provides context at a glance without needing multiple buttons.
+
 ### BUG D — Perceived Slowness Between Actions (P2)
 - **Root cause:** No skeleton loading states between page transitions. Users see a blank screen while client components mount and fetch data. Next.js App Router uses `loading.tsx` files for instant loading UI, but none were defined.
 - **Fix:** Added `loading.tsx` skeleton screens for dashboard, leaderboard, and picks pages. These show immediately on navigation before the page component mounts, eliminating the blank-screen gap. Actual API response times depend on Neon cold starts (free tier) — infrastructure-level optimization would require Vercel Pro + connection pooling, which is documented as a future recommendation.
