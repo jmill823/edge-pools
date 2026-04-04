@@ -166,3 +166,31 @@
 - **Spec said:** Refactor SelectionGrid to be importable outside picks page.
 - **What was done:** Moved the component to `src/components/ui/SelectionGrid.tsx` and re-exported from the original picks location for backward compatibility.
 - **Why:** Both picks page and my-entries inline edit need the same component. Shared location is cleaner than cross-page imports.
+
+## Session R5A — Admin + Manage + Status Controls (April 3, 2026)
+
+### DEV R5A-1 — STATE-MATRIX.md Still Missing
+- **Spec said:** Read STATE-MATRIX.md. It is critical for this session.
+- **What exists:** File does not exist in the repository (same as prior sessions).
+- **What was done:** Used existing code state logic as the effective state matrix. The status route already has VALID_TRANSITIONS enforcing SETUP→OPEN→LOCKED→LIVE→COMPLETE→ARCHIVED. All new UI components follow these same rules.
+- **Why:** No ambiguity — state transitions are encoded in the API and replicated in the UI components.
+
+### DEV R5A-2 — LIVE → COMPLETE Transition Not Manual
+- **Spec said:** LIVE status shows no manual transition button. LIVE → COMPLETE is automatic when tournament completes.
+- **What was done:** Removed the LIVE → COMPLETE entry from the manual transitions map. The button will not appear when pool is LIVE. The completion transition will be handled by the scoring service in R5B.
+- **Why:** Brief explicitly says "no manual transition" for LIVE. Auto-transition is R5B scope.
+
+### DEV R5A-3 — ScoringAdmin poolId Removed
+- **Spec said:** ScoringAdmin component accepts poolId for future use.
+- **What was done:** Removed poolId from ScoringAdmin props to pass linting (no-unused-vars). R5B will re-add it when the actual scoring integration connects.
+- **Why:** Lint rules prevent unused variables. Adding it back when needed is trivial.
+
+### DEV R5A-4 — acceptingMembers Toggle Restrictions Extended
+- **Spec said:** Toggle works in SETUP/OPEN, disabled after.
+- **What was done:** Added server-side validation in the PATCH /api/pools/[id] route — acceptingMembers can only be changed in SETUP or OPEN status. Client-side toggle is also disabled in LOCKED+ states.
+- **Why:** Defense in depth. Client UI can be bypassed; server must enforce the rule.
+
+### DEV R5A-5 — Pool Settings Restriction Applied Server-Side
+- **Spec said:** Pool settings editable in SETUP only.
+- **What was done:** Added server-side validation — name, picksDeadline, maxEntries, and rules can only be updated when pool status is SETUP. Returns 400 error otherwise.
+- **Why:** Spec compliance. Previous implementation allowed settings changes in any status.

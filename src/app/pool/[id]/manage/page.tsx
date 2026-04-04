@@ -14,7 +14,9 @@ export default async function ManagePage({
   const pool = await prisma.pool.findUnique({
     where: { id: params.id },
     include: {
-      tournament: { select: { name: true, startDate: true, endDate: true, course: true } },
+      tournament: {
+        select: { name: true, startDate: true, endDate: true, course: true, lastSyncAt: true },
+      },
       _count: { select: { members: true, entries: true } },
     },
   });
@@ -38,6 +40,10 @@ export default async function ManagePage({
   });
   const entryCountMap = new Map(entries.map((e) => [e.userId, e._count]));
 
+  const pendingReplacements = await prisma.pendingReplacement.count({
+    where: { poolId: pool.id, status: "PENDING" },
+  });
+
   const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://edgepools.com"}/join/${pool.inviteCode}`;
 
   return (
@@ -59,6 +65,8 @@ export default async function ManagePage({
         },
         memberCount: pool._count.members,
         entryCount: pool._count.entries,
+        lastSyncAt: pool.tournament.lastSyncAt?.toISOString() ?? null,
+        pendingReplacements,
       }}
       members={members.map((m) => ({
         id: m.id,

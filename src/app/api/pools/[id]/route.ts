@@ -62,13 +62,32 @@ export async function PATCH(
   const body = await req.json();
   const allowed: Record<string, unknown> = {};
 
+  // acceptingMembers can be toggled in SETUP and OPEN
+  if (body.acceptingMembers !== undefined) {
+    if (!["SETUP", "OPEN"].includes(pool.status)) {
+      return NextResponse.json(
+        { error: "Cannot change accepting members after pool is locked" },
+        { status: 400 }
+      );
+    }
+    allowed.acceptingMembers = body.acceptingMembers;
+  }
+
+  // Pool settings (name, deadline, maxEntries, rules) only editable in SETUP
+  const settingsFields = ["name", "picksDeadline", "maxEntries", "rules"];
+  const hasSettings = settingsFields.some((f) => body[f] !== undefined);
+  if (hasSettings && pool.status !== "SETUP") {
+    return NextResponse.json(
+      { error: "Pool settings can only be edited during SETUP" },
+      { status: 400 }
+    );
+  }
+
   if (body.name !== undefined) allowed.name = body.name;
   if (body.picksDeadline !== undefined)
     allowed.picksDeadline = new Date(body.picksDeadline);
   if (body.maxEntries !== undefined) allowed.maxEntries = body.maxEntries;
   if (body.rules !== undefined) allowed.rules = body.rules;
-  if (body.acceptingMembers !== undefined)
-    allowed.acceptingMembers = body.acceptingMembers;
 
   const updated = await prisma.pool.update({
     where: { id: params.id },
