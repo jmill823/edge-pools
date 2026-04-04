@@ -9,9 +9,12 @@ interface InviteLinkSectionProps {
   inviteCode: string;
   inviteUrl: string;
   status: string;
+  picksDeadline?: string;
+  maxEntries?: number;
+  poolType?: string | null;
 }
 
-export function InviteLinkSection({ poolName, tournamentName, inviteCode, inviteUrl, status }: InviteLinkSectionProps) {
+export function InviteLinkSection({ poolName, tournamentName, inviteCode, inviteUrl, status, picksDeadline, maxEntries, poolType }: InviteLinkSectionProps) {
   const [copied, setCopied] = useState(false);
 
   const copyLink = useCallback(async () => {
@@ -29,6 +32,22 @@ export function InviteLinkSection({ poolName, tournamentName, inviteCode, invite
   if (!visible) return null;
 
   const shareText = `Join my golf pool "${poolName}" for the ${tournamentName}: ${inviteUrl}`;
+
+  const deadlineFormatted = picksDeadline
+    ? new Date(picksDeadline).toLocaleString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })
+    : "TBD";
+
+  const emailSubject = `Tilt–Join the Pool: ${poolName}`;
+  const emailBody = [
+    `You're invited to join "${poolName}"!`,
+    ``,
+    `Tournament: ${tournamentName}`,
+    `Deadline: ${deadlineFormatted}`,
+    `Type: ${poolType || "Categories"}`,
+    `Entries Allowed: ${maxEntries ?? 1}`,
+    ``,
+    `Join here: ${inviteUrl}`,
+  ].join("\n");
 
   return (
     <div className="rounded-card border-2 border-accent-primary bg-surface p-4">
@@ -65,11 +84,10 @@ export function InviteLinkSection({ poolName, tournamentName, inviteCode, invite
           </svg>
           <span>Text</span>
         </a>
-        <a
-          href={`mailto:?subject=${encodeURIComponent(`Join my golf pool: ${poolName}`)}&body=${encodeURIComponent(shareText)}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            window.location.href = `mailto:?subject=${encodeURIComponent(`Join my golf pool: ${poolName}`)}&body=${encodeURIComponent(shareText)}`;
+        <button
+          type="button"
+          onClick={() => {
+            window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
           }}
           className="rounded-btn border border-border bg-surface py-2.5 text-center font-body text-xs font-medium text-text-primary hover:bg-surface-alt transition-colors duration-200 min-h-[44px] flex flex-col items-center justify-center gap-1 cursor-pointer"
         >
@@ -77,7 +95,7 @@ export function InviteLinkSection({ poolName, tournamentName, inviteCode, invite
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
           <span>Email</span>
-        </a>
+        </button>
         <a
           href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
           target="_blank"

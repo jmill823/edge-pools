@@ -112,7 +112,7 @@ export function SelectionGrid({
                       }`}
                     >
                       <span
-                        className={`block truncate ${
+                        className={`block break-words ${
                           isSelected
                             ? "font-bold text-white"
                             : isUsedElsewhere

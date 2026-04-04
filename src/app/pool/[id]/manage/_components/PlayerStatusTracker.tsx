@@ -66,22 +66,20 @@ export function PlayerStatusTracker({ poolId, members, onMembersChange }: Player
 
       {/* Column headers */}
       {totalMembers > 0 && (
-        <div className="grid grid-cols-[1fr_auto] items-center gap-2 px-4 py-2 border-b border-border">
+        <div className="grid grid-cols-[1fr_40px_40px_40px_40px] items-center gap-0 px-4 py-2 border-b border-border">
           <div />
-          <div className="grid grid-cols-4 gap-3 text-center" style={{ minWidth: "160px" }}>
-            <span className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px]">
-              Invited
-            </span>
-            <span className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px]">
-              Signed up
-            </span>
-            <span className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px]">
-              Picks
-            </span>
-            <span className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px]">
-              Paid
-            </span>
-          </div>
+          <span className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
+            Inv
+          </span>
+          <span className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
+            Reg
+          </span>
+          <span className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
+            Picks
+          </span>
+          <span className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
+            Paid
+          </span>
         </div>
       )}
 
@@ -95,9 +93,9 @@ export function PlayerStatusTracker({ poolId, members, onMembersChange }: Player
           {sorted.map((m) => {
             const hasPicksSet = m.entriesSubmitted > 0;
             return (
-              <li key={m.id} className="grid grid-cols-[1fr_auto] items-center gap-2 px-4 py-3">
+              <li key={m.id} className="grid grid-cols-[1fr_40px_40px_40px_40px] items-center gap-0 px-4 py-3">
                 {/* Name + meta */}
-                <div className="min-w-0">
+                <div className="min-w-0 pr-2">
                   <div className="flex items-center gap-2">
                     <span className="font-body text-[13px] font-medium text-text-primary truncate">
                       {m.displayName}
@@ -119,33 +117,36 @@ export function PlayerStatusTracker({ poolId, members, onMembersChange }: Player
                   </p>
                 </div>
 
-                {/* Status columns */}
-                <div className="grid grid-cols-4 gap-3 text-center" style={{ minWidth: "160px" }}>
-                  {/* Invited — always ✓ since they joined via invite */}
-                  <StatusCheck checked />
-                  {/* Signed up — always ✓ since they're in the member list */}
-                  <StatusCheck checked />
-                  {/* Picks set */}
-                  <StatusCheck checked={hasPicksSet} />
-                  {/* Paid — interactive */}
-                  <div className="flex justify-center">
-                    <button
-                      onClick={() => togglePaid(m.id, m.hasPaid)}
-                      disabled={paidLoading === m.id}
-                      className={`flex h-6 w-6 items-center justify-center rounded border-2 transition-colors duration-200 cursor-pointer ${
-                        m.hasPaid
-                          ? "border-accent-success bg-accent-success text-white"
-                          : "border-border bg-surface hover:border-text-muted"
-                      } ${paidLoading === m.id ? "opacity-50" : ""}`}
-                      aria-label={`Mark ${m.displayName} as ${m.hasPaid ? "unpaid" : "paid"}`}
-                    >
-                      {m.hasPaid && (
-                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </button>
-                  </div>
+                {/* Invited — always true (read-only indicator) */}
+                <div className="flex justify-center">
+                  <StatusIcon checked />
+                </div>
+                {/* Signed up — always true (read-only indicator) */}
+                <div className="flex justify-center">
+                  <StatusIcon checked />
+                </div>
+                {/* Picks — derived from data (read-only indicator) */}
+                <div className="flex justify-center">
+                  <StatusIcon checked={hasPicksSet} />
+                </div>
+                {/* Paid — interactive toggle */}
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => togglePaid(m.id, m.hasPaid)}
+                    disabled={paidLoading === m.id}
+                    className={`flex h-6 w-6 items-center justify-center rounded border-2 transition-colors duration-200 cursor-pointer ${
+                      m.hasPaid
+                        ? "border-accent-success bg-accent-success text-white"
+                        : "border-border bg-surface hover:border-text-muted"
+                    } ${paidLoading === m.id ? "opacity-50" : ""}`}
+                    aria-label={`Mark ${m.displayName} as ${m.hasPaid ? "unpaid" : "paid"}`}
+                  >
+                    {m.hasPaid && (
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
               </li>
             );
@@ -166,19 +167,14 @@ export function PlayerStatusTracker({ poolId, members, onMembersChange }: Player
   );
 }
 
-function StatusCheck({ checked }: { checked: boolean }) {
-  return (
-    <div className="flex justify-center">
-      {checked ? (
-        <div className="flex h-6 w-6 items-center justify-center rounded border-2 border-accent-success bg-accent-success text-white">
-          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-      ) : (
-        <div className="h-6 w-6 rounded border-2 border-border bg-surface" />
-      )}
-    </div>
+/** Read-only status icon — visually distinct from the interactive Paid checkbox */
+function StatusIcon({ checked }: { checked: boolean }) {
+  return checked ? (
+    <svg className="h-4 w-4 text-accent-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  ) : (
+    <span className="h-4 w-4 flex items-center justify-center text-text-muted font-mono text-xs">—</span>
   );
 }
 

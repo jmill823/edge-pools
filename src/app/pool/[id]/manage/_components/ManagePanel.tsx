@@ -91,6 +91,9 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
         inviteCode={pool.inviteCode}
         inviteUrl={inviteUrl}
         status={pool.status}
+        picksDeadline={pool.picksDeadline}
+        maxEntries={pool.maxEntries}
+        poolType={pool.rules}
       />
 
       {/* 3. Accepting Members Toggle */}

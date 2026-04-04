@@ -82,10 +82,11 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
 
           {/* Footer */}
-          <footer className="border-t border-border bg-surface py-6">
-            <div className="mx-auto max-w-content px-4 text-center">
-              <p className="font-display text-sm font-semibold text-accent-primary">Edge Pools</p>
-              <p className="mt-1 font-body text-xs text-text-muted">&copy; 2026</p>
+          <footer className="border-t border-border bg-surface py-2">
+            <div className="mx-auto max-w-content px-4 flex items-center justify-center gap-2">
+              <p className="font-display text-xs font-semibold text-accent-primary">Edge Pools</p>
+              <span className="text-border">·</span>
+              <p className="font-body text-[10px] text-text-muted">&copy; 2026</p>
             </div>
           </footer>
         </body>

@@ -10,6 +10,9 @@ interface PoolInfo {
   name: string;
   status: string;
   inviteCode: string;
+  picksDeadline: string | null;
+  maxEntries: number;
+  rules: string | null;
   tournament: { name: string };
 }
 
@@ -32,7 +35,24 @@ export default function InvitePage({ params }: { params: { id: string } }) {
       ? `${window.location.origin}/join/${pool.inviteCode}`
       : `/join/${pool.inviteCode}`;
 
+  const deadlineFormatted = pool.picksDeadline
+    ? new Date(pool.picksDeadline).toLocaleString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })
+    : "TBD";
+  const poolType = pool.rules || "Categories";
+
   const shareText = `Join my golf pool "${pool.name}" for the ${pool.tournament.name}: ${inviteUrl}`;
+
+  const emailSubject = `Tilt–Join the Pool: ${pool.name}`;
+  const emailBody = [
+    `You're invited to join "${pool.name}"!`,
+    ``,
+    `Tournament: ${pool.tournament.name}`,
+    `Deadline: ${deadlineFormatted}`,
+    `Type: ${poolType}`,
+    `Entries Allowed: ${pool.maxEntries}`,
+    ``,
+    `Join here: ${inviteUrl}`,
+  ].join("\n");
 
   function copyLink() {
     navigator.clipboard.writeText(inviteUrl);
@@ -104,12 +124,10 @@ export default function InvitePage({ params }: { params: { id: string } }) {
             </svg>
             <span>Text</span>
           </a>
-          <a
-            href={`mailto:?subject=${encodeURIComponent(`Join my golf pool: ${pool.name}`)}&body=${encodeURIComponent(shareText)}`}
-            onClick={(e) => {
-              // Ensure mailto fires on all platforms — prevent any SPA interception
-              e.stopPropagation();
-              window.location.href = `mailto:?subject=${encodeURIComponent(`Join my golf pool: ${pool.name}`)}&body=${encodeURIComponent(shareText)}`;
+          <button
+            type="button"
+            onClick={() => {
+              window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
             }}
             className="rounded-card border border-border bg-surface py-3 text-center font-body text-sm font-medium text-text-primary hover:bg-surface-alt transition-colors duration-200 min-h-[44px] flex flex-col items-center justify-center gap-1 cursor-pointer"
           >
@@ -117,7 +135,7 @@ export default function InvitePage({ params }: { params: { id: string } }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             <span>Email</span>
-          </a>
+          </button>
           <a
             href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
             target="_blank"
