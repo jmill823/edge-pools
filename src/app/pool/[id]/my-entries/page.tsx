@@ -307,8 +307,8 @@ function EntryCard({
             />
           </div>
 
-          {/* Selection grid */}
-          <div className="max-h-[400px] overflow-y-auto">
+          {/* Selection grid — matches picks page layout */}
+          <div className="max-h-[400px] overflow-y-auto overflow-x-auto -webkit-overflow-scrolling-touch">
             <SelectionGrid
               categories={categories}
               selections={editSelections}
