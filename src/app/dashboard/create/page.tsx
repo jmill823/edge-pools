@@ -18,7 +18,7 @@ interface Tournament {
 
 interface Template {
   templateName: string;
-  categories: { name: string; sortOrder: number; golferNames: string[] }[];
+  categories: { name: string; qualifier?: string; sortOrder: number; golferNames: string[] }[];
 }
 
 export default function CreatePoolPage() {
@@ -70,6 +70,7 @@ export default function CreatePoolPage() {
     setCategories(
       tmpl.categories.map((c) => ({
         name: c.name,
+        qualifier: c.qualifier,
         sortOrder: c.sortOrder,
         golfers: c.golferNames.map((n) => golferMap.get(n)).filter((g): g is GolferData => !!g),
       }))
@@ -90,6 +91,7 @@ export default function CreatePoolPage() {
           tournamentId,
           categories: categories.map((c) => ({
             name: c.name,
+            qualifier: c.qualifier || undefined,
             sortOrder: c.sortOrder,
             golferIds: c.golfers.map((g) => g.id),
           })),

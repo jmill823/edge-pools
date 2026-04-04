@@ -5,6 +5,7 @@ import { generateUniqueInviteCode } from "@/lib/invite-code";
 
 interface CategoryInput {
   name: string;
+  qualifier?: string;
   sortOrder: number;
   golferIds: string[];
 }
@@ -113,6 +114,7 @@ export async function POST(req: Request) {
       categories: {
         create: categories.map((cat) => ({
           name: cat.name,
+          qualifier: cat.qualifier || null,
           sortOrder: cat.sortOrder,
           golfers: {
             create: cat.golferIds.map((golferId) => ({ golferId })),

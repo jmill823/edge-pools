@@ -11,6 +11,7 @@ export interface GolferData {
 
 export interface CategoryData {
   name: string;
+  qualifier?: string;
   sortOrder: number;
   golfers: GolferData[];
 }

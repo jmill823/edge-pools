@@ -5,8 +5,11 @@ export default function HomePage() {
     <div className="bg-background">
       {/* Hero */}
       <section className="mx-auto max-w-hero px-4 py-20 text-center sm:py-28">
+        <p className="font-display text-[40px] font-bold text-text-primary tracking-[2px] mb-3 sm:text-[48px]">
+          TILT
+        </p>
         <h1 className="font-display text-[22px] font-bold tracking-tight text-text-primary sm:text-[36px] leading-tight">
-          Ditch the spreadsheet.
+          Ready to ditch the spreadsheet?
         </h1>
         <p className="mx-auto mt-6 max-w-xl font-body text-base text-text-secondary">
           3-Minute Setup <span className="text-text-muted">|</span> Real-Time Leaderboard <span className="text-text-muted">|</span> Custom Category Creation

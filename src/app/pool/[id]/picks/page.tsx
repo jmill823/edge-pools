@@ -11,7 +11,7 @@ import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 import { Button } from "@/components/ui/Button";
 
 interface Golfer { id: string; name: string; country: string | null; owgr: number | null; }
-interface Category { id: string; name: string; sortOrder: number; golfers: Golfer[]; }
+interface Category { id: string; name: string; qualifier?: string | null; sortOrder: number; golfers: Golfer[]; }
 interface PoolInfo { id: string; name: string; status: string; picksDeadline: string; maxEntries: number; }
 interface ExistingEntry { id: string; entryNumber: number; teamName: string; picks: { category: { id: string }; golfer: { id: string } }[]; }
 

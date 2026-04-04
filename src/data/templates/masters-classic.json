@@ -3,6 +3,7 @@
   "categories": [
     {
       "name": "Past Champions",
+      "qualifier": "Past Winner",
       "sortOrder": 1,
       "golferNames": [
         "Tiger Woods",
@@ -20,6 +21,7 @@
     },
     {
       "name": "World Top 10",
+      "qualifier": "OWGR Top 10",
       "sortOrder": 2,
       "golferNames": [
         "Scottie Scheffler",
@@ -36,6 +38,7 @@
     },
     {
       "name": "Contenders",
+      "qualifier": "2024-25 Winner",
       "sortOrder": 3,
       "golferNames": [
         "Brooks Koepka",
@@ -52,6 +55,7 @@
     },
     {
       "name": "Dark Horses",
+      "qualifier": "OWGR 50+",
       "sortOrder": 4,
       "golferNames": [
         "Max Homa",
@@ -68,6 +72,7 @@
     },
     {
       "name": "Veterans",
+      "qualifier": "+35 Yrs Old",
       "sortOrder": 5,
       "golferNames": [
         "Tiger Woods",
@@ -84,6 +89,7 @@
     },
     {
       "name": "International",
+      "qualifier": "Non-USA",
       "sortOrder": 6,
       "golferNames": [
         "Rory McIlroy",
@@ -100,6 +106,7 @@
     },
     {
       "name": "Rising Stars",
+      "qualifier": "Under 28",
       "sortOrder": 7,
       "golferNames": [
         "Tom Kim",
@@ -116,6 +123,7 @@
     },
     {
       "name": "Fan Favorites",
+      "qualifier": "Masters Debut",
       "sortOrder": 8,
       "golferNames": [
         "Tiger Woods",
@@ -132,6 +140,7 @@
     },
     {
       "name": "Longshots",
+      "qualifier": "Any Field Player",
       "sortOrder": 9,
       "golferNames": [
         "Denny McCarthy",

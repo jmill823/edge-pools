@@ -112,6 +112,7 @@ model Category {
   id          String   @id @default(cuid())
   poolId      String
   name        String
+  qualifier   String?
   sortOrder   Int
   createdAt   DateTime @default(now())
 

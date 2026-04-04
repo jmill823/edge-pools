@@ -10,6 +10,7 @@ export interface Golfer {
 export interface Category {
   id: string;
   name: string;
+  qualifier?: string | null;
   sortOrder: number;
   golfers: Golfer[];
 }
@@ -55,11 +56,18 @@ export function SelectionGrid({
             {categories.map((cat) => (
               <th
                 key={cat.id}
-                className={`bg-surface border-b border-r border-border px-2 py-2 font-display text-[9px] font-medium text-text-muted text-center uppercase tracking-[0.5px] ${
+                className={`bg-surface border-b border-r border-border px-2 py-2 text-center ${
                   fitsDesktop ? "" : "min-w-[100px] max-w-[120px]"
                 }`}
               >
-                {cat.name}
+                <span className="block font-display text-[11px] font-medium text-text-muted uppercase tracking-[0.5px]">
+                  {cat.name}
+                </span>
+                {cat.qualifier && (
+                  <span className="block font-body text-[9px] font-normal text-text-muted mt-0.5" style={{ textTransform: "none" }}>
+                    {cat.qualifier}
+                  </span>
+                )}
               </th>
             ))}
           </tr>

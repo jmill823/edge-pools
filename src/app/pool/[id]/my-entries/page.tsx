@@ -11,7 +11,7 @@ import { InlineFeedback } from "@/components/ui/InlineFeedback";
 import { formatScore, scoreColor, formatRankWithTies } from "../leaderboard/_components/score-utils";
 
 interface Golfer { id: string; name: string; country: string | null; owgr: number | null; }
-interface CategoryData { id: string; name: string; sortOrder: number; golfers: Golfer[]; }
+interface CategoryData { id: string; name: string; qualifier?: string | null; sortOrder: number; golfers: Golfer[]; }
 
 interface PickData {
   golfer: { id: string; name: string; country: string | null; owgr: number | null };

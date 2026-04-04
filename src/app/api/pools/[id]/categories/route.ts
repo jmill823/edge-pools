@@ -42,6 +42,7 @@ export async function GET(
   const categories = pool.categories.map((c) => ({
     id: c.id,
     name: c.name,
+    qualifier: c.qualifier,
     sortOrder: c.sortOrder,
     golfers: c.golfers.map((cg) => ({
       id: cg.golfer.id,
@@ -82,7 +83,7 @@ export async function PUT(
   }
 
   const body = await req.json();
-  const cats: { name: string; sortOrder: number; golferIds: string[] }[] =
+  const cats: { name: string; qualifier?: string; sortOrder: number; golferIds: string[] }[] =
     body.categories;
 
   if (!Array.isArray(cats) || cats.length === 0) {
@@ -116,6 +117,7 @@ export async function PUT(
         data: {
           poolId: params.id,
           name: cat.name,
+          qualifier: cat.qualifier || null,
           sortOrder: cat.sortOrder,
         },
       });

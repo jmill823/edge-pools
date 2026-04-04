@@ -45,6 +45,7 @@ export default async function PoolLayout({
         poolName={pool.name}
         poolStatus={pool.status}
         isOrganizer={isOrganizer}
+        inviteCode={pool.inviteCode}
       />
       {/* Content area — add bottom padding on mobile for tab bar */}
       <div className="flex-1 pb-20 sm:pb-0">{children}</div>

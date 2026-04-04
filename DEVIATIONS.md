@@ -225,3 +225,28 @@
 - **What was found:** No endpoint existed to return eligible golfers for a specific replacement.
 - **What was done:** Created `GET /api/admin/replacements/[poolId]/[id]/eligible` — returns golfers in the same category, filtered out already-picked and WD/CUT golfers, sorted by worst score first (matching the replacement algorithm).
 - **Why:** The override dropdown needs server-side eligibility calculation to show only valid choices.
+
+## Session D15-D18 — Product Polish (April 4, 2026)
+
+### DEV D18-1 — Category Qualifier Added to Prisma Schema
+- **Spec said:** "This is NOT a Prisma schema change — qualifiers live in the template JSON files only."
+- **What was found:** Templates feed into categories at pool creation time. Once created, categories live in the DB (name + sortOrder + golfers). Without a `qualifier` field on the Category model, qualifiers would be lost after pool creation and never appear on the picks grid or leaderboard.
+- **What was done:** Added `qualifier String?` (optional) to the Category model. Updated `prisma db push`. Template qualifiers now flow through create pool → DB → categories API → picks grid display.
+- **Why:** Runtime template lookups are fragile (break if category names change, require template mapping logic). A nullable DB field is the correct approach for persisted metadata.
+
+### DEV D15-1 — Landing Headline Changed
+- **Spec said:** Headline should be "Stop using a spreadsheet to run your golf pool."
+- **What existed:** Headline was already "Ditch the spreadsheet." from a prior fix.
+- **What was done:** Updated to "Ready to ditch the spreadsheet?" per the most recent approved copy (April 3 fix session).
+- **Why:** The April 3 copy change superseded the original spec text.
+
+### DEV D17-1 — Clerk UserButton Replaced with Custom Dropdown
+- **Spec said:** Wrap Clerk avatar with dropdown behavior, don't change Clerk component.
+- **What was done:** Removed Clerk's `UserButton` entirely and replaced with a custom `AvatarDropdown` component that shows the user's Clerk profile image (or initials), with a dropdown for Dashboard + Sign Out. Uses `useUser()` and `useClerk()` hooks directly.
+- **Why:** Clerk's `UserButton` renders its own dropdown with settings/manage links that don't match the spec. A custom component gives full control over menu items and styling.
+
+### DEV D18-2 — Fan Favorites Qualifier Mapped to "Masters Debut"
+- **Spec said:** Map qualifiers to category names: "First Timers" → "Masters Debut", "Tour Winners" → "2024-25 Winner".
+- **What existed:** Template has "Fan Favorites" (not "First Timers") and "Contenders" (not "Tour Winners").
+- **What was done:** Mapped "Masters Debut" to "Fan Favorites" and "2024-25 Winner" to "Contenders" as the closest matches. "Dark Horses" received "OWGR 50+" (from "Long Shots" in the spec).
+- **Why:** Template category names don't exactly match the spec's qualifier table. Best-fit mapping applied.
