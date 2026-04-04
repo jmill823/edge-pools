@@ -250,3 +250,34 @@
 - **What existed:** Template has "Fan Favorites" (not "First Timers") and "Contenders" (not "Tour Winners").
 - **What was done:** Mapped "Masters Debut" to "Fan Favorites" and "2024-25 Winner" to "Contenders" as the closest matches. "Dark Horses" received "OWGR 50+" (from "Long Shots" in the spec).
 - **Why:** Template category names don't exactly match the spec's qualifier table. Best-fit mapping applied.
+
+## Picks Grid Visual Upgrade (April 4, 2026)
+
+### DEV PVU-1 — No Schema Change for countryCode
+- **Spec said:** Add `countryCode` field to Golfer model if it doesn't exist.
+- **What was found:** The Golfer model already has a `country` field (String?) used throughout the codebase. Data uses 3-letter golf codes (USA, ENG, IRL, etc.) not ISO 3166-1 alpha-2.
+- **What was done:** Used existing `country` field. Created a mapping function (`countryToFlag()`) in `src/lib/golf-utils.ts` that converts golf-specific 3-letter codes to ISO alpha-2 for flag emoji rendering.
+- **Why:** No schema change needed. Mapping function handles the format difference transparently.
+
+### DEV PVU-2 — No Schema Change for owgr
+- **Spec said:** Add `owgr` field to Golfer model if it doesn't exist.
+- **What was found:** The Golfer model already has `owgr Int?`. Seed data populates approximate OWGR for all Masters template golfers.
+- **What was done:** No change needed. Added Rickie Fowler to seed data (was in Fan Favorites template but missing from seed).
+- **Why:** Field and data already existed.
+
+### DEV PVU-3 — STATE-MATRIX.md Still Missing
+- **Spec said:** Read STATE-MATRIX.md at session start.
+- **What exists:** File does not exist in the repository (same as prior sessions).
+- **What was done:** Used existing code state logic. Picks page state handling unchanged.
+- **Why:** Visual upgrade only — no state conditional changes.
+
+### DEV PVU-4 — UK Country Flags Mapped to GB
+- **Spec said:** Use ISO 3166-1 alpha-2 codes for flag emoji.
+- **What was found:** Golfers from England (ENG), Scotland (SCO), and Northern Ireland (NIR) use non-ISO codes. Unicode flag emoji only supports sovereign nations.
+- **What was done:** Mapped ENG, SCO, NIR, and WAL all to the GB (Union Jack) flag. There are no standard Unicode emoji for constituent UK nations.
+- **Why:** This is a platform limitation. All major OS/browser combinations render regional indicator flags for GB but not for ENG/SCO/NIR separately.
+
+### DEV PVU-5 — PickStrip Replaced with BubbleStrip on Picks Page Only
+- **Spec said:** Bubble strip replaces the existing pick progress display.
+- **What was done:** The picks page now uses BubbleStrip instead of PickStrip. The shared PickStrip component at `src/components/ui/PickStrip.tsx` is preserved — it's still used by My Entries and Leaderboard pages.
+- **Why:** BubbleStrip is picks-page-specific UX. Other pages need the compact strip format.

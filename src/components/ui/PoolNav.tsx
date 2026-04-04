@@ -59,14 +59,14 @@ export function PoolNav({ poolId, poolName, poolStatus, isOrganizer, inviteCode 
         </div>
       </div>
 
-      {/* Desktop tabs — no background, no border on the nav itself */}
+      {/* Desktop tabs — centered, no background */}
       <nav className="hidden sm:block sticky top-0 z-30">
-        <div className="mx-auto max-w-[70%] flex">
+        <div className="flex justify-center gap-6">
           {visibleTabs.map((tab) => (
             <Link
               key={tab.segment}
               href={tab.href}
-              className={`flex-1 text-center px-4 py-3 font-display text-[13px] font-medium transition-colors duration-200 border-b-2 cursor-pointer ${
+              className={`text-center px-3 py-3 font-display text-[11px] font-medium uppercase tracking-[0.3px] transition-colors duration-200 border-b-2 cursor-pointer ${
                 isActive(tab.segment)
                   ? "border-accent-primary text-accent-primary"
                   : "border-transparent text-text-secondary hover:text-text-primary"

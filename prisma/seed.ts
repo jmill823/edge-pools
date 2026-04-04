@@ -53,6 +53,7 @@ const golfers = [
   { name: "Sepp Straka", country: "AUT", owgr: 34 },
   { name: "Min Woo Lee", country: "AUS", owgr: 29 },
   { name: "Will Zalatoris", country: "USA", owgr: 39 },
+  { name: "Rickie Fowler", country: "USA", owgr: 100 },
 ];
 
 async function main() {

@@ -1,5 +1,8 @@
 "use client";
 
+import { useRef, useCallback } from "react";
+import { getCategoryColor, abbreviateName, getInitials, countryToFlag } from "@/lib/golf-utils";
+
 export interface Golfer {
   id: string;
   name: string;
@@ -22,15 +25,15 @@ export interface SelectionGridProps {
   usedGolferIds: Set<string>;
   onSelect: (categoryId: string, golferId: string) => void;
   readOnly: boolean;
+  /** Called after a pick with the categoryId — parent handles auto-advance */
+  onPickMade?: (categoryId: string) => void;
+  /** Ref forwarded so parent can scroll to specific columns */
+  gridRef?: React.RefObject<HTMLDivElement>;
 }
 
 /**
- * SelectionGrid — golfer pick grid used on picks page and inline edit.
- *
- * Layout rules:
- * - ≤9 categories on desktop: columns fill available width, no horizontal scroll
- * - >9 categories OR mobile: horizontal scroll enabled with min-width per column
- * - 20-30px padding on each side of the grid
+ * SelectionGrid — golfer pick grid with earth-tone category colors,
+ * avatar circles, flag emoji, abbreviated names, and OWGR display.
  */
 export function SelectionGrid({
   categories,
@@ -39,100 +42,155 @@ export function SelectionGrid({
   usedGolferIds,
   onSelect,
   readOnly,
+  onPickMade,
+  gridRef,
 }: SelectionGridProps) {
   const maxRows = Math.max(...categories.map((c) => c.golfers.length), 0);
-  const fitsDesktop = categories.length <= 9;
+  const internalRef = useRef<HTMLDivElement>(null);
+  const containerRef = gridRef || internalRef;
+
+  const handleSelect = useCallback(
+    (categoryId: string, golferId: string, wasAlreadySelected: boolean) => {
+      onSelect(categoryId, golferId);
+      // Only trigger auto-advance for new picks, not deselection or changing existing
+      if (!wasAlreadySelected && golferId && onPickMade) {
+        onPickMade(categoryId);
+      }
+    },
+    [onSelect, onPickMade]
+  );
 
   return (
-    <div className="overflow-x-auto flex-1 min-h-0 px-5 sm:px-8 -webkit-overflow-scrolling-touch">
-      <table
-        className={`border-collapse ${
-          fitsDesktop ? "w-full sm:w-full sm:table-fixed" : "min-w-max"
-        }`}
-      >
-        {/* Sticky column headers */}
+    <div
+      ref={containerRef}
+      className="overflow-x-auto flex-1 min-h-0 px-3 sm:px-6"
+      style={{ WebkitOverflowScrolling: "touch" }}
+    >
+      <table className="border-collapse min-w-max">
+        {/* Column headers */}
         <thead className="sticky top-0 z-10">
           <tr>
-            {categories.map((cat) => (
-              <th
-                key={cat.id}
-                className={`bg-surface border-b border-r border-border px-2 py-2 text-center ${
-                  fitsDesktop ? "" : "min-w-[100px] max-w-[120px]"
-                }`}
-              >
-                <span className="block font-display text-[11px] font-medium text-text-muted uppercase tracking-[0.5px]">
-                  {cat.name}
-                </span>
-                {cat.qualifier && (
-                  <span className="block font-body text-[9px] font-normal text-text-muted mt-0.5" style={{ textTransform: "none" }}>
-                    {cat.qualifier}
+            {categories.map((cat, catIdx) => {
+              const color = getCategoryColor(catIdx);
+              return (
+                <th
+                  key={cat.id}
+                  data-category-id={cat.id}
+                  className="border-b border-r border-border px-2 text-center"
+                  style={{
+                    backgroundColor: color.fill,
+                    minWidth: 90,
+                    height: 56,
+                  }}
+                >
+                  <span
+                    className="block font-display text-[11px] font-medium uppercase tracking-[0.3px]"
+                    style={{ color: color.text }}
+                  >
+                    {cat.name}
                   </span>
-                )}
-              </th>
-            ))}
+                  {cat.qualifier && (
+                    <span className="block font-body text-[9px] font-normal text-text-muted mt-0.5" style={{ textTransform: "none" }}>
+                      {cat.qualifier}
+                    </span>
+                  )}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
           {Array.from({ length: maxRows }).map((_, rowIdx) => (
             <tr key={rowIdx}>
-              {categories.map((cat) => {
+              {categories.map((cat, catIdx) => {
                 const golfer = cat.golfers[rowIdx];
                 if (!golfer) {
                   return (
                     <td
                       key={cat.id}
-                      className={`border-r border-border/50 ${
-                        fitsDesktop ? "" : "min-w-[100px] max-w-[120px]"
-                      }`}
+                      className="border-r border-border/50"
+                      style={{ minWidth: 90 }}
                     />
                   );
                 }
 
+                const color = getCategoryColor(catIdx);
                 const isSelected = selections.get(cat.id) === golfer.id;
                 const isUsedElsewhere = usedGolferIds.has(golfer.id) && !isSelected;
                 const catCount = golferCategoryCount.get(golfer.id) || 1;
                 const isMultiCat = catCount > 1;
                 const canTap = !readOnly && !isUsedElsewhere;
 
+                const flag = countryToFlag(golfer.country);
+                const abbrevName = abbreviateName(golfer.name);
+                const initials = getInitials(golfer.name);
+
                 return (
                   <td
                     key={`${cat.id}-${golfer.id}`}
-                    className={`border-r border-b border-border/50 ${
-                      fitsDesktop ? "" : "min-w-[100px] max-w-[120px]"
-                    } ${
-                      isSelected
-                        ? "bg-accent-primary"
+                    className="border-r border-b border-border/50"
+                    style={{
+                      minWidth: 90,
+                      backgroundColor: isSelected
+                        ? color.fill
                         : isUsedElsewhere
-                          ? "bg-surface-alt"
-                          : isMultiCat
-                            ? "bg-[#FDF4E3]/50"
-                            : ""
-                    }`}
+                          ? undefined
+                          : undefined,
+                      borderLeft: isSelected ? `3px solid ${color.dot}` : undefined,
+                    }}
                   >
                     <button
                       onClick={() => {
                         if (!canTap) return;
-                        onSelect(cat.id, isSelected ? "" : golfer.id);
+                        handleSelect(cat.id, isSelected ? "" : golfer.id, isSelected);
                       }}
                       disabled={!canTap}
-                      className={`w-full text-left px-2 py-2.5 min-h-[44px] font-body text-[13px] leading-tight ${
-                        canTap ? "cursor-pointer active:bg-accent-primary/20" : "cursor-default"
-                      }`}
+                      className={`w-full text-left px-2 py-1.5 min-h-[48px] flex items-center gap-1.5 ${
+                        canTap ? "cursor-pointer active:opacity-80" : "cursor-default"
+                      } ${isUsedElsewhere ? "opacity-30" : ""}`}
                     >
+                      {/* Avatar circle */}
                       <span
-                        className={`block break-words ${
-                          isSelected
-                            ? "font-bold text-white"
-                            : isUsedElsewhere
-                              ? "text-text-muted line-through"
-                              : "text-text-primary"
-                        }`}
+                        className="shrink-0 flex items-center justify-center rounded-full font-body text-[9px] font-semibold text-white"
+                        style={{
+                          width: 24,
+                          height: 24,
+                          backgroundColor: isSelected ? color.dot : isUsedElsewhere ? "#D4D0C8" : color.dot,
+                          outline: isSelected ? "2px solid white" : undefined,
+                          outlineOffset: isSelected ? -1 : undefined,
+                        }}
                       >
-                        {isSelected && <span className="text-white">● </span>}
-                        {golfer.name}
+                        {initials}
                       </span>
+
+                      {/* Name + flag */}
+                      <span className="flex-1 min-w-0">
+                        <span
+                          className={`block font-body text-[12px] leading-tight truncate ${
+                            isSelected
+                              ? "font-semibold"
+                              : isUsedElsewhere
+                                ? "line-through"
+                                : "font-normal"
+                          }`}
+                          style={{
+                            color: isSelected ? color.text : isUsedElsewhere ? "#A39E96" : "#1A1A18",
+                            letterSpacing: "-0.2px",
+                          }}
+                        >
+                          {flag && <span className="text-[11px] mr-0.5">{flag}</span>}
+                          {abbrevName}
+                        </span>
+                      </span>
+
+                      {/* OWGR */}
+                      <span className="shrink-0 font-mono text-[10px] text-text-muted tabular-nums">
+                        {golfer.owgr ?? "\u2014"}
+                      </span>
+
+                      {/* Multi-category badge */}
                       {isMultiCat && !isUsedElsewhere && !isSelected && (
-                        <span className="font-mono text-[9px] font-bold text-accent-secondary align-super ml-0.5">
+                        <span className="shrink-0 font-mono text-[9px] font-bold text-accent-secondary align-super">
                           {catCount}
                         </span>
                       )}
