@@ -18,6 +18,7 @@ interface PoolData {
   maxEntries: number;
   picksDeadline: string;
   rules: string | null;
+  tournamentId: string;
   tournament: { name: string; startDate: string; endDate: string; course: string | null };
   memberCount: number;
   entryCount: number;
@@ -120,6 +121,8 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
 
       {/* 6. Scoring Admin */}
       <ScoringAdmin
+        poolId={pool.id}
+        tournamentId={pool.tournamentId}
         status={pool.status}
         lastSyncAt={pool.lastSyncAt}
         pendingReplacements={pool.pendingReplacements}

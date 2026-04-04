@@ -3,17 +3,23 @@
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
 import { InlineFeedback } from "@/components/ui/InlineFeedback";
+import { ReplacementQueue } from "./ReplacementQueue";
+import { ManualScoreEntry } from "./ManualScoreEntry";
 
 interface ScoringAdminProps {
+  poolId: string;
+  tournamentId: string;
   status: string;
   lastSyncAt: string | null;
   pendingReplacements: number;
 }
 
-export function ScoringAdmin({ status, lastSyncAt, pendingReplacements }: ScoringAdminProps) {
+export function ScoringAdmin({ poolId, tournamentId, status, lastSyncAt, pendingReplacements }: ScoringAdminProps) {
   const [polling, setPolling] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [syncTime, setSyncTime] = useState(lastSyncAt);
+  const [replacementCount, setReplacementCount] = useState(pendingReplacements);
+  const [showManualEntry, setShowManualEntry] = useState(false);
 
   const isLive = status === "LIVE";
 
@@ -21,22 +27,37 @@ export function ScoringAdmin({ status, lastSyncAt, pendingReplacements }: Scorin
     setPolling(true);
     setFeedback(null);
     try {
-      const res = await fetch("/api/cron/poll-scores", { method: "POST" });
+      const res = await fetch(`/api/pools/${poolId}/poll-scores`, { method: "POST" });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Score update failed");
       }
+      const data = await res.json();
       const now = new Date().toISOString();
       setSyncTime(now);
-      setFeedback({ type: "success", message: `Scores updated at ${new Date(now).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}` });
+
+      const totalUpdated = data.results?.reduce((sum: number, r: { golfersUpdated: number }) => sum + r.golfersUpdated, 0) ?? 0;
+      const totalReplacements = data.results?.reduce((sum: number, r: { replacementsFlagged: number }) => sum + r.replacementsFlagged, 0) ?? 0;
+
+      if (totalReplacements > 0) {
+        setReplacementCount((c) => c + totalReplacements);
+      }
+
+      setFeedback({
+        type: "success",
+        message: `${totalUpdated} golfer${totalUpdated !== 1 ? "s" : ""} updated at ${new Date(now).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`,
+      });
     } catch (err) {
       setFeedback({ type: "error", message: err instanceof Error ? err.message : "Score update failed — try again" });
     } finally {
       setPolling(false);
     }
+  }, [poolId]);
+
+  const handleReplacementProcessed = useCallback(() => {
+    setReplacementCount((c) => Math.max(0, c - 1));
   }, []);
 
-  // Sync status display
   const getSyncStatus = () => {
     if (!syncTime) return { text: "No scores yet", level: "neutral" as const };
     const syncDate = new Date(syncTime);
@@ -121,28 +142,37 @@ export function ScoringAdmin({ status, lastSyncAt, pendingReplacements }: Scorin
       {/* WD/CUT Replacement Queue */}
       {isLive && (
         <div className="border-t border-border pt-3 mt-3">
-          <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-2">
-            WD/CUT Replacements
-          </p>
-          {pendingReplacements > 0 ? (
-            <p className="font-body text-sm text-[#8A6B1E]">
-              {pendingReplacements} pending {pendingReplacements === 1 ? "replacement" : "replacements"}
-            </p>
-          ) : (
-            <p className="font-body text-sm text-text-muted">No pending replacements</p>
-          )}
+          <ReplacementQueue
+            poolId={poolId}
+            pendingCount={replacementCount}
+            onReplacementProcessed={handleReplacementProcessed}
+          />
         </div>
       )}
 
-      {/* Manual Score Entry link — only when LIVE */}
+      {/* Manual Score Entry — only when LIVE */}
       {isLive && (
         <div className="border-t border-border pt-3 mt-3">
           <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-2">
             Manual Fallback
           </p>
-          <p className="font-body text-sm text-text-muted">
-            Manual score entry will be available in a future update.
-          </p>
+          {showManualEntry ? (
+            <ManualScoreEntry
+              tournamentId={tournamentId}
+              onClose={() => setShowManualEntry(false)}
+              onScoresUpdated={() => {
+                setSyncTime(new Date().toISOString());
+                setFeedback({ type: "success", message: "Manual scores saved and standings recalculated" });
+              }}
+            />
+          ) : (
+            <button
+              onClick={() => setShowManualEntry(true)}
+              className="font-body text-sm text-accent-primary hover:underline cursor-pointer"
+            >
+              Enter scores manually &rarr;
+            </button>
+          )}
         </div>
       )}
 

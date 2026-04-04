@@ -198,9 +198,17 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
       {/* Stale data footer */}
       {hasScores && staleMinutes !== null && staleMinutes >= 2 && (
         <div className={`mt-4 rounded-data px-3 py-2 text-center font-mono text-xs ${
-          staleMinutes > 5 ? "bg-[#FDF4E3] text-[#8A6B1E]" : "bg-surface-alt text-text-muted"
+          staleMinutes > 30
+            ? "bg-[#FCEAE9] text-accent-danger"
+            : staleMinutes > 15
+            ? "bg-[#FDF4E3] text-[#8A6B1E]"
+            : "bg-surface-alt text-text-muted"
         }`}>
-          Updated {staleMinutes} min ago
+          {staleMinutes > 30
+            ? `Score updates appear stalled \u2014 last updated ${staleMinutes} min ago`
+            : staleMinutes > 15
+            ? `Scores may be delayed \u2014 updated ${staleMinutes} min ago`
+            : `Updated ${staleMinutes} min ago`}
         </div>
       )}
     </div>

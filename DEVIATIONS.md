@@ -194,3 +194,34 @@
 - **Spec said:** Pool settings editable in SETUP only.
 - **What was done:** Added server-side validation — name, picksDeadline, maxEntries, and rules can only be updated when pool status is SETUP. Returns 400 error otherwise.
 - **Why:** Spec compliance. Previous implementation allowed settings changes in any status.
+
+## Session R5B — Live Scoring + WD/CUT + Manual Fallback (April 3, 2026)
+
+### DEV R5B-1 — STATE-MATRIX.md Still Missing
+- **Spec said:** Read STATE-MATRIX.md at session start.
+- **What exists:** File does not exist in the repository (same as prior sessions).
+- **What was done:** Used existing code state logic. All status-based behavior follows patterns from prior sessions.
+- **Why:** No ambiguity — scoring controls are gated by `status === "LIVE"` consistently.
+
+### DEV R5B-2 — Pool-Scoped Poll Endpoint Instead of Cron Auth Bypass
+- **Spec said:** Poll button calls `POST /api/cron/poll-scores`.
+- **What was found:** The cron endpoint requires `CRON_SECRET` header auth. The ScoringAdmin client component cannot know this secret — it would need to be exposed to the browser.
+- **What was done:** Created `POST /api/pools/[id]/poll-scores` which uses Clerk auth + organizer check instead of CRON_SECRET. It calls the same `pollAllLiveTournaments()` function. The cron endpoint remains unchanged for Vercel Cron automated calls.
+- **Why:** Security — CRON_SECRET should never be in client-side code. The pool-scoped endpoint enforces organizer-only access through standard auth.
+
+### DEV R5B-3 — Scoring Backend Already Fully Wired
+- **Spec said:** Verify scoring backend, connect poll button, connect leaderboard to real scores, build client polling.
+- **What was found:** The leaderboard API (`/api/pools/[id]/leaderboard`) already fetches from GolferScore records, calculates team scores, ranks with tie handling, and returns pick-level score details. The leaderboard page already has 30s polling with visibility-change pausing. The ScoringAdmin already had a poll button (just needed the auth fix above).
+- **What was done:** Fixed the poll endpoint auth (DEV R5B-2). Fixed stale data thresholds (5min→15/30min per spec). No other changes needed — the leaderboard was already connected to real scores from earlier sessions.
+- **Why:** Phase 4a and subsequent sessions had already wired most of this. The spec was written before verifying what survived the rebuild.
+
+### DEV R5B-4 — Manual Score Entry Inline Instead of Separate Page
+- **Spec said:** Manual score entry accessible via "Enter scores manually" link from manage page when LIVE.
+- **What was done:** Built as an inline expandable component within the ScoringAdmin section rather than a separate page/route. Clicking "Enter scores manually" reveals the form in-place.
+- **Why:** Simpler UX — no page navigation needed. The form is small (table of golfers + scores) and fits within the manage page context. The API at `/api/admin/scores/[tournamentId]` was already built and needed no changes.
+
+### DEV R5B-5 — Eligible Golfer Endpoint for Override
+- **Spec said:** Override lets admin select a different eligible golfer (same filtering as replacement calculation).
+- **What was found:** No endpoint existed to return eligible golfers for a specific replacement.
+- **What was done:** Created `GET /api/admin/replacements/[poolId]/[id]/eligible` — returns golfers in the same category, filtered out already-picked and WD/CUT golfers, sorted by worst score first (matching the replacement algorithm).
+- **Why:** The override dropdown needs server-side eligibility calculation to show only valid choices.
