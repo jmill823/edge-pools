@@ -281,3 +281,20 @@
 - **Spec said:** Bubble strip replaces the existing pick progress display.
 - **What was done:** The picks page now uses BubbleStrip instead of PickStrip. The shared PickStrip component at `src/components/ui/PickStrip.tsx` is preserved — it's still used by My Entries and Leaderboard pages.
 - **Why:** BubbleStrip is picks-page-specific UX. Other pages need the compact strip format.
+
+## Homepage Redesign + Role Selector (April 4, 2026)
+
+### DEV HP-1 — Route Group Restructure
+- **Spec said:** Replace `src/app/page.tsx` with the full homepage redesign.
+- **What was done:** In addition to replacing the homepage, restructured the app into Next.js route groups: `(marketing)` for the landing page (with its own top bar and footer) and `(app)` for authenticated pages (with the existing header with AvatarDropdown and footer). Root layout stripped to just ClerkProvider + HTML shell.
+- **Why:** The brief specifies a different top bar for the landing page (minimal `TILT` + `Sign in`) versus the authenticated header (with avatar dropdown, Sign In + Sign Up buttons). Route groups are the correct Next.js pattern to give each section its own layout without changing URLs.
+
+### DEV HP-2 — Commissioner/Player Flows as In-Page Sections
+- **Spec said:** "This can be either a separate route (`/for/commissioners`) or an in-page section that scrolls into view. Use the simpler approach."
+- **What was done:** Used in-page sections with smooth scroll-into-view behavior. No separate routes created.
+- **Why:** Simpler approach as spec suggested. Single page load, no routing complexity.
+
+### DEV HP-3 — lucide-react Added as Dependency
+- **Spec said:** Use Lucide icons for Trophy and Flag in the role selector modal (instead of emoji).
+- **What was done:** Installed `lucide-react` package. Used `Trophy` and `Flag` icons.
+- **Why:** Design system says "No emoji as icons — use Lucide SVG icons only." This is the first use of lucide-react in the project.
