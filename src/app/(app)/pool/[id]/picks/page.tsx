@@ -228,7 +228,7 @@ export default function PicksPage({ params }: { params: { id: string } }) {
     : isMultiEntry ? `New Entry (${entryCount + 1} of ${maxEntries})` : "Make your picks";
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)] sm:h-[calc(100vh-180px)]">
+    <div className="flex flex-col h-[calc(100vh-120px)] sm:h-[calc(100vh-180px)] mx-auto w-full md:w-[80%] md:max-w-[1200px]">
       {/* Header */}
       <div className="px-4 pt-3 pb-2 shrink-0">
         <div className="flex items-center justify-between">
@@ -288,8 +288,8 @@ export default function PicksPage({ params }: { params: { id: string } }) {
           isComplete={isComplete} onSubmit={() => setShowConfirm(true)} />
       )}
 
-      {/* Spacer for sticky bottom bar */}
-      {!readOnly && <div className="shrink-0 h-14" />}
+      {/* Spacer for sticky bottom bar — extra for safe-area on notched phones */}
+      {!readOnly && <div className="shrink-0 h-20" />}
 
       {showConfirm && (
         <ConfirmModal picks={picksForConfirm} poolName={pool.name} isEdit={isEdit} submitting={submitting}

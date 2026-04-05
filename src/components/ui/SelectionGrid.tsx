@@ -145,7 +145,7 @@ export function SelectionGrid({
                         handleSelect(cat.id, isSelected ? "" : golfer.id, isSelected);
                       }}
                       disabled={!canTap}
-                      className={`w-full text-left px-2 py-1.5 min-h-[48px] flex items-center gap-1.5 ${
+                      className={`relative w-full text-left px-2 py-1.5 min-h-[48px] flex items-center gap-1.5 ${
                         canTap ? "cursor-pointer active:opacity-80" : "cursor-default"
                       } ${isUsedElsewhere ? "opacity-30" : ""}`}
                     >
@@ -163,10 +163,10 @@ export function SelectionGrid({
                         {initials}
                       </span>
 
-                      {/* Name + flag */}
+                      {/* Name + flag — no truncate so flags always show */}
                       <span className="flex-1 min-w-0">
                         <span
-                          className={`block font-body text-[12px] leading-tight truncate ${
+                          className={`block font-body text-[12px] leading-tight break-words ${
                             isSelected
                               ? "font-semibold"
                               : isUsedElsewhere
@@ -183,14 +183,23 @@ export function SelectionGrid({
                         </span>
                       </span>
 
-                      {/* OWGR */}
+                      {/* OWGR — right-justified inline */}
                       <span className="shrink-0 font-mono text-[10px] text-text-muted tabular-nums">
                         {golfer.owgr ?? "\u2014"}
                       </span>
 
-                      {/* Multi-category badge */}
+                      {/* Multi-category badge — circular, bottom-right corner */}
                       {isMultiCat && !isUsedElsewhere && !isSelected && (
-                        <span className="shrink-0 font-mono text-[9px] font-bold text-accent-secondary align-super">
+                        <span
+                          className="absolute bottom-1 right-1 flex items-center justify-center rounded-full font-mono font-bold"
+                          style={{
+                            width: 16,
+                            height: 16,
+                            fontSize: 10,
+                            color: "#A39E96",
+                            backgroundColor: "#F5F1EB",
+                          }}
+                        >
                           {catCount}
                         </span>
                       )}

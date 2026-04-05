@@ -21,10 +21,11 @@ export function StickyBottomBar({
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-20 flex items-center justify-between px-4 border-t bg-white"
+      className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-4 border-t bg-surface shadow-[0_-2px_8px_rgba(0,0,0,0.08)]"
       style={{
         height: 56,
         borderColor: "#E2DDD5",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
     >
       {/* Pick count */}

@@ -19,6 +19,7 @@ interface PoolInfo {
 export default function InvitePage({ params }: { params: { id: string } }) {
   const [pool, setPool] = useState<PoolInfo | null>(null);
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [opening, setOpening] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
@@ -58,6 +59,28 @@ export default function InvitePage({ params }: { params: { id: string } }) {
     navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  function copyInviteLink() {
+    navigator.clipboard.writeText(inviteUrl);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  }
+
+  function handleEmail() {
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    // Try mailto
+    window.location.href = mailtoUrl;
+    // After a short delay, copy email content as a fallback for desktop
+    // On mobile the mail app opens immediately; on desktop if no mail client,
+    // the clipboard fallback ensures the user still gets the content
+    setTimeout(() => {
+      navigator.clipboard.writeText(`Subject: ${emailSubject}\n\n${emailBody}`).then(() => {
+        setFeedback({ type: "success", msg: "Email content copied — paste into your email client" });
+      }).catch(() => {
+        // clipboard denied — no action needed, mailto may have worked
+      });
+    }, 1000);
   }
 
   async function openPool() {
@@ -113,22 +136,22 @@ export default function InvitePage({ params }: { params: { id: string } }) {
           </Button>
         </div>
 
-        {/* Share buttons */}
-        <div className="grid grid-cols-3 gap-3">
+        {/* Share buttons — SMS hidden on desktop (≥768px) */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3">
+          {/* SMS — mobile only */}
           <a
             href={`sms:?body=${encodeURIComponent(shareText)}`}
-            className="rounded-card border border-border bg-surface py-3 text-center font-body text-sm font-medium text-text-primary hover:bg-surface-alt transition-colors duration-200 min-h-[44px] flex flex-col items-center justify-center gap-1 cursor-pointer"
+            className="rounded-card border border-border bg-surface py-3 text-center font-body text-sm font-medium text-text-primary hover:bg-surface-alt transition-colors duration-200 min-h-[44px] flex flex-col items-center justify-center gap-1 cursor-pointer md:hidden"
           >
             <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
             <span>Text</span>
           </a>
+          {/* Email — all viewports */}
           <button
             type="button"
-            onClick={() => {
-              window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-            }}
+            onClick={handleEmail}
             className="rounded-card border border-border bg-surface py-3 text-center font-body text-sm font-medium text-text-primary hover:bg-surface-alt transition-colors duration-200 min-h-[44px] flex flex-col items-center justify-center gap-1 cursor-pointer"
           >
             <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -136,6 +159,7 @@ export default function InvitePage({ params }: { params: { id: string } }) {
             </svg>
             <span>Email</span>
           </button>
+          {/* WhatsApp — all viewports */}
           <a
             href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
             target="_blank"
@@ -147,6 +171,17 @@ export default function InvitePage({ params }: { params: { id: string } }) {
             </svg>
             <span>WhatsApp</span>
           </a>
+          {/* Copy Link — all viewports */}
+          <button
+            type="button"
+            onClick={copyInviteLink}
+            className="rounded-card border border-border bg-surface py-3 text-center font-body text-sm font-medium text-text-primary hover:bg-surface-alt transition-colors duration-200 min-h-[44px] flex flex-col items-center justify-center gap-1 cursor-pointer"
+          >
+            <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            <span>{linkCopied ? "Copied!" : "Copy Link"}</span>
+          </button>
         </div>
 
         {/* Invite code fallback */}

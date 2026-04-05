@@ -92,7 +92,7 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="mx-auto max-w-content px-4 py-6">
+    <div className="mx-auto w-full md:w-[80%] md:max-w-[1200px] px-4 py-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-lg font-bold text-text-primary">
           {isMultiEntry ? "My Entries" : "My Picks"}
