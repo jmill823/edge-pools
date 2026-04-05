@@ -49,6 +49,9 @@ CLAUDE.md has the rules. This file has the experience. Every lesson here was lea
 - If you're changing ANY part of a file, read the entire file first. This prevents regressions.
 - Multiple instances of CC modifying one function and unknowingly breaking another in the same file. (R1-R3, Apr 1)
 
+### Truncation Hides Content, Not Just Text
+- Flags on desktop were always rendered but clipped by CSS `truncate`. Root-cause fix (`break-words`) solved both the flag visibility and the name display in one change. Always check if a display bug is actually a CSS overflow issue before adding new rendering logic. (QA Batch 2, Apr 4)
+
 ---
 
 ## 3. NAVIGATION LESSONS
@@ -107,6 +110,14 @@ CLAUDE.md has the rules. This file has the experience. Every lesson here was lea
 - No horizontal scroll on the PAGE itself — only within designated strips.
 - Pick strips, category previews, and metric strips use this pattern. (Design spec, Apr 2)
 
+### Read-Only vs. Interactive Toggles
+- System-derived states (Invited, Signed Up, Picks) should not be manually togglable. Only commissioner-tracked fields (Paid) should be interactive.
+- CC made this call correctly as a deviation but should have documented it in DEVIATIONS.md. If a deviation is the right call, still document it. (QA Batch 1, Apr 4)
+
+### Sticky Mobile Bars Need Spacers
+- A fixed-position bottom bar will cover the last row of scrollable content. Always add a spacer element (`h-20`) matching the bar height so all content is reachable.
+- Mobile submit button was hidden behind the picks grid's bottom content. (QA Batch 2, Apr 4)
+
 ---
 
 ## 6. DESIGN SYSTEM LESSONS
@@ -154,10 +165,14 @@ CLAUDE.md has the rules. This file has the experience. Every lesson here was lea
 ### Preview Branch Before Main — Always
 - Push to a named branch. Vercel generates a preview URL. Jeff tests on his phone. If it passes, merge to main.
 - Never push directly to main. Gate B exists because CC's self-reported QA is unreliable. (Gate system, Mar 31)
+- Homepage redesign was pushed to main (bd3e549) skipping Gate B. Even when Jeff approves skipping the phone test, the branch should exist for rollback. (Homepage redesign session, Apr 4)
 
 ### New CC Session for Each Brief
 - Clean context = fewer regressions. Each session brief is self-contained.
 - Don't continue a CC session after a brief is complete — start fresh for the next one. (Standing practice, Apr 1)
+
+### Verify Mandatory Session Files Exist in Repo Before Starting
+- All four mandatory session files (CLAUDE.md, CC-LESSONS-LEARNED.md, QA-PROTOCOL.md, STATE-MATRIX.md) must actually exist in the repo before building. STATE-MATRIX.md was missing from the repo — discovered mid-build during picks visual upgrade. Missing files should be flagged at Gate A, not discovered mid-build. (Picks visual upgrade session, Apr 4)
 
 ---
 
@@ -190,8 +205,13 @@ CLAUDE.md has the rules. This file has the experience. Every lesson here was lea
 | R4 P2 | Apr 2 | Unified UI polish | Functional but design quality low. Led to design system spec. |
 | R4 Manage | Apr 2 | Minimal manage page | Placeholder was blank — built minimal functional version. |
 | Design inputs | Apr 3 | Install design skills + reference | frontend-design skill is built-in (private repo). Others installed fine. |
+| QA Batch 1 | Apr 4 | 6 fixes (email, toggles, copy, UI) | Read-only vs interactive toggles — system states aren't togglable. |
+| QA Batch 2 | Apr 4 | 7 fixes (desktop email, submit bar, flags, widths) | CSS truncation hides content. Sticky bars need spacers. |
+| D15-D18 polish | Apr 4 | TILT brand, referral, header, qualifiers | STATE-MATRIX.md was missing from repo. |
+| Picks visual upgrade | Apr 4 | Earth-tone palette, auto-advance, bubbles | Verify mandatory files exist before starting. |
+| Homepage redesign | Apr 4 | 76px TILT, role selector | Gate B skipped — branch should always exist for rollback. |
 
 ---
 
-*CC-LESSONS-LEARNED.md | Edge Pools | April 3, 2026*
+*CC-LESSONS-LEARNED.md | Edge Pools | April 4, 2026*
 *This file grows with every build. Never delete lessons — only add.*

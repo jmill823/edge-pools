@@ -37,7 +37,7 @@ No other transitions. No backward transitions.
 |---|---|---|---|---|---|---|
 | Edit pool settings | ✅ Org | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Edit categories | ✅ Org | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Share invite link | ✅ Org | ✅ Org | ✅ Org | ✅ Org | ❌ | ❌ |
+| Share invite link | ✅ Org | ✅ Org + Player | ✅ Org | ✅ Org | ❌ | ❌ |
 | Join pool | ❌ | ✅ Anyone* | ❌ | ❌ | ❌ | ❌ |
 | Submit/edit picks | ❌ | ✅ Members | ❌ | ❌ | ❌ | ❌ |
 | View own picks | ❌ | ✅ Owner | ✅ Owner | ✅ All | ✅ All | ✅ All |
@@ -51,6 +51,7 @@ No other transitions. No backward transitions.
 | Manual score entry | ❌ | ❌ | ❌ | ✅ Org | ❌ | ❌ |
 
 *Join requires `acceptingMembers = true`
+**D16 (Apr 4): Players can share invite link when pool is OPEN. Organizer can share in OPEN, LOCKED, LIVE.
 
 **Key:** Org = pool organizer. All = all pool members. Owner = entry owner only.
 
@@ -122,5 +123,6 @@ Cross-pool admin access (golfer mapping, manual scores): check if user is organi
 
 ---
 
-*Edge Pools | STATE-MATRIX.md | March 31, 2026*
+*Edge Pools | STATE-MATRIX.md | April 4, 2026*
+*Updated: D16 — player share in OPEN status.*
 *This is the canonical reference. When in doubt, this document wins.*
