@@ -308,3 +308,47 @@
 - **What was found:** `hasPaid` is a boolean on `PoolMember` (per-user), not per-entry. Making it per-entry requires a schema change (`hasPaid` on the `Entry` model) which is not permitted without explicit approval per CLAUDE.md.
 - **What was done:** Kept Paid as a single per-user toggle. Updated the Picks/Entries summary to correctly reflect multi-entry counts (e.g., "4 entries of 5"). Paid shows per-member count (paid members / total members), not per-entry.
 - **Why:** Cannot modify Prisma schema without approval. If per-entry paid tracking is needed, a schema migration adding `hasPaid` to the `Entry` model would be required.
+
+---
+
+## Masters 2026 Field Prep (April 5, 2026)
+
+### DEV MFP-1 — SlashGolf API Not Available for 2026 Masters
+- **Spec said:** Call the SlashGolf field/leaderboard endpoint for the Masters 2026 tournament.
+- **What was found:** SlashGolf leaderboard API returns 400 for Masters 2026 (`tournId=014`, `year=2026`) — tournament data isn't available until the tournament starts. The SlashGolf API also does NOT have a `/field` endpoint (confirmed by `valero_field.json` error response).
+- **What was done:** Built the sync script (`scripts/sync-masters-field.ts`) to attempt the API first, then fall back to a manually curated field of 88 golfers sourced from the 2025 Masters SlashGolf data (95 players with verified playerIds) and public Masters invitation criteria. All SlashGolf IDs are from verified 2025 API responses, so scoring will work when the tournament starts.
+- **Why:** Tournament data won't be available until April 9-10. Manual field is the only option pre-tournament. Script will automatically use API data when available.
+
+### DEV MFP-2 — OWGR/Age/Country Data Manually Populated
+- **Spec said:** For each golfer in the field, update OWGR, country, age if available.
+- **What was found:** SlashGolf leaderboard endpoint does NOT return country, OWGR, or age data. It only provides playerId, firstName, lastName, status, and scoring data.
+- **What was done:** Manually populated country (3-letter golf codes matching existing DB convention), approximate OWGR rankings (as of early April 2026), and birth years (for age-based categories) from public sources.
+- **Why:** These are the only data sources. OWGR values are approximate and should be verified before pool creation.
+
+### DEV MFP-3 — Cross-Category Grey-Out Already Existed (Verified, Not Rebuilt)
+- **Spec said:** Verify or build cross-category grey-out when a golfer appears in multiple categories.
+- **What was found:** The SelectionGrid component (`src/components/ui/SelectionGrid.tsx`) already implements this:
+  - `usedGolferIds` Set tracks all picked golfer IDs across categories (line 42 of picks/page.tsx)
+  - `isUsedElsewhere` check applies opacity-30 + line-through styling (lines 119-121 of SelectionGrid.tsx)
+  - `golferCategoryCount` map shows multi-category badge count (lines 52-55 of picks/page.tsx)
+  - No-reuse logic is per-entry, not per-user (multi-entry pools allow same golfer across entries)
+- **What was done:** Verified existing logic is correct. No code changes needed.
+- **Why:** The Valero Texas Open template already used cross-category overlaps (e.g., "Ludvig Åberg" in Favorites, International, and Young Guns), so this UI logic was built in prior sessions.
+
+### DEV MFP-4 — Joaquín Niemann Accent Mismatch
+- **Spec said:** N/A (data consistency issue).
+- **What was found:** SlashGolf API returns "Joaquín" (with accent), but DB seed had "Joaquin" (without accent). Template name matching is exact-string.
+- **What was done:** Used "Joaquin" (without accent) in template to match existing DB record. Updated sync script to use consistent spelling.
+- **Why:** Breaking existing DB records to add an accent would be a schema-level change. Template must match DB exactly.
+
+### DEV MFP-5 — Template Format Backward Compatible
+- **Spec said:** Update template JSON format with `rule`, `owgrMin`, `owgrMax`, `description` fields.
+- **What was found:** Template consumer (create pool page) only reads `templateName`, `categories[].name`, `categories[].qualifier`, `categories[].sortOrder`, and `categories[].golferNames`. Extra fields are silently ignored by JavaScript object destructuring.
+- **What was done:** Added `rule`, `owgrMin`, `owgrMax`, and `description` fields to the template. Existing template consumer code is unchanged and handles the new fields gracefully.
+- **Why:** No code change needed in the consumer — JSON objects naturally ignore unread properties.
+
+### DEV MFP-6 — Vijay Singh and Additional Qualifiers
+- **Spec said:** Only include past champions actually in the competing field per SlashGolf.
+- **What was found:** Vijay Singh was not in the 2025 Masters SlashGolf data but is a past champion who receives a lifetime invitation. His competing status for 2026 is unclear from available data.
+- **What was done:** Included Vijay Singh in the template but flagged here. He appears in Past Champions, Veterans, International, Favorites, and Longshots.
+- **Why:** Brief says "If any past champion's competing status is unclear from SlashGolf data, INCLUDE them in the template but flag in DEVIATIONS.md."
