@@ -44,7 +44,11 @@ export default async function ManagePage({
     where: { poolId: pool.id, status: "PENDING" },
   });
 
-  const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://edgepools.com"}/join/${pool.inviteCode}`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (!baseUrl) {
+    console.warn("[Edge Pools] NEXT_PUBLIC_APP_URL is not set — invite links will use a relative path. Set this env var in Vercel project settings.");
+  }
+  const inviteUrl = `${baseUrl || ""}/join/${pool.inviteCode}`;
 
   return (
     <ManagePanel

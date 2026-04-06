@@ -16,10 +16,11 @@ interface MemberData {
 interface PlayerStatusTrackerProps {
   poolId: string;
   members: MemberData[];
+  maxEntries: number;
   onMembersChange: (members: MemberData[]) => void;
 }
 
-export function PlayerStatusTracker({ poolId, members, onMembersChange }: PlayerStatusTrackerProps) {
+export function PlayerStatusTracker({ poolId, members, maxEntries, onMembersChange }: PlayerStatusTrackerProps) {
   const [paidLoading, setPaidLoading] = useState<string | null>(null);
 
   // Sort: incomplete actions first (no picks or unpaid), then alphabetical
@@ -52,7 +53,8 @@ export function PlayerStatusTracker({ poolId, members, onMembersChange }: Player
   // Summary counts
   const totalMembers = members.length;
   const signedUpCount = totalMembers; // All members are signed up by definition
-  const picksSetCount = members.filter((m) => m.entriesSubmitted > 0).length;
+  const totalEntriesSubmitted = members.reduce((sum, m) => sum + m.entriesSubmitted, 0);
+  const totalEntriesPossible = totalMembers * maxEntries;
   const paidCount = members.filter((m) => m.hasPaid).length;
 
   return (
@@ -110,6 +112,7 @@ export function PlayerStatusTracker({ poolId, members, onMembersChange }: Player
                     {hasPicksSet ? (
                       <span>
                         {m.entriesSubmitted} {m.entriesSubmitted === 1 ? "entry" : "entries"}
+                        {maxEntries > 1 && <span className="text-text-muted"> of {maxEntries}</span>}
                       </span>
                     ) : (
                       <span className="text-[#8A6B1E]">No picks yet</span>
@@ -159,7 +162,7 @@ export function PlayerStatusTracker({ poolId, members, onMembersChange }: Player
         <div className="grid grid-cols-4 gap-3 border-t border-border bg-surface-alt px-4 py-3">
           <SummaryCard label="Invited" count={totalMembers} total={totalMembers} />
           <SummaryCard label="Signed up" count={signedUpCount} total={totalMembers} />
-          <SummaryCard label="Picks set" count={picksSetCount} total={totalMembers} />
+          <SummaryCard label="Entries" count={totalEntriesSubmitted} total={totalEntriesPossible} />
           <SummaryCard label="Paid" count={paidCount} total={totalMembers} />
         </div>
       )}

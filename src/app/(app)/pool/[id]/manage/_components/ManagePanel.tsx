@@ -108,6 +108,7 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
       <PlayerStatusTracker
         poolId={pool.id}
         members={members}
+        maxEntries={pool.maxEntries}
         onMembersChange={handleMembersChange}
       />
 

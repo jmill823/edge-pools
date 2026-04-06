@@ -84,13 +84,13 @@ export function SelectionGrid({
                   }}
                 >
                   <span
-                    className="block font-display text-[11px] font-medium uppercase tracking-[0.3px]"
-                    style={{ color: color.text }}
+                    className="block font-display text-[11px] font-semibold uppercase tracking-[0.3px]"
+                    style={{ color: "#1A1A18" }}
                   >
                     {cat.name}
                   </span>
                   {cat.qualifier && (
-                    <span className="block font-body text-[9px] font-normal text-text-muted mt-0.5" style={{ textTransform: "none" }}>
+                    <span className="block font-body text-[9px] font-normal mt-0.5" style={{ textTransform: "none", color: "#1A1A18" }}>
                       {cat.qualifier}
                     </span>
                   )}
