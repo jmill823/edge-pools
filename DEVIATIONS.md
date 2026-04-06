@@ -298,3 +298,13 @@
 - **Spec said:** Use Lucide icons for Trophy and Flag in the role selector modal (instead of emoji).
 - **What was done:** Installed `lucide-react` package. Used `Trophy` and `Flag` icons.
 - **Why:** Design system says "No emoji as icons — use Lucide SVG icons only." This is the first use of lucide-react in the project.
+
+---
+
+## QA Fixes Batch 3 (April 5, 2026)
+
+### DEV QB3-1 — Paid Toggle Stays Per-User (Not Per-Entry)
+- **Spec said:** "Paid denominator must equal the number of entries the player has created. Example: player created 4 entries, commissioner marked 2 as paid → shows 2/4."
+- **What was found:** `hasPaid` is a boolean on `PoolMember` (per-user), not per-entry. Making it per-entry requires a schema change (`hasPaid` on the `Entry` model) which is not permitted without explicit approval per CLAUDE.md.
+- **What was done:** Kept Paid as a single per-user toggle. Updated the Picks/Entries summary to correctly reflect multi-entry counts (e.g., "4 entries of 5"). Paid shows per-member count (paid members / total members), not per-entry.
+- **Why:** Cannot modify Prisma schema without approval. If per-entry paid tracking is needed, a schema migration adding `hasPaid` to the `Entry` model would be required.
