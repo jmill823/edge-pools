@@ -26,6 +26,9 @@ export const metadata: Metadata = {
   title: "TILT — Golf Pool Management",
   description:
     "Create and manage your golf pools. Set up categories, invite players, and watch the live leaderboard.",
+  verification: {
+    google: "M-Upq87PyCPeVtvI7ex0hzZmOqX8Scg2pzlW8wOMBMY",
+  },
 };
 
 export default function RootLayout({
