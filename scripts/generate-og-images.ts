@@ -24,6 +24,7 @@ GlobalFonts.registerFromPath(join(FD, "WorkSans-Variable.ttf"), "WorkSans");
 GlobalFonts.registerFromPath(join(FD, "WorkSans-Italic-Variable.ttf"), "WorkSansItalic");
 GlobalFonts.registerFromPath(join(FD, "SpaceMono-Regular.ttf"), "SpaceMono");
 GlobalFonts.registerFromPath(join(FD, "SpaceMono-Bold.ttf"), "SpaceMonoBold");
+GlobalFonts.registerFromPath(join(FD, "Montserrat-BlackItalic.ttf"), "MontserratBlackItalic");
 
 // ── Constants ─────────────────────────────────────────────
 const W = 1200, H = 630;
@@ -248,8 +249,8 @@ function drawLeftSide(ctx: Ctx, cfg: LeftConfig) {
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
 
-  // TILT wordmark (bold — Space Grotesk has no italic; deviation documented)
-  ctx.font = `900 ${cfg.wordmarkSize}px SpaceGrotesk`;
+  // TILT wordmark — Montserrat Black Italic for bold italic rendering
+  ctx.font = `900 ${cfg.wordmarkSize}px MontserratBlackItalic`;
   ctx.fillStyle = BLACK;
   ctx.fillText("TILT", x, yy + cfg.wordmarkSize * 0.4);
   yy += cfg.wordmarkSize * 0.8 + 12;
