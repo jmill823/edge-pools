@@ -400,3 +400,46 @@
 - **Spec said:** "CREATE A POOL" CTA in commissioner flow.
 - **What was done:** Links to `/dashboard/create` (the existing pool creation route) rather than `/dashboard`.
 - **Why:** `/dashboard/create` is the actual pool creation flow. `/dashboard` shows the pool list, not creation.
+
+## Scoring Engine + Leaderboard Redesign (April 10, 2026)
+
+### DEV SE-1 — New Schema Fields Coexist with Legacy Fields
+- **Spec said:** Pool schema should have `scoringType`, `missedCutPenalty` (enum), `tiebreakerRule`, `rosterRule`, etc.
+- **What existed:** Pool already has `missedCutPenalty` (string like "+8"), `scoringMode`, `bestX`, `bestY`, `tiebreaker`.
+- **What was done:** Added new fields alongside the old ones: `scoringType`, `missedCutPenaltyType`, `missedCutFixedPenalty`, `tiebreakerRule`, `rosterRule`, `rosterRuleMode`, `rosterRuleCount`. Old fields kept for backwards compatibility. New fields have defaults matching the spec.
+- **Why:** Removing old fields would break existing pools and code. New engine reads from new fields. Old fields remain but are no longer used by the scoring engine. ScoringConfig UI now writes to new fields.
+
+### DEV SE-2 — Prisma Client Type Casts Before Migration
+- **Spec said:** N/A (infrastructure).
+- **What was done:** Used `as Record<string, unknown>` casts in API routes and poll-scores.ts when accessing new schema fields, because the Prisma client types haven't been regenerated yet (requires `prisma generate` after migration).
+- **Why:** Build must pass before deploy. After `npx prisma db push` + `npx prisma generate` on deploy, these casts will be unnecessary but harmless.
+
+### DEV SE-3 — GolferScore.roundScore Is To-Par, Not Raw Strokes
+- **Spec said:** Engine should support both to-par and total-strokes scoring.
+- **What was found:** The existing `GolferScore.roundScore` stores SlashGolf's `scoreToPar` value. Raw stroke counts are not persisted separately in the current schema.
+- **What was done:** For to-par scoring, `roundScore` maps directly. For total-strokes, `roundScore` is treated as the round score (since it's what's stored). The `totalStrokes` field on `GolferTournamentData` is set to `null`.
+- **Why:** Adding raw strokes to GolferScore requires a schema change. Total strokes scoring will work correctly once strokes data is captured — for now, to-par is the primary scoring type.
+
+### DEV SE-4 — MyEntryCard Component Preserved but Not Redesigned
+- **Spec said:** The "You" row is highlighted in the team view with `#E8F0E5` background.
+- **What existed:** A separate `MyEntryCard` component that renders above the leaderboard with detailed picks.
+- **What was done:** Removed `MyEntryCard` from the leaderboard page. The "You" row is now highlighted inline within the team view table (green background). Tap to expand shows golfer details same as any other entry.
+- **Why:** The spec describes a unified table where your entry is highlighted with a background color, not a separate card. The MyEntryCard component is preserved on disk but no longer imported.
+
+### DEV SE-5 — Guest Leaderboard Uses Simple Table, Not Scoring Engine
+- **Spec said:** All leaderboard views should use the new format.
+- **What was found:** The guest leaderboard (`/guest-pool/[id]/leaderboard`) uses a separate API and page.
+- **What was done:** Guest leaderboard uses a simplified standalone table (rank, team, score) not sharing the `LeaderboardList` component. It still shows the old format.
+- **Why:** The guest leaderboard API returns the old data shape and doesn't run the scoring engine. Updating it requires changes to the guest API route which is out of scope for this session.
+
+### DEV SE-6 — Scoring Config Editable in SETUP and OPEN (Not Just SETUP)
+- **Spec said:** "Scoring config should be editable only when pool status is SETUP or OPEN."
+- **What existed:** Pool settings (including old scoring fields) were only editable in SETUP.
+- **What was done:** Updated the PATCH API route to allow scoring config changes in both SETUP and OPEN, matching the spec.
+- **Why:** Spec explicitly says SETUP or OPEN. This gives commissioners time to adjust scoring after opening the pool but before locking.
+
+### DEV SE-7 — HoleByHoleCard Not Included in Expanded View
+- **Spec said:** Expanded entry shows POS | CAT | PLAYER | THRU | R1 | R2 | R3 | R4 | TOTAL.
+- **What existed:** Previous leaderboard had a HoleByHoleCard scorecard viewer in the expanded view.
+- **What was done:** The new expanded view shows the golfer table per spec. HoleByHoleCard is not included in the redesigned expansion.
+- **Why:** The spec defines a specific golfer detail table format. Hole-by-hole scorecards may be added later as a secondary expansion.

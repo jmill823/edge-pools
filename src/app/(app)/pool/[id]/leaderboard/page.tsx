@@ -1,50 +1,40 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { MyEntryCard } from "./_components/MyEntryCard";
 import { LeaderboardList } from "./_components/LeaderboardList";
+import type { LeaderboardEntry } from "./_components/LeaderboardList";
 import { StatusBanner } from "./_components/StatusBanner";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 import { Confetti } from "./_components/Confetti";
 import { WinnerCelebration } from "./_components/WinnerCelebration";
 import { ResultCard } from "./_components/ResultCard";
 import { StaleFooter } from "./_components/StaleFooter";
-
-interface PickDetail {
-  golferId: string;
-  categoryName: string;
-  golferName: string;
-  golferCountry: string | null;
-  golferScore: number | null;
-  golferPosition: string | null;
-  holesCompleted: number;
-  round: number;
-  isReplacement: boolean;
-  originalGolferName: string | null;
-}
-
-interface LeaderboardEntry {
-  id: string;
-  userId: string;
-  displayName: string;
-  teamName: string;
-  entryNumber: number;
-  teamScore: number | null;
-  rank: number | null;
-  previousRank: number | null;
-  isCurrentUser: boolean;
-  submittedAt: string;
-  winProbability: number | null;
-  cutProbability: number | null;
-  picks: PickDetail[];
-}
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 interface LeaderboardData {
-  pool: { id: string; name: string; status: string; maxEntries: number; picksDeadline: string; inviteCode: string };
-  tournament: { name: string; status: string; lastSyncAt: string | null; currentRound: number | null };
+  pool: {
+    id: string;
+    name: string;
+    status: string;
+    maxEntries: number;
+    picksDeadline: string;
+    inviteCode: string;
+    scoringConfig: {
+      scoringType: string;
+      rosterRule: string;
+    };
+  };
+  tournament: {
+    name: string;
+    status: string;
+    lastSyncAt: string | null;
+    currentRound: number | null;
+  };
+  templateName: string;
   onCourse: number;
   pendingReplacements: number;
-  leaderboard: LeaderboardEntry[];
+  entries: LeaderboardEntry[];
+  rosterRuleSummary: string | null;
 }
 
 export default function LeaderboardPage({ params }: { params: { id: string } }) {
@@ -82,7 +72,7 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
       if (document.hidden) {
         if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
       } else {
-        load(); // Refresh immediately when tab comes back
+        load();
         startPolling();
       }
     }
@@ -99,39 +89,43 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
   if (loading) return <div className="mx-auto max-w-leaderboard px-4 py-8"><LoadingSkeleton variant="page" lines={6} /></div>;
   if (error) return <div className="mx-auto max-w-leaderboard px-4 py-12 text-center font-body text-accent-danger">{error}</div>;
   if (!data) return null;
-  const { pool, tournament, onCourse, leaderboard } = data;
+
+  const { pool, tournament, entries, rosterRuleSummary, templateName } = data;
   const hasScores = ["LIVE", "COMPLETE", "ARCHIVED"].includes(pool.status);
   const isComplete = pool.status === "COMPLETE";
-  const myEntry = leaderboard.find((e) => e.isCurrentUser);
-  const allRanks = leaderboard.map((e) => e.rank);
-  const winner = leaderboard.length > 0 && leaderboard[0].rank === 1 ? leaderboard[0] : null;
+  const winner = entries.length > 0 && entries[0].position === 1 && isComplete ? entries[0] : null;
+
+  // Build status display string
+  const statusDisplay = pool.status === "LIVE" && tournament.currentRound
+    ? `LIVE · R${tournament.currentRound}`
+    : pool.status;
 
   return (
     <div className="mx-auto max-w-leaderboard px-4 py-4">
-      {/* Tournament info */}
-      <div className="mb-1">
-        <p className="font-body text-sm text-text-secondary">
-          {tournament.name}
-          {tournament.currentRound && hasScores && (
-            <span> · Round {tournament.currentRound}{onCourse > 0 && ` — ${onCourse} on course`}</span>
-          )}
-        </p>
-        {hasScores && tournament.lastSyncAt && (
-          <p className="font-mono text-xs text-text-muted mt-0.5">
-            Updated {new Date(tournament.lastSyncAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+      {/* Header bar */}
+      <div className="flex items-start justify-between mb-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-display text-sm font-semibold text-text-primary truncate">
+            {tournament.name}
           </p>
-        )}
+          <p className="font-body text-xs text-text-secondary mt-0.5">
+            {pool.name} — {templateName}
+          </p>
+        </div>
+        <div className="shrink-0 ml-3">
+          <StatusBadge status={statusDisplay} />
+        </div>
       </div>
 
-      {/* Status banner */}
-      <div className="mb-4">
+      {/* Status banner (picks open, locked, etc.) */}
+      <div className="mb-3">
         <StatusBanner
           poolId={pool.id}
           poolStatus={pool.status}
           picksDeadline={pool.picksDeadline}
           tournamentName={tournament.name}
           lastSyncAt={tournament.lastSyncAt}
-          hasEntry={!!myEntry}
+          hasEntry={entries.some((e) => e.isCurrentUser)}
         />
       </div>
 
@@ -140,61 +134,49 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
         <>
           <Confetti poolId={pool.id} />
           <WinnerCelebration
-            winnerName={winner.teamName || winner.displayName}
+            winnerName={winner.teamName}
             poolName={pool.name}
             tournamentName={tournament.name}
-            winnerScore={winner.teamScore}
+            winnerScore={winner.total}
           />
         </>
       )}
 
-      {/* My Entry card — only in scored states */}
-      {hasScores && myEntry && (
-        <div className="mb-4">
-          <MyEntryCard
-            rank={myEntry.rank}
-            teamName={myEntry.teamName}
-            teamScore={myEntry.teamScore}
-            entryNumber={myEntry.entryNumber}
-            maxEntries={pool.maxEntries}
-            allRanks={allRanks}
-            picks={myEntry.picks}
-            winProbability={myEntry.winProbability}
-            cutProbability={myEntry.cutProbability}
-            onTap={() => setExpanded(expanded === myEntry.id ? null : myEntry.id)}
-          />
-        </div>
-      )}
-
-      {/* Entry list */}
+      {/* Leaderboard table */}
       <LeaderboardList
-        poolId={pool.id}
-        entries={leaderboard}
-        maxEntries={pool.maxEntries}
+        entries={entries}
         hasScores={hasScores}
-        isComplete={isComplete}
-        currentRound={tournament.currentRound}
-        allRanks={allRanks}
         expanded={expanded}
         onToggle={(id) => setExpanded(expanded === id ? null : id)}
+        rosterRuleSummary={rosterRuleSummary}
+        entryCount={entries.length}
+        tournamentName={tournament.name}
       />
 
       {/* Share Results — COMPLETE only */}
-      {isComplete && leaderboard.length > 0 && (
+      {isComplete && entries.length > 0 && (
         <ResultCard
           poolName={pool.name}
           tournamentName={tournament.name}
-          top5={leaderboard.slice(0, 5).map((e) => ({
-            displayName: e.displayName,
+          top5={entries.slice(0, 5).map((e) => ({
+            displayName: e.teamName,
             teamName: e.teamName,
-            teamScore: e.teamScore,
-            rank: e.rank,
+            teamScore: e.total,
+            rank: e.position,
           }))}
-          allRanks={allRanks}
+          allRanks={entries.map((e) => e.position)}
         />
       )}
 
       <StaleFooter lastSyncAt={tournament.lastSyncAt} hasScores={hasScores} />
+
+      {/* Expand animation keyframes */}
+      <style jsx global>{`
+        @keyframes expandIn {
+          from { max-height: 0; opacity: 0; }
+          to { max-height: 1000px; opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

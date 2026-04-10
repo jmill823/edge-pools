@@ -78,6 +78,13 @@ export async function POST(req: Request) {
     bestX,
     bestY,
     tiebreaker,
+    scoringType,
+    missedCutPenaltyType,
+    missedCutFixedPenalty,
+    tiebreakerRule,
+    rosterRule,
+    rosterRuleMode,
+    rosterRuleCount,
   }: {
     name: string;
     tournamentId: string;
@@ -90,6 +97,13 @@ export async function POST(req: Request) {
     bestX?: number;
     bestY?: number;
     tiebreaker?: string;
+    scoringType?: string;
+    missedCutPenaltyType?: string;
+    missedCutFixedPenalty?: number;
+    tiebreakerRule?: string;
+    rosterRule?: string;
+    rosterRuleMode?: string;
+    rosterRuleCount?: number;
   } = body;
 
   if (!name || !tournamentId || !categories?.length || !picksDeadline) {
@@ -111,7 +125,8 @@ export async function POST(req: Request) {
 
   const inviteCode = await generateUniqueInviteCode();
 
-  const pool = await prisma.pool.create({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pool = await (prisma.pool.create as any)({
     data: {
       name,
       organizerId: user.id,
@@ -125,6 +140,13 @@ export async function POST(req: Request) {
       bestX: bestX ?? null,
       bestY: bestY ?? null,
       tiebreaker: tiebreaker || "lowest_final_round",
+      scoringType: scoringType || "to-par",
+      missedCutPenaltyType: missedCutPenaltyType || "carry-score",
+      missedCutFixedPenalty: missedCutFixedPenalty ?? 4,
+      tiebreakerRule: tiebreakerRule || "entry-timestamp",
+      rosterRule: rosterRule || "all-play",
+      rosterRuleMode: rosterRuleMode || "per-tournament",
+      rosterRuleCount: rosterRuleCount ?? null,
       status: "SETUP",
       categories: {
         create: categories.map((cat) => ({

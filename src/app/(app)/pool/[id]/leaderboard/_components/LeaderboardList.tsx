@@ -1,56 +1,71 @@
 "use client";
 
 import { EntryRow } from "./EntryRow";
+import type { ScoreColor } from "@/lib/scoring/types";
 
-interface PickDetail {
+interface RoundScoreDisplay {
+  round: number;
+  score: number | null;
+  display: string;
+  color: ScoreColor;
+}
+
+interface GolferScore {
   golferId: string;
-  categoryName: string;
   golferName: string;
   golferCountry: string | null;
-  golferScore: number | null;
-  golferPosition: string | null;
-  holesCompleted: number;
-  round: number;
+  categoryName: string;
+  categoryAbbrev: string;
+  categorySortOrder: number;
+  position: string | null;
+  positionDisplay: string;
+  status: "active" | "cut" | "withdrawn" | "complete";
+  thru: number | null;
+  thruDisplay: string;
+  roundScores: RoundScoreDisplay[];
+  total: number | null;
+  totalDisplay: string;
+  totalColor: ScoreColor;
+  isExcludedByRosterRule: boolean;
   isReplacement: boolean;
   originalGolferName: string | null;
 }
 
-interface LeaderboardEntry {
-  id: string;
+export interface LeaderboardEntry {
+  entryId: string;
   teamName: string;
-  teamScore: number | null;
-  rank: number | null;
-  previousRank: number | null;
-  entryNumber: number;
+  userId: string | null;
+  position: number;
+  positionDisplay: string;
+  total: number;
+  totalDisplay: string;
+  totalColor: ScoreColor;
+  roundScores: RoundScoreDisplay[];
+  activePicks: number;
+  totalPicks: number;
   isCurrentUser: boolean;
+  golfers: GolferScore[];
   submittedAt: string;
-  winProbability: number | null;
-  cutProbability: number | null;
-  picks: PickDetail[];
 }
 
 interface LeaderboardListProps {
-  poolId: string;
   entries: LeaderboardEntry[];
-  maxEntries: number;
   hasScores: boolean;
-  isComplete: boolean;
-  currentRound: number | null;
-  allRanks: (number | null)[];
   expanded: string | null;
   onToggle: (id: string) => void;
+  rosterRuleSummary: string | null;
+  entryCount: number;
+  tournamentName: string;
 }
 
 export function LeaderboardList({
-  poolId,
   entries,
-  maxEntries,
   hasScores,
-  isComplete,
-  currentRound,
-  allRanks,
   expanded,
   onToggle,
+  rosterRuleSummary,
+  entryCount,
+  tournamentName,
 }: LeaderboardListProps) {
   if (entries.length === 0) {
     return (
@@ -61,44 +76,57 @@ export function LeaderboardList({
   }
 
   return (
-    <>
-      {/* Column headers */}
-      <div className="flex items-center bg-surface-alt px-3 py-2 border-b border-border mb-0.5">
-        <span className="w-[30px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Rank</span>
-        <span className="w-[36px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Cut%</span>
-        <span className="flex-1 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
-        <span className="w-[40px] text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Score</span>
-        <span className="w-[44px] text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">%Win</span>
-      </div>
+    <div className="overflow-x-auto -mx-4 px-4">
+      <div className="min-w-[520px]">
+        {/* Column headers */}
+        <div className="flex items-center px-3 py-2 border-b border-border">
+          <span className="w-[36px] shrink-0 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            POS
+          </span>
+          <span className="flex-1 min-w-[100px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            ENTRY
+          </span>
+          <span className="w-[36px] shrink-0 text-center font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] opacity-45">
+            MC
+          </span>
+          <span className="w-[36px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            R1
+          </span>
+          <span className="w-[36px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            R2
+          </span>
+          <span className="w-[36px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            R3
+          </span>
+          <span className="w-[36px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            R4
+          </span>
+          <span className="w-[48px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            TOTAL
+          </span>
+        </div>
 
-      {/* Entry rows */}
-      <div className="space-y-0.5">
-        {entries.map((entry, idx) => (
-          <EntryRow
-            key={entry.id}
-            entryId={entry.id}
-            poolId={poolId}
-            rank={entry.rank}
-            previousRank={entry.previousRank}
-            teamName={entry.teamName}
-            teamScore={entry.teamScore}
-            entryNumber={entry.entryNumber}
-            maxEntries={maxEntries}
-            isCurrentUser={entry.isCurrentUser}
-            isExpanded={expanded === entry.id}
-            allRanks={allRanks}
-            picks={entry.picks}
-            hasScores={hasScores}
-            currentRound={currentRound}
-            submittedAt={entry.submittedAt}
-            winProbability={entry.winProbability}
-            cutProbability={entry.cutProbability}
-            onToggle={() => onToggle(entry.id)}
-            isEvenRow={idx % 2 === 0}
-            isWinner={isComplete && entry.rank === 1}
-          />
-        ))}
+        {/* Entry rows */}
+        <div>
+          {entries.map((entry) => (
+            <EntryRow
+              key={entry.entryId}
+              entry={entry}
+              hasScores={hasScores}
+              isExpanded={expanded === entry.entryId}
+              onToggle={() => onToggle(entry.entryId)}
+              rosterRuleSummary={rosterRuleSummary}
+            />
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="px-3 py-2.5 text-center border-t border-border">
+          <span className="font-body text-[9px] text-text-muted">
+            {entryCount} {entryCount === 1 ? "entry" : "entries"} &middot; {tournamentName}
+          </span>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

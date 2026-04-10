@@ -24,6 +24,13 @@ interface PoolData {
   bestX: number | null;
   bestY: number | null;
   tiebreaker: string;
+  scoringType: string;
+  missedCutPenaltyType: string;
+  missedCutFixedPenalty: number | null;
+  tiebreakerRule: string;
+  rosterRule: string;
+  rosterRuleMode: string;
+  rosterRuleCount: number | null;
   categoryCount: number;
   tournamentId: string;
   tournament: { name: string; startDate: string; endDate: string; course: string | null };
@@ -66,11 +73,8 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
     setMembers(updated);
   }, []);
 
-  const handleSettingsChange = useCallback((settings: {
-    name: string; picksDeadline: string; maxEntries: number; rules: string | null;
-    missedCutPenalty: string; scoringMode: string; bestX: number | null; bestY: number | null; tiebreaker: string;
-  }) => {
-    setPool((p) => ({ ...p, ...settings }));
+  const handleSettingsChange = useCallback((settings: Record<string, unknown>) => {
+    setPool((p) => ({ ...p, ...settings } as typeof p));
     router.refresh();
   }, [router]);
 
@@ -152,6 +156,13 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
         bestX={pool.bestX}
         bestY={pool.bestY}
         tiebreaker={pool.tiebreaker}
+        scoringType={pool.scoringType}
+        missedCutPenaltyType={pool.missedCutPenaltyType}
+        missedCutFixedPenalty={pool.missedCutFixedPenalty}
+        tiebreakerRule={pool.tiebreakerRule}
+        rosterRule={pool.rosterRule}
+        rosterRuleMode={pool.rosterRuleMode}
+        rosterRuleCount={pool.rosterRuleCount}
         categoryCount={pool.categoryCount}
         onSettingsChange={handleSettingsChange}
       />

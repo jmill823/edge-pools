@@ -66,6 +66,13 @@ export default async function ManagePage({
         bestX: pool.bestX,
         bestY: pool.bestY,
         tiebreaker: pool.tiebreaker,
+        scoringType: (pool as Record<string, unknown>).scoringType as string ?? "to-par",
+        missedCutPenaltyType: (pool as Record<string, unknown>).missedCutPenaltyType as string ?? "carry-score",
+        missedCutFixedPenalty: (pool as Record<string, unknown>).missedCutFixedPenalty as number | null ?? 4,
+        tiebreakerRule: (pool as Record<string, unknown>).tiebreakerRule as string ?? "entry-timestamp",
+        rosterRule: (pool as Record<string, unknown>).rosterRule as string ?? "all-play",
+        rosterRuleMode: (pool as Record<string, unknown>).rosterRuleMode as string ?? "per-tournament",
+        rosterRuleCount: (pool as Record<string, unknown>).rosterRuleCount as number | null ?? null,
         categoryCount: pool._count.categories,
         tournamentId: pool.tournament.id,
         tournament: {

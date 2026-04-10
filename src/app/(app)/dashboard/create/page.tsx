@@ -40,11 +40,13 @@ export default function CreatePoolPage() {
   const [maxEntries, setMaxEntries] = useState(1);
   const [rules, setRules] = useState("");
   const [scoringConfig, setScoringConfig] = useState({
-    missedCutPenalty: "+8",
-    scoringMode: "total",
-    bestX: null as number | null,
-    bestY: null as number | null,
-    tiebreaker: "lowest_final_round",
+    scoringType: "to-par",
+    missedCutPenaltyType: "carry-score",
+    missedCutFixedPenalty: 4 as number | null,
+    tiebreakerRule: "entry-timestamp",
+    rosterRule: "all-play",
+    rosterRuleMode: "per-tournament",
+    rosterRuleCount: null as number | null,
   });
 
   useEffect(() => {
@@ -120,11 +122,7 @@ export default function CreatePoolPage() {
           picksDeadline: new Date(picksDeadline).toISOString(),
           maxEntries,
           rules: rules.trim() || undefined,
-          missedCutPenalty: scoringConfig.missedCutPenalty,
-          scoringMode: scoringConfig.scoringMode,
-          bestX: scoringConfig.bestX,
-          bestY: scoringConfig.bestY,
-          tiebreaker: scoringConfig.tiebreaker,
+          ...scoringConfig,
         }),
       });
 
@@ -261,11 +259,13 @@ export default function CreatePoolPage() {
         {/* 7. Scoring Configuration */}
         <Section num="7" label="Scoring Configuration">
           <ScoringConfig
-            missedCutPenalty={scoringConfig.missedCutPenalty}
-            scoringMode={scoringConfig.scoringMode}
-            bestX={scoringConfig.bestX}
-            bestY={scoringConfig.bestY}
-            tiebreaker={scoringConfig.tiebreaker}
+            scoringType={scoringConfig.scoringType}
+            missedCutPenaltyType={scoringConfig.missedCutPenaltyType}
+            missedCutFixedPenalty={scoringConfig.missedCutFixedPenalty}
+            tiebreakerRule={scoringConfig.tiebreakerRule}
+            rosterRule={scoringConfig.rosterRule}
+            rosterRuleMode={scoringConfig.rosterRuleMode}
+            rosterRuleCount={scoringConfig.rosterRuleCount}
             categoryCount={categories.length || 9}
             onChange={setScoringConfig}
           />

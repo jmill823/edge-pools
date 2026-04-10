@@ -1,5 +1,16 @@
 import { prisma } from "../db";
 import { fetchLeaderboard, parseScore } from "./slashgolf";
+import { getStrategy } from "./strategies";
+import type {
+  ScoringType,
+  MissedCutPenalty,
+  TiebreakerRule,
+  RosterRuleType,
+  RosterRuleMode,
+  PoolScoringConfig,
+  GolferTournamentData,
+  GolferRoundData,
+} from "./types";
 
 interface PollResult {
   tournament: string;
@@ -295,11 +306,16 @@ async function flagWithdrawal(
 
 /**
  * Recalculate team scores and rankings for all entries in a pool.
+ * Uses the pool's scoring config via the scoring engine.
  */
 export async function recalculatePoolStandings(
   poolId: string,
   tournamentId: string
 ): Promise<void> {
+  const pool = await prisma.pool.findUnique({
+    where: { id: poolId },
+  });
+
   const entries = await prisma.entry.findMany({
     where: { poolId },
     include: {
@@ -310,43 +326,126 @@ export async function recalculatePoolStandings(
 
   if (entries.length === 0) return;
 
-  // Batch-fetch all golfer scores for this tournament
+  // Build scoring config — cast to any because Prisma client may not be
+  // regenerated yet with the new fields. They exist in DB with defaults.
+  const poolAny = pool as Record<string, unknown> | null;
+  const config: PoolScoringConfig = {
+    scoringType: ((poolAny?.scoringType as string) || "to-par") as ScoringType,
+    missedCutPenaltyType: ((poolAny?.missedCutPenaltyType as string) || "carry-score") as MissedCutPenalty,
+    missedCutFixedPenalty: (poolAny?.missedCutFixedPenalty as number) ?? 4,
+    tiebreakerRule: ((poolAny?.tiebreakerRule as string) || "entry-timestamp") as TiebreakerRule,
+    rosterRule: ((poolAny?.rosterRule as string) || "all-play") as RosterRuleType,
+    rosterRuleMode: ((poolAny?.rosterRuleMode as string) || "per-tournament") as RosterRuleMode,
+    rosterRuleCount: (poolAny?.rosterRuleCount as number) ?? null,
+  };
+
+  const strategy = getStrategy(config.scoringType);
+
+  // Batch-fetch all golfer scores for this tournament (all rounds)
   const allGolferIds = Array.from(new Set(entries.flatMap((e) => e.picks.map((p) => p.golferId))));
 
-  const latestScores = await prisma.golferScore.findMany({
+  const allScores = await prisma.golferScore.findMany({
     where: {
       golferId: { in: allGolferIds },
       tournamentId,
     },
-    orderBy: { round: "desc" },
-    distinct: ["golferId"],
+    orderBy: { round: "asc" },
   });
 
-  const scoreMap = new Map<string, number>();
-  for (const s of latestScores) {
-    scoreMap.set(s.golferId, s.totalScore ?? 0);
+  // Build golfer tournament data map
+  const golferDataMap = new Map<string, GolferTournamentData>();
+  for (const golferId of allGolferIds) {
+    const scores = allScores.filter((s) => s.golferId === golferId);
+    if (scores.length === 0) {
+      golferDataMap.set(golferId, {
+        golferId,
+        name: "",
+        country: null,
+        position: null,
+        status: "active",
+        thru: null,
+        currentRound: null,
+        rounds: [],
+        totalToPar: null,
+        totalStrokes: null,
+      });
+      continue;
+    }
+
+    const latest = scores.reduce((a, b) => (a.round > b.round ? a : b));
+    let status: "active" | "cut" | "withdrawn" | "complete" = "active";
+    if (latest.position === "CUT") status = "cut";
+    else if (latest.position === "WD") status = "withdrawn";
+    else if (latest.holesCompleted >= 18 && latest.round >= 4) status = "complete";
+
+    const rounds: GolferRoundData[] = scores.map((s) => ({
+      round: s.round,
+      strokes: s.roundScore,
+      scoreToPar: s.roundScore,
+      holesCompleted: s.holesCompleted,
+      isComplete: s.holesCompleted >= 18,
+    }));
+
+    golferDataMap.set(golferId, {
+      golferId,
+      name: "",
+      country: null,
+      position: latest.position,
+      status,
+      thru: latest.holesCompleted,
+      currentRound: latest.round,
+      rounds,
+      totalToPar: latest.totalScore,
+      totalStrokes: null,
+    });
   }
 
-  // Calculate team scores
+  const allGolferData = Array.from(golferDataMap.values());
+
+  // Calculate team scores using the engine
   const scored: Array<{ id: string; teamScore: number; submittedAt: Date }> = [];
+
   for (const entry of entries) {
-    let teamScore = 0;
-    for (const pick of entry.picks) {
-      teamScore += scoreMap.get(pick.golferId) ?? 0;
+    const golferTotals = entry.picks.map((pick) => {
+      const gData = golferDataMap.get(pick.golferId);
+      if (!gData) return null;
+      return strategy.calculateGolferTotal(gData, config, allGolferData);
+    });
+
+    // Apply roster rule (simplified — just filter totals)
+    let filteredTotals = golferTotals;
+    if (config.rosterRule !== "all-play" && config.rosterRuleCount) {
+      const nonNull = golferTotals
+        .map((t, i) => ({ total: t, idx: i }))
+        .filter((g) => g.total !== null)
+        .sort((a, b) => (a.total as number) - (b.total as number));
+
+      if (config.rosterRule === "best-of") {
+        const keepIds = new Set(nonNull.slice(0, config.rosterRuleCount).map((g) => g.idx));
+        filteredTotals = golferTotals.map((t, i) => keepIds.has(i) ? t : null);
+      } else if (config.rosterRule === "drop-worst") {
+        const dropIds = new Set(nonNull.slice(-config.rosterRuleCount).map((g) => g.idx));
+        filteredTotals = golferTotals.map((t, i) => dropIds.has(i) ? null : t);
+      }
     }
+
+    const teamScore = strategy.calculateEntryTotal(filteredTotals.filter((t) => t !== null));
     scored.push({ id: entry.id, teamScore, submittedAt: entry.submittedAt });
   }
 
-  // Sort: lowest score first, tiebreak by earliest submission
+  // Sort: ascending for to-par/strokes
   scored.sort((a, b) => {
-    if (a.teamScore !== b.teamScore) return a.teamScore - b.teamScore;
+    if (a.teamScore !== b.teamScore) {
+      return strategy.sortDirection === "asc"
+        ? a.teamScore - b.teamScore
+        : b.teamScore - a.teamScore;
+    }
     return a.submittedAt.getTime() - b.submittedAt.getTime();
   });
 
-  // Assign ranks with tie handling (T1, T1, 3 — not T1, T1, 2)
+  // Assign ranks with tie handling
   const ranks: Array<{ id: string; rank: number }> = [];
   for (let i = 0; i < scored.length; i++) {
-    // Find the first position with this score
     let rank = i + 1;
     for (let j = 0; j < i; j++) {
       if (scored[j].teamScore === scored[i].teamScore) {
@@ -357,7 +456,7 @@ export async function recalculatePoolStandings(
     ranks.push({ id: scored[i].id, rank });
   }
 
-  // Batch update: save previousRank then update
+  // Batch update
   for (let i = 0; i < scored.length; i++) {
     const entry = entries.find((e) => e.id === scored[i].id)!;
     await prisma.entry.update({

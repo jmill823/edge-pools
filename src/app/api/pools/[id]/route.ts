@@ -73,12 +73,17 @@ export async function PATCH(
     allowed.acceptingMembers = body.acceptingMembers;
   }
 
-  // Pool settings only editable in SETUP
-  const settingsFields = ["name", "picksDeadline", "maxEntries", "rules", "missedCutPenalty", "scoringMode", "bestX", "bestY", "tiebreaker"];
+  // Pool settings editable in SETUP and OPEN
+  const settingsFields = [
+    "name", "picksDeadline", "maxEntries", "rules",
+    "missedCutPenalty", "scoringMode", "bestX", "bestY", "tiebreaker",
+    "scoringType", "missedCutPenaltyType", "missedCutFixedPenalty",
+    "tiebreakerRule", "rosterRule", "rosterRuleMode", "rosterRuleCount",
+  ];
   const hasSettings = settingsFields.some((f) => body[f] !== undefined);
-  if (hasSettings && pool.status !== "SETUP") {
+  if (hasSettings && !["SETUP", "OPEN"].includes(pool.status)) {
     return NextResponse.json(
-      { error: "Pool settings can only be edited during SETUP" },
+      { error: "Pool settings can only be edited during SETUP or OPEN" },
       { status: 400 }
     );
   }
@@ -97,6 +102,14 @@ export async function PATCH(
   if (body.bestX !== undefined) allowed.bestX = body.bestX;
   if (body.bestY !== undefined) allowed.bestY = body.bestY;
   if (body.tiebreaker !== undefined) allowed.tiebreaker = body.tiebreaker;
+  // New scoring config fields
+  if (body.scoringType !== undefined) allowed.scoringType = body.scoringType;
+  if (body.missedCutPenaltyType !== undefined) allowed.missedCutPenaltyType = body.missedCutPenaltyType;
+  if (body.missedCutFixedPenalty !== undefined) allowed.missedCutFixedPenalty = body.missedCutFixedPenalty;
+  if (body.tiebreakerRule !== undefined) allowed.tiebreakerRule = body.tiebreakerRule;
+  if (body.rosterRule !== undefined) allowed.rosterRule = body.rosterRule;
+  if (body.rosterRuleMode !== undefined) allowed.rosterRuleMode = body.rosterRuleMode;
+  if (body.rosterRuleCount !== undefined) allowed.rosterRuleCount = body.rosterRuleCount;
 
   const updated = await prisma.pool.update({
     where: { id: params.id },

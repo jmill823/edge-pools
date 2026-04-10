@@ -1,3 +1,5 @@
+import type { ScoreColor } from "@/lib/scoring/types";
+
 /** Format a score relative to par: -12, +4, or E */
 export function formatScore(score: number | null | undefined): string {
   if (score === null || score === undefined || score === 0) return "E";
@@ -12,7 +14,17 @@ export function scoreColor(score: number | null | undefined): string {
   return "text-accent-danger";
 }
 
-/** Format rank with tie prefix: #1, T2, T2, #4 */
+/** Map ScoreColor enum to Tailwind class */
+export function scoreColorClass(color: ScoreColor): string {
+  switch (color) {
+    case "under": return "text-accent-success";
+    case "over": return "text-accent-danger";
+    case "even": return "text-text-secondary";
+    case "neutral": return "text-text-muted";
+  }
+}
+
+/** Format rank with tie prefix: T1, T2, 4 */
 export function formatRank(rank: number | null | undefined): string {
   if (!rank) return "\u2014";
   return `${rank}`;
@@ -34,11 +46,11 @@ export function formatRankWithTies(rank: number | null, allRanks: (number | null
 /** Color class for a single hole score relative to par */
 export function holeScoreColor(score: number, par: number): string {
   const diff = score - par;
-  if (diff <= -2) return "text-[#1B5E3B] bg-[#D4EDDA]"; // eagle or better — bold green bg
-  if (diff === -1) return "text-accent-success";           // birdie — green text
-  if (diff === 0) return "text-text-secondary";            // par — neutral
-  if (diff === 1) return "text-accent-danger";             // bogey — red text
-  return "text-[#8B2D27] bg-[#FCEAE9]";                   // double+ — bold red bg
+  if (diff <= -2) return "text-[#1B5E3B] bg-[#D4EDDA]";
+  if (diff === -1) return "text-accent-success";
+  if (diff === 0) return "text-text-secondary";
+  if (diff === 1) return "text-accent-danger";
+  return "text-[#8B2D27] bg-[#FCEAE9]";
 }
 
 /** Short label for a hole score relative to par */
@@ -50,4 +62,13 @@ export function holeScoreLabel(score: number, par: number): string {
   if (diff === 1) return "Bogey";
   if (diff === 2) return "Dbl Bogey";
   return `+${diff}`;
+}
+
+/** Format golfer name as F. LastName */
+export function formatGolferNameShort(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length <= 1) return fullName;
+  const firstName = parts[0];
+  const lastName = parts.slice(1).join(" ");
+  return `${firstName.charAt(0)}. ${lastName}`;
 }

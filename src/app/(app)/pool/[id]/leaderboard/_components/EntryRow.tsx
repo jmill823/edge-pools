@@ -1,175 +1,195 @@
-import { formatScore, scoreColor, formatRankWithTies } from "./score-utils";
-import { HoleByHoleCard } from "./HoleByHoleCard";
+"use client";
 
-interface PickDetail {
-  golferId: string;
-  categoryName: string;
-  golferName: string;
-  golferCountry: string | null;
-  golferScore: number | null;
-  golferPosition: string | null;
-  holesCompleted: number;
-  round: number;
-  isReplacement: boolean;
-  originalGolferName: string | null;
-}
+import { scoreColorClass, formatGolferNameShort } from "./score-utils";
+import type { LeaderboardEntry } from "./LeaderboardList";
 
 interface EntryRowProps {
-  entryId: string;
-  poolId: string;
-  rank: number | null;
-  previousRank: number | null;
-  teamName: string;
-  teamScore: number | null;
-  entryNumber: number;
-  maxEntries: number;
-  isCurrentUser: boolean;
-  isExpanded: boolean;
-  allRanks: (number | null)[];
-  picks: PickDetail[];
+  entry: LeaderboardEntry;
   hasScores: boolean;
-  currentRound: number | null;
-  submittedAt: string;
-  winProbability: number | null;
-  cutProbability: number | null;
+  isExpanded: boolean;
   onToggle: () => void;
-  isEvenRow?: boolean;
-  isWinner?: boolean;
-}
-
-function cutPercentColor(cutPct: number | null): string {
-  if (cutPct === null) return "text-text-muted";
-  if (cutPct === 0) return "text-accent-success";
-  if (cutPct <= 25) return "text-accent-secondary";
-  if (cutPct <= 50) return "text-accent-secondary";
-  return "text-accent-danger";
+  rosterRuleSummary: string | null;
 }
 
 export function EntryRow({
-  rank,
-  poolId,
-  teamName,
-  teamScore,
-  entryNumber,
-  maxEntries,
-  isCurrentUser,
-  isExpanded,
-  allRanks,
-  picks,
+  entry,
   hasScores,
-  currentRound,
-  submittedAt,
-  winProbability,
-  cutProbability,
+  isExpanded,
   onToggle,
-  isEvenRow,
-  isWinner,
+  rosterRuleSummary,
 }: EntryRowProps) {
+  const isYou = entry.isCurrentUser;
+
   return (
     <div>
+      {/* Team row */}
       <button
         onClick={onToggle}
-        className={`w-full flex items-center px-3 py-3 text-left rounded-data transition-colors duration-150 min-h-[44px] cursor-pointer ${
-          isWinner
-            ? "bg-[#FDF4E3] border-l-[3px] border-accent-secondary"
-            : isCurrentUser
-            ? "bg-[#F0F5F2] border-l-[3px] border-accent-primary"
-            : isEvenRow
-              ? "bg-surface-alt"
-              : "hover:bg-surface-alt"
+        className={`w-full flex items-center px-3 py-2.5 text-left transition-colors duration-150 min-h-[44px] cursor-pointer border-b border-border/50 ${
+          isYou
+            ? "bg-[#E8F0E5]"
+            : "hover:bg-surface-alt"
         }`}
       >
-        {/* Rank — always show column, dash when no scores */}
-        <span className={`w-[30px] shrink-0 font-mono text-xs font-bold ${hasScores ? "text-text-primary" : "text-text-muted"}`}>
-          {hasScores ? formatRankWithTies(rank, allRanks) : "\u2014"}
+        {/* POS */}
+        <span className="w-[36px] shrink-0 font-mono text-xs font-bold text-[#C4B896]">
+          {hasScores ? entry.positionDisplay : "\u2014"}
         </span>
-        {/* Cut% */}
-        <span className={`w-[36px] shrink-0 font-mono text-[10px] ${hasScores ? cutPercentColor(cutProbability) : "text-text-muted"}`}>
-          {hasScores && cutProbability !== null ? `${cutProbability}%` : "\u2014"}
-        </span>
-        {/* Team Name */}
-        <span className={`flex-1 min-w-0 truncate font-body text-sm ${
-          isCurrentUser || isWinner ? "font-semibold" : "font-medium"
-        } text-text-primary`}>
-          {isWinner && <span className="mr-1">🏆</span>}
-          {teamName}
-          {maxEntries > 1 && <span className="text-text-muted text-xs"> · E{entryNumber}</span>}
-        </span>
-        {/* Score */}
-        <span className={`w-[40px] shrink-0 text-right font-mono text-[13px] font-bold ${hasScores ? scoreColor(teamScore) : "text-text-muted"}`}>
-          {hasScores ? formatScore(teamScore) : "\u2014"}
-        </span>
-        {/* %Win */}
-        <span className={`w-[44px] shrink-0 text-right font-mono text-[11px] ${hasScores ? "text-accent-secondary" : "text-text-muted"}`}>
-          {hasScores && winProbability !== null ? `${winProbability}%` : "\u2014"}
-        </span>
-        <svg
-          className={`h-4 w-4 text-text-muted transition-transform duration-200 ml-1 shrink-0 ${isExpanded ? "rotate-180" : ""}`}
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+
+        {/* ENTRY */}
+        <span
+          className={`flex-1 min-w-[100px] truncate font-body text-[12px] ${
+            isYou ? "font-semibold" : "font-medium"
+          } text-text-primary`}
+          style={{ maxWidth: "120px" }}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
+          {entry.teamName}
+        </span>
+
+        {/* MC column — ghosted */}
+        <span className="w-[36px] shrink-0 text-center font-mono text-[9px] text-text-muted opacity-45">
+          {entry.activePicks}/{entry.totalPicks}
+        </span>
+
+        {/* R1-R4 */}
+        {entry.roundScores.map((rs) => (
+          <span
+            key={rs.round}
+            className={`w-[36px] shrink-0 text-right font-mono text-[10px] ${
+              hasScores ? scoreColorClass(rs.color) : "text-text-muted"
+            }`}
+          >
+            {hasScores ? rs.display : "-"}
+          </span>
+        ))}
+
+        {/* TOTAL */}
+        <span
+          className={`w-[48px] shrink-0 text-right font-mono text-[12px] font-medium ${
+            hasScores ? scoreColorClass(entry.totalColor) : "text-text-muted"
+          }`}
+        >
+          {hasScores ? entry.totalDisplay : "-"}
+        </span>
       </button>
 
+      {/* Expanded golfer details */}
       {isExpanded && (
-        <div className="ml-4 mb-2 rounded-b border-l-2 border-border pl-3 py-2 space-y-1.5">
-          {picks.map((pick, i) => (
-            <div key={i} className="flex items-center justify-between font-body text-xs">
-              <div className="min-w-0">
-                <span className="text-text-muted">{pick.categoryName}</span>
-                <span className="mx-1 text-border">&rarr;</span>
-                <span className={`font-medium ${
-                  pick.golferPosition === "CUT" || pick.golferPosition === "WD"
-                    ? "text-accent-danger" : "text-text-primary"
-                }`}>
-                  {pick.golferName}
-                </span>
-                {pick.isReplacement && pick.originalGolferName && (
-                  <span className="ml-1 text-accent-danger">
-                    (replaced <span className="line-through">{pick.originalGolferName}</span>)
-                  </span>
-                )}
-              </div>
-              <span className={`shrink-0 ml-2 font-mono font-medium whitespace-nowrap ${
-                pick.golferPosition === "CUT" || pick.golferPosition === "WD"
-                  ? "text-accent-danger" : scoreColor(pick.golferScore)
-              }`}>
-                {pick.golferPosition === "CUT" ? "CUT"
-                  : pick.golferPosition === "WD" ? "WD"
-                  : pick.golferScore !== null ? (
-                    <>
-                      {formatScore(pick.golferScore)}
-                      {pick.holesCompleted > 0 && (
-                        <span className="text-text-secondary font-normal text-xs">
-                          {pick.holesCompleted >= 18 ? " · F" : ` · thru ${pick.holesCompleted}`}
-                        </span>
-                      )}
-                    </>
-                  )
-                  : "\u2014"}
-              </span>
-            </div>
-          ))}
-
-          {/* Hole-by-hole scorecards — only when pool has scores */}
-          {hasScores && (
-            <div className="border-t border-border/50 pt-1.5 mt-1.5">
-              <HoleByHoleCard
-                poolId={poolId}
-                golferIds={picks.map((p) => p.golferId)}
-                golferNames={picks.map((p) => p.golferName)}
-                currentRound={currentRound}
-              />
-            </div>
-          )}
-
-          {/* Timestamp at bottom of expansion */}
-          <div className="pt-1 border-t border-border/50">
-            <span className="font-mono text-[10px] text-text-muted">
-              Submitted {new Date(submittedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })},{" "}
-              {new Date(submittedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+        <div
+          className="bg-surface border-b border-border overflow-hidden"
+          style={{
+            animation: "expandIn 200ms ease forwards",
+          }}
+        >
+          {/* Golfer column headers */}
+          <div className="flex items-center px-3 py-1.5 bg-surface-alt border-b border-border/50">
+            <span className="w-[30px] shrink-0 font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              POS
+            </span>
+            <span className="w-[36px] shrink-0 font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              CAT
+            </span>
+            <span className="flex-1 min-w-[80px] font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              PLAYER
+            </span>
+            <span className="w-[30px] shrink-0 text-center font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              THRU
+            </span>
+            <span className="w-[32px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              R1
+            </span>
+            <span className="w-[32px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              R2
+            </span>
+            <span className="w-[32px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              R3
+            </span>
+            <span className="w-[32px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              R4
+            </span>
+            <span className="w-[40px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              TOTAL
             </span>
           </div>
+
+          {/* Golfer rows */}
+          {entry.golfers.map((golfer) => {
+            const isMcOrWd = golfer.status === "cut" || golfer.status === "withdrawn";
+            const isExcluded = golfer.isExcludedByRosterRule;
+            const rowOpacity = isMcOrWd ? "opacity-45" : isExcluded ? "opacity-35" : "";
+
+            return (
+              <div
+                key={golfer.golferId}
+                className={`flex items-center px-3 py-1.5 border-b border-border/30 ${rowOpacity}`}
+              >
+                {/* POS */}
+                <span className="w-[30px] shrink-0 font-mono text-[10px] text-text-secondary">
+                  {isMcOrWd ? "-" : golfer.positionDisplay}
+                </span>
+
+                {/* CAT */}
+                <span className="w-[36px] shrink-0 font-body text-[9px] font-medium text-[#2D5F3B]">
+                  {golfer.categoryAbbrev}
+                </span>
+
+                {/* PLAYER */}
+                <span className="flex-1 min-w-[80px] font-body text-[11px] text-text-primary truncate">
+                  {formatGolferNameShort(golfer.golferName)}
+                  {golfer.isReplacement && golfer.originalGolferName && (
+                    <span className="ml-1 text-[9px] text-accent-danger">
+                      (was <span className="line-through">{formatGolferNameShort(golfer.originalGolferName)}</span>)
+                    </span>
+                  )}
+                </span>
+
+                {/* THRU */}
+                <span className="w-[30px] shrink-0 text-center">
+                  {golfer.status === "cut" ? (
+                    <span className="inline-block px-1 py-0.5 rounded-[3px] bg-text-muted/20 text-text-muted font-body text-[8px] font-medium">
+                      MC
+                    </span>
+                  ) : golfer.status === "withdrawn" ? (
+                    <span className="inline-block px-1 py-0.5 rounded-[3px] bg-text-muted/20 text-text-muted font-body text-[8px] font-medium">
+                      WD
+                    </span>
+                  ) : (
+                    <span className="font-mono text-[10px] text-text-muted">
+                      {golfer.thruDisplay}
+                    </span>
+                  )}
+                </span>
+
+                {/* R1-R4 */}
+                {golfer.roundScores.map((rs) => (
+                  <span
+                    key={rs.round}
+                    className={`w-[32px] shrink-0 text-right font-mono text-[10px] ${scoreColorClass(rs.color)}`}
+                  >
+                    {rs.display}
+                  </span>
+                ))}
+
+                {/* TOTAL */}
+                <span
+                  className={`w-[40px] shrink-0 text-right font-mono text-[10px] font-medium ${scoreColorClass(golfer.totalColor)} ${
+                    isExcluded ? "line-through" : ""
+                  }`}
+                >
+                  {golfer.totalDisplay}
+                </span>
+              </div>
+            );
+          })}
+
+          {/* Roster rule summary */}
+          {rosterRuleSummary && (
+            <div className="px-3 py-1.5 text-center">
+              <span className="font-body text-[9px] text-text-muted italic">
+                {rosterRuleSummary}
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>

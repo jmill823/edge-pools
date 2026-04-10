@@ -69,11 +69,18 @@ model Pool {
   acceptingMembers Boolean    @default(true)
   maxEntries       Int        @default(1)
   rules            String?
-  missedCutPenalty String     @default("+8")
-  scoringMode      String     @default("total")
-  bestX            Int?
-  bestY            Int?
-  tiebreaker       String     @default("lowest_final_round")
+  missedCutPenalty      String  @default("+8")
+  scoringMode           String  @default("total")
+  bestX                 Int?
+  bestY                 Int?
+  tiebreaker            String  @default("lowest_final_round")
+  scoringType           String  @default("to-par")
+  missedCutPenaltyType  String  @default("carry-score")
+  missedCutFixedPenalty Int?    @default(4)
+  tiebreakerRule        String  @default("entry-timestamp")
+  rosterRule            String  @default("all-play")
+  rosterRuleMode        String  @default("per-tournament")
+  rosterRuleCount       Int?
   entryFee         String?
   paymentInfo      String?
   createdAt        DateTime   @default(now())

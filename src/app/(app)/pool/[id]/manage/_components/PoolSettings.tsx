@@ -12,23 +12,22 @@ interface PoolSettingsProps {
   picksDeadline: string;
   maxEntries: number;
   rules: string | null;
+  // Legacy fields (kept for backwards compat)
   missedCutPenalty: string;
   scoringMode: string;
   bestX: number | null;
   bestY: number | null;
   tiebreaker: string;
+  // New scoring config fields
+  scoringType: string;
+  missedCutPenaltyType: string;
+  missedCutFixedPenalty: number | null;
+  tiebreakerRule: string;
+  rosterRule: string;
+  rosterRuleMode: string;
+  rosterRuleCount: number | null;
   categoryCount: number;
-  onSettingsChange: (settings: {
-    name: string;
-    picksDeadline: string;
-    maxEntries: number;
-    rules: string | null;
-    missedCutPenalty: string;
-    scoringMode: string;
-    bestX: number | null;
-    bestY: number | null;
-    tiebreaker: string;
-  }) => void;
+  onSettingsChange: (settings: Record<string, unknown>) => void;
 }
 
 export function PoolSettings({
@@ -38,15 +37,18 @@ export function PoolSettings({
   picksDeadline,
   maxEntries,
   rules,
-  missedCutPenalty,
-  scoringMode,
-  bestX,
-  bestY,
-  tiebreaker,
+  scoringType,
+  missedCutPenaltyType,
+  missedCutFixedPenalty,
+  tiebreakerRule,
+  rosterRule,
+  rosterRuleMode,
+  rosterRuleCount,
   categoryCount,
   onSettingsChange,
 }: PoolSettingsProps) {
-  const editable = status === "SETUP";
+  const editable = status === "SETUP" || status === "OPEN";
+  const scoringEditable = status === "SETUP" || status === "OPEN";
 
   const [formName, setFormName] = useState(name);
   const [formDeadline, setFormDeadline] = useState(
@@ -55,11 +57,13 @@ export function PoolSettings({
   const [formMaxEntries, setFormMaxEntries] = useState(maxEntries);
   const [formRules, setFormRules] = useState(rules || "");
   const [formScoring, setFormScoring] = useState({
-    missedCutPenalty,
-    scoringMode,
-    bestX,
-    bestY,
-    tiebreaker,
+    scoringType: scoringType || "to-par",
+    missedCutPenaltyType: missedCutPenaltyType || "carry-score",
+    missedCutFixedPenalty: missedCutFixedPenalty,
+    tiebreakerRule: tiebreakerRule || "entry-timestamp",
+    rosterRule: rosterRule || "all-play",
+    rosterRuleMode: rosterRuleMode || "per-tournament",
+    rosterRuleCount: rosterRuleCount,
   });
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -87,17 +91,7 @@ export function PoolSettings({
         throw new Error(data.error || "Failed to save settings");
       }
       const updated = await res.json();
-      onSettingsChange({
-        name: updated.name,
-        picksDeadline: updated.picksDeadline,
-        maxEntries: updated.maxEntries,
-        rules: updated.rules,
-        missedCutPenalty: updated.missedCutPenalty,
-        scoringMode: updated.scoringMode,
-        bestX: updated.bestX,
-        bestY: updated.bestY,
-        tiebreaker: updated.tiebreaker,
-      });
+      onSettingsChange(updated);
       setFeedback({ type: "success", message: "Settings saved" });
       setDirty(false);
     } catch (err) {
@@ -107,31 +101,37 @@ export function PoolSettings({
     }
   }, [poolId, formName, formDeadline, formMaxEntries, formRules, formScoring, onSettingsChange]);
 
+  // Read-only labels for locked config
+  const scoringTypeLabel = {
+    "to-par": "To Par",
+    "total-strokes": "Total Strokes",
+    "points": "Points",
+  }[formScoring.scoringType] ?? formScoring.scoringType;
+
+  const mcPenaltyLabel = {
+    "carry-score": "Carry score (MC score stays fixed)",
+    "fixed-per-round": `+${formScoring.missedCutFixedPenalty ?? 4} per missed round`,
+    "worst-make-cut": "Worst of golfers who made cut",
+  }[formScoring.missedCutPenaltyType] ?? formScoring.missedCutPenaltyType;
+
+  const tiebreakerLabel = {
+    "entry-timestamp": "Earlier submission wins",
+    "best-individual": "Best single golfer score",
+    "none": "Ties remain tied",
+  }[formScoring.tiebreakerRule] ?? formScoring.tiebreakerRule;
+
+  const rosterRuleLabel = {
+    "all-play": "All picks count",
+    "best-of": `Best ${formScoring.rosterRuleCount} of ${categoryCount}`,
+    "drop-worst": `Drop worst ${formScoring.rosterRuleCount}`,
+  }[formScoring.rosterRule] ?? formScoring.rosterRule;
+
   const deadline = new Date(picksDeadline);
   const deadlineDisplay = isNaN(deadline.getTime())
     ? "—"
     : `${deadline.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} at ${deadline.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
 
-  const penaltyLabel = {
-    "+8": "+8 per missed round",
-    "+10": "+10 per missed round",
-    "repeat_best": "Repeat best completed round",
-    "repeat_worst": "Repeat worst completed round",
-  }[missedCutPenalty] ?? `${missedCutPenalty} per missed round`;
-
-  const modeLabel = {
-    "total": "Total strokes",
-    "best_x_of_y": `Best ${bestY} of ${bestX}`,
-    "drop_worst": "Drop worst",
-  }[scoringMode] ?? scoringMode;
-
-  const tiebreakerLabel = {
-    "lowest_final_round": "Lowest final round",
-    "lowest_r1": "Lowest Round 1",
-    "commissioner_decides": "Commissioner decides",
-    "scorecard_playoff": "Scorecard playoff",
-  }[tiebreaker] ?? tiebreaker;
-
+  // Read-only view for non-editable states
   if (!editable) {
     return (
       <div className="rounded-card border border-border bg-surface p-4">
@@ -143,13 +143,21 @@ export function PoolSettings({
           <ReadOnlyField label="Picks deadline" value={deadlineDisplay} mono />
           <ReadOnlyField label="Max entries per player" value={String(maxEntries)} mono />
           {rules && <ReadOnlyField label="House rules" value={rules} />}
-          <ReadOnlyField label="Missed-cut penalty" value={penaltyLabel} />
-          <ReadOnlyField label="Scoring mode" value={modeLabel} />
-          <ReadOnlyField label="Tiebreaker" value={tiebreakerLabel} />
         </div>
-        <p className="mt-3 font-body text-xs text-text-muted">
-          Settings are locked after pool is opened.
-        </p>
+        <div className="border-t border-border mt-4 pt-4">
+          <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
+            Scoring Configuration
+          </p>
+          <div className="space-y-3">
+            <ReadOnlyField label="Scoring type" value={scoringTypeLabel} />
+            <ReadOnlyField label="Missed-cut penalty" value={mcPenaltyLabel} />
+            <ReadOnlyField label="Tiebreaker" value={tiebreakerLabel} />
+            <ReadOnlyField label="Roster rule" value={rosterRuleLabel} />
+          </div>
+          <p className="mt-3 font-body text-xs text-text-muted">
+            Scoring settings are locked once the pool is locked.
+          </p>
+        </div>
       </div>
     );
   }
@@ -242,14 +250,22 @@ export function PoolSettings({
           <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
             Scoring Configuration
           </p>
+          {!scoringEditable && (
+            <p className="font-body text-xs text-text-muted mb-3">
+              Scoring settings are locked once the pool is locked.
+            </p>
+          )}
           <ScoringConfig
-            missedCutPenalty={formScoring.missedCutPenalty}
-            scoringMode={formScoring.scoringMode}
-            bestX={formScoring.bestX}
-            bestY={formScoring.bestY}
-            tiebreaker={formScoring.tiebreaker}
+            scoringType={formScoring.scoringType}
+            missedCutPenaltyType={formScoring.missedCutPenaltyType}
+            missedCutFixedPenalty={formScoring.missedCutFixedPenalty}
+            tiebreakerRule={formScoring.tiebreakerRule}
+            rosterRule={formScoring.rosterRule}
+            rosterRuleMode={formScoring.rosterRuleMode}
+            rosterRuleCount={formScoring.rosterRuleCount}
             categoryCount={categoryCount}
             onChange={(config) => { setFormScoring(config); markDirty(); }}
+            disabled={!scoringEditable}
           />
         </div>
 
