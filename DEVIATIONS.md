@@ -443,3 +443,11 @@
 - **What existed:** Previous leaderboard had a HoleByHoleCard scorecard viewer in the expanded view.
 - **What was done:** The new expanded view shows the golfer table per spec. HoleByHoleCard is not included in the redesigned expansion.
 - **Why:** The spec defines a specific golfer detail table format. Hole-by-hole scorecards may be added later as a secondary expansion.
+
+## OG Images (April 10, 2026)
+
+### DEV OG-1 — Space Grotesk italic unavailable in canvas rendering
+- **Spec said:** TILT wordmark in bold italic in OG images.
+- **What was found:** Space Grotesk does not include an italic variant — the typeface only ships regular (upright) weights.
+- **What was done:** Used bold (weight 900) non-italic for TILT wordmark in all three OG images.
+- **Why:** No italic axis exists in the variable font file. The on-site wordmark uses CSS `font-style: italic` which triggers synthetic italic in browsers, but `@napi-rs/canvas` does not synthesize italic from upright-only fonts.
