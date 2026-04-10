@@ -6,26 +6,24 @@ export function SocialProof() {
   ];
 
   return (
-    <section className="border-t border-b border-border py-8">
-      <div className="mx-auto max-w-hero px-4">
-        <div className="flex items-center justify-center">
+    <section className="border-t border-[#EDEAE4] py-8">
+      <div className="mx-auto max-w-[720px] px-5">
+        <div className="flex items-center justify-center gap-8">
           {stats.map((stat, i) => (
-            <div key={stat.label} className="flex items-center">
-              {i > 0 && (
-                <div className="mx-6 h-8 w-px bg-border sm:mx-8" />
-              )}
+            <div key={stat.label} className="flex items-center gap-8">
+              {i > 0 && <div className="h-8 w-px bg-[#EDEAE4]" />}
               <div className="text-center">
-                <p className="font-mono text-2xl font-[800] text-text-primary">
+                <p className="font-mono text-[24px] font-[800] text-[#1A1A18] tabular-nums">
                   {stat.number}
                 </p>
-                <p className="mt-1 font-body text-[9px] font-medium uppercase tracking-[0.5px] text-text-muted">
+                <p className="mt-1 font-body text-[9px] font-medium uppercase tracking-[0.8px] text-[#8A8580]">
                   {stat.label}
                 </p>
               </div>
             </div>
           ))}
         </div>
-        <p className="mt-2 text-center font-body text-[10px] font-normal text-text-muted">
+        <p className="mt-3 text-center font-body text-[10px] font-normal text-[#ABA69E]">
           Born from the Masters 2K Contest (2010&ndash;2024)
         </p>
       </div>

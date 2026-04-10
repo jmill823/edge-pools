@@ -6,7 +6,17 @@ import { LandingFooter } from "../_components/LandingFooter";
 export const metadata: Metadata = {
   title: "Classic 9-Category Golf Pool Format",
   description:
-    "The Classic 9-category golf pool format splits the field into tiers — Past Champions, Contenders, Dark Horses, Longshots, and more. Pick one golfer per category. Download the free template and run your pool on TILT.",
+    "The Classic 9-category golf pool — pick one golfer per tier, cross-category rules apply. Download the free template.",
+  openGraph: {
+    images: [
+      {
+        url: "/og-classic.png",
+        width: 1200,
+        height: 630,
+        alt: "TILT Classic 9-Category Golf Pool",
+      },
+    ],
+  },
 };
 
 const categories = [

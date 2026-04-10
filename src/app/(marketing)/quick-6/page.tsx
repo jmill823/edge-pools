@@ -6,7 +6,17 @@ import { LandingFooter } from "../_components/LandingFooter";
 export const metadata: Metadata = {
   title: "Quick-6 Golf Pool Format",
   description:
-    "The Quick-6 is a post-cut golf pool format — 6 categories, 6 picks, built from the players who made the weekend. Fast setup, real strategy. Download the free template and run your pool on TILT.",
+    "The Quick-6 golf pool — 6 categories, 6 picks, fast setup for casual groups. Download the free template.",
+  openGraph: {
+    images: [
+      {
+        url: "/og-quick6.png",
+        width: 1200,
+        height: 630,
+        alt: "TILT Quick-6 Golf Pool",
+      },
+    ],
+  },
 };
 
 const categories = [

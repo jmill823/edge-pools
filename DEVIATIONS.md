@@ -381,3 +381,22 @@
 - **What exists:** The RoleSelector popup lives on the marketing landing page (pre-auth), not on the dashboard (post-auth). It shows once per visitor via localStorage.
 - **What was done:** Modified the existing RoleSelector to show JOIN/CREATE/SWITCH buttons with the new styling. The popup remains on the landing page.
 - **Why:** The existing popup architecture works correctly for first-time visitors. Moving it to post-auth dashboard would require a different component and flow. The landing page popup captures users at the earliest touchpoint.
+
+## Landing Page Redesign (April 10, 2026)
+
+### DEV LP-1 — File paths use (marketing) route group, not root
+- **Spec said:** `src/app/page.tsx` and `src/app/_components/`
+- **What exists:** Homepage is at `src/app/(marketing)/page.tsx`, components at `src/app/(marketing)/_components/`
+- **What was done:** Kept the existing `(marketing)` route group structure. All new components placed in `src/app/(marketing)/_components/`.
+- **Why:** The `(marketing)` route group already exists with the correct URL routing. Changing to root-level would break the existing route group pattern and require moving all marketing-related files.
+
+### DEV LP-2 — RoleModal replaces localStorage-based RoleSelector
+- **Spec said:** RoleModal opens on CTA button click (CREATE/JOIN).
+- **What existed:** `RoleSelector.tsx` used localStorage to auto-show once per visitor.
+- **What was done:** Created new `RoleModal.tsx` triggered by button clicks. Old `RoleSelector.tsx` is no longer imported by the homepage but left on disk for reference.
+- **Why:** Spec explicitly defines modal as button-triggered, not auto-showing. The new pattern gives users control.
+
+### DEV LP-3 — Commissioner CTA links to /dashboard/create
+- **Spec said:** "CREATE A POOL" CTA in commissioner flow.
+- **What was done:** Links to `/dashboard/create` (the existing pool creation route) rather than `/dashboard`.
+- **Why:** `/dashboard/create` is the actual pool creation flow. `/dashboard` shows the pool list, not creation.
