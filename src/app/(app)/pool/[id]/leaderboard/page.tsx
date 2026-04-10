@@ -2,9 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { MyEntryCard } from "./_components/MyEntryCard";
-import { EntryRow } from "./_components/EntryRow";
+import { LeaderboardList } from "./_components/LeaderboardList";
 import { StatusBanner } from "./_components/StatusBanner";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
+import { Confetti } from "./_components/Confetti";
+import { WinnerCelebration } from "./_components/WinnerCelebration";
+import { ResultCard } from "./_components/ResultCard";
+import { StaleFooter } from "./_components/StaleFooter";
 
 interface PickDetail {
   golferId: string;
@@ -95,16 +99,12 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
   if (loading) return <div className="mx-auto max-w-leaderboard px-4 py-8"><LoadingSkeleton variant="page" lines={6} /></div>;
   if (error) return <div className="mx-auto max-w-leaderboard px-4 py-12 text-center font-body text-accent-danger">{error}</div>;
   if (!data) return null;
-
   const { pool, tournament, onCourse, leaderboard } = data;
   const hasScores = ["LIVE", "COMPLETE", "ARCHIVED"].includes(pool.status);
+  const isComplete = pool.status === "COMPLETE";
   const myEntry = leaderboard.find((e) => e.isCurrentUser);
   const allRanks = leaderboard.map((e) => e.rank);
-
-  // Stale data calculation
-  const staleMinutes = tournament.lastSyncAt
-    ? Math.floor((Date.now() - new Date(tournament.lastSyncAt).getTime()) / 60000)
-    : null;
+  const winner = leaderboard.length > 0 && leaderboard[0].rank === 1 ? leaderboard[0] : null;
 
   return (
     <div className="mx-auto max-w-leaderboard px-4 py-4">
@@ -135,6 +135,19 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
         />
       </div>
 
+      {/* Winner celebration — COMPLETE only */}
+      {isComplete && winner && (
+        <>
+          <Confetti poolId={pool.id} />
+          <WinnerCelebration
+            winnerName={winner.teamName || winner.displayName}
+            poolName={pool.name}
+            tournamentName={tournament.name}
+            winnerScore={winner.teamScore}
+          />
+        </>
+      )}
+
       {/* My Entry card — only in scored states */}
       {hasScores && myEntry && (
         <div className="mb-4">
@@ -153,67 +166,35 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
         </div>
       )}
 
-      {/* Column headers — always 5 columns when entries exist */}
-      {leaderboard.length > 0 && (
-        <div className="flex items-center bg-surface-alt px-3 py-2 border-b border-border mb-0.5">
-          <span className="w-[30px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Rank</span>
-          <span className="w-[36px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Cut%</span>
-          <span className="flex-1 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
-          <span className="w-[40px] text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Score</span>
-          <span className="w-[44px] text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">%Win</span>
-        </div>
-      )}
-
       {/* Entry list */}
-      {leaderboard.length > 0 ? (
-        <div className="space-y-0.5">
-          {leaderboard.map((entry, idx) => (
-            <EntryRow
-              key={entry.id}
-              entryId={entry.id}
-              poolId={pool.id}
-              rank={entry.rank}
-              previousRank={entry.previousRank}
-              teamName={entry.teamName}
-              teamScore={entry.teamScore}
-              entryNumber={entry.entryNumber}
-              maxEntries={pool.maxEntries}
-              isCurrentUser={entry.isCurrentUser}
-              isExpanded={expanded === entry.id}
-              allRanks={allRanks}
-              picks={entry.picks}
-              hasScores={hasScores}
-              currentRound={tournament.currentRound}
-              submittedAt={entry.submittedAt}
-              winProbability={entry.winProbability}
-              cutProbability={entry.cutProbability}
-              onToggle={() => setExpanded(expanded === entry.id ? null : entry.id)}
-              isEvenRow={idx % 2 === 0}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="py-12 text-center font-body text-sm text-text-muted">
-          No entries yet. Picks will appear on the leaderboard after submission.
-        </div>
+      <LeaderboardList
+        poolId={pool.id}
+        entries={leaderboard}
+        maxEntries={pool.maxEntries}
+        hasScores={hasScores}
+        isComplete={isComplete}
+        currentRound={tournament.currentRound}
+        allRanks={allRanks}
+        expanded={expanded}
+        onToggle={(id) => setExpanded(expanded === id ? null : id)}
+      />
+
+      {/* Share Results — COMPLETE only */}
+      {isComplete && leaderboard.length > 0 && (
+        <ResultCard
+          poolName={pool.name}
+          tournamentName={tournament.name}
+          top5={leaderboard.slice(0, 5).map((e) => ({
+            displayName: e.displayName,
+            teamName: e.teamName,
+            teamScore: e.teamScore,
+            rank: e.rank,
+          }))}
+          allRanks={allRanks}
+        />
       )}
 
-      {/* Stale data footer */}
-      {hasScores && staleMinutes !== null && staleMinutes >= 2 && (
-        <div className={`mt-4 rounded-data px-3 py-2 text-center font-mono text-xs ${
-          staleMinutes > 30
-            ? "bg-[#FCEAE9] text-accent-danger"
-            : staleMinutes > 15
-            ? "bg-[#FDF4E3] text-[#8A6B1E]"
-            : "bg-surface-alt text-text-muted"
-        }`}>
-          {staleMinutes > 30
-            ? `Score updates appear stalled \u2014 last updated ${staleMinutes} min ago`
-            : staleMinutes > 15
-            ? `Scores may be delayed \u2014 updated ${staleMinutes} min ago`
-            : `Updated ${staleMinutes} min ago`}
-        </div>
-      )}
+      <StaleFooter lastSyncAt={tournament.lastSyncAt} hasScores={hasScores} />
     </div>
   );
 }

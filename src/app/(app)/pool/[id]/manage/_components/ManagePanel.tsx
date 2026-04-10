@@ -8,6 +8,7 @@ import { PoolSettings } from "./PoolSettings";
 import { ScoringAdmin } from "./ScoringAdmin";
 import { InviteLinkSection } from "./InviteLinkSection";
 import { AcceptingMembersToggle } from "./AcceptingMembersToggle";
+import { PaymentTracker } from "./PaymentTracker";
 
 interface PoolData {
   id: string;
@@ -26,6 +27,8 @@ interface PoolData {
   categoryCount: number;
   tournamentId: string;
   tournament: { name: string; startDate: string; endDate: string; course: string | null };
+  entryFee: string | null;
+  paymentInfo: string | null;
   memberCount: number;
   entryCount: number;
   lastSyncAt: string | null;
@@ -75,6 +78,10 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
     setPool((p) => ({ ...p, acceptingMembers: accepting }));
   }, []);
 
+  const handleFeeChange = useCallback((entryFee: string, paymentInfo: string) => {
+    setPool((p) => ({ ...p, entryFee, paymentInfo }));
+  }, []);
+
   return (
     <div className="mx-auto max-w-content px-4 py-6 space-y-5">
       {/* Pool Info Header */}
@@ -121,7 +128,18 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
         onMembersChange={handleMembersChange}
       />
 
-      {/* 5. Pool Settings */}
+      {/* 5. Payment Tracker */}
+      <PaymentTracker
+        poolId={pool.id}
+        poolName={pool.name}
+        tournamentName={pool.tournament.name}
+        status={pool.status}
+        entryFee={pool.entryFee || ""}
+        paymentInfo={pool.paymentInfo || ""}
+        onFeeChange={handleFeeChange}
+      />
+
+      {/* 6. Pool Settings */}
       <PoolSettings
         poolId={pool.id}
         status={pool.status}
@@ -138,7 +156,7 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
         onSettingsChange={handleSettingsChange}
       />
 
-      {/* 6. Scoring Admin */}
+      {/* 7. Scoring Admin */}
       <ScoringAdmin
         poolId={pool.id}
         tournamentId={pool.tournamentId}

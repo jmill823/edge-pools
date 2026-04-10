@@ -83,6 +83,10 @@ export async function PATCH(
     );
   }
 
+  // Payment settings can be updated in any non-archived status
+  if (body.entryFee !== undefined) allowed.entryFee = body.entryFee;
+  if (body.paymentInfo !== undefined) allowed.paymentInfo = body.paymentInfo;
+
   if (body.name !== undefined) allowed.name = body.name;
   if (body.picksDeadline !== undefined)
     allowed.picksDeadline = new Date(body.picksDeadline);

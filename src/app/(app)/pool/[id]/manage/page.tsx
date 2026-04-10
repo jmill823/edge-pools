@@ -76,6 +76,8 @@ export default async function ManagePage({
         },
         memberCount: pool._count.members,
         entryCount: pool._count.entries,
+        entryFee: pool.entryFee ?? null,
+        paymentInfo: pool.paymentInfo ?? null,
         lastSyncAt: pool.tournament.lastSyncAt?.toISOString() ?? null,
         pendingReplacements,
       }}

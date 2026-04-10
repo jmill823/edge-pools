@@ -34,6 +34,7 @@ interface EntryRowProps {
   cutProbability: number | null;
   onToggle: () => void;
   isEvenRow?: boolean;
+  isWinner?: boolean;
 }
 
 function cutPercentColor(cutPct: number | null): string {
@@ -62,13 +63,16 @@ export function EntryRow({
   cutProbability,
   onToggle,
   isEvenRow,
+  isWinner,
 }: EntryRowProps) {
   return (
     <div>
       <button
         onClick={onToggle}
         className={`w-full flex items-center px-3 py-3 text-left rounded-data transition-colors duration-150 min-h-[44px] cursor-pointer ${
-          isCurrentUser
+          isWinner
+            ? "bg-[#FDF4E3] border-l-[3px] border-accent-secondary"
+            : isCurrentUser
             ? "bg-[#F0F5F2] border-l-[3px] border-accent-primary"
             : isEvenRow
               ? "bg-surface-alt"
@@ -85,8 +89,9 @@ export function EntryRow({
         </span>
         {/* Team Name */}
         <span className={`flex-1 min-w-0 truncate font-body text-sm ${
-          isCurrentUser ? "font-semibold" : "font-medium"
+          isCurrentUser || isWinner ? "font-semibold" : "font-medium"
         } text-text-primary`}>
+          {isWinner && <span className="mr-1">🏆</span>}
           {teamName}
           {maxEntries > 1 && <span className="text-text-muted text-xs"> · E{entryNumber}</span>}
         </span>
