@@ -30,3 +30,24 @@ export function formatRankWithTies(rank: number | null, allRanks: (number | null
   if (isTied(rank, allRanks)) return `T${rank}`;
   return `${rank}`;
 }
+
+/** Color class for a single hole score relative to par */
+export function holeScoreColor(score: number, par: number): string {
+  const diff = score - par;
+  if (diff <= -2) return "text-[#1B5E3B] bg-[#D4EDDA]"; // eagle or better — bold green bg
+  if (diff === -1) return "text-accent-success";           // birdie — green text
+  if (diff === 0) return "text-text-secondary";            // par — neutral
+  if (diff === 1) return "text-accent-danger";             // bogey — red text
+  return "text-[#8B2D27] bg-[#FCEAE9]";                   // double+ — bold red bg
+}
+
+/** Short label for a hole score relative to par */
+export function holeScoreLabel(score: number, par: number): string {
+  const diff = score - par;
+  if (diff <= -2) return "Eagle";
+  if (diff === -1) return "Birdie";
+  if (diff === 0) return "Par";
+  if (diff === 1) return "Bogey";
+  if (diff === 2) return "Dbl Bogey";
+  return `+${diff}`;
+}

@@ -7,6 +7,7 @@ import { StatusBanner } from "./_components/StatusBanner";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 
 interface PickDetail {
+  golferId: string;
   categoryName: string;
   golferName: string;
   golferCountry: string | null;
@@ -170,6 +171,7 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
             <EntryRow
               key={entry.id}
               entryId={entry.id}
+              poolId={pool.id}
               rank={entry.rank}
               previousRank={entry.previousRank}
               teamName={entry.teamName}
@@ -181,6 +183,7 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
               allRanks={allRanks}
               picks={entry.picks}
               hasScores={hasScores}
+              currentRound={tournament.currentRound}
               submittedAt={entry.submittedAt}
               winProbability={entry.winProbability}
               cutProbability={entry.cutProbability}

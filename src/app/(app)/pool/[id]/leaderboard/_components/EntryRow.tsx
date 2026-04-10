@@ -1,6 +1,8 @@
 import { formatScore, scoreColor, formatRankWithTies } from "./score-utils";
+import { HoleByHoleCard } from "./HoleByHoleCard";
 
 interface PickDetail {
+  golferId: string;
   categoryName: string;
   golferName: string;
   golferCountry: string | null;
@@ -12,6 +14,7 @@ interface PickDetail {
 
 interface EntryRowProps {
   entryId: string;
+  poolId: string;
   rank: number | null;
   previousRank: number | null;
   teamName: string;
@@ -23,6 +26,7 @@ interface EntryRowProps {
   allRanks: (number | null)[];
   picks: PickDetail[];
   hasScores: boolean;
+  currentRound: number | null;
   submittedAt: string;
   winProbability: number | null;
   cutProbability: number | null;
@@ -40,6 +44,7 @@ function cutPercentColor(cutPct: number | null): string {
 
 export function EntryRow({
   rank,
+  poolId,
   teamName,
   teamScore,
   entryNumber,
@@ -49,6 +54,7 @@ export function EntryRow({
   allRanks,
   picks,
   hasScores,
+  currentRound,
   submittedAt,
   winProbability,
   cutProbability,
@@ -128,6 +134,19 @@ export function EntryRow({
               </span>
             </div>
           ))}
+
+          {/* Hole-by-hole scorecards — only when pool has scores */}
+          {hasScores && (
+            <div className="border-t border-border/50 pt-1.5 mt-1.5">
+              <HoleByHoleCard
+                poolId={poolId}
+                golferIds={picks.map((p) => p.golferId)}
+                golferNames={picks.map((p) => p.golferName)}
+                currentRound={currentRound}
+              />
+            </div>
+          )}
+
           {/* Timestamp at bottom of expansion */}
           <div className="pt-1 border-t border-border/50">
             <span className="font-mono text-[10px] text-text-muted">

@@ -91,6 +91,7 @@ export async function GET(
       .map((pick) => {
         const score = scoreMap.get(pick.golferId);
         return {
+          golferId: pick.golfer.id,
           categoryName: pick.category.name,
           golferName: pick.golfer.name,
           golferCountry: pick.golfer.country,
