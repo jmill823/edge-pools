@@ -8,6 +8,8 @@ interface PickDetail {
   golferCountry: string | null;
   golferScore: number | null;
   golferPosition: string | null;
+  holesCompleted: number;
+  round: number;
   isReplacement: boolean;
   originalGolferName: string | null;
 }
@@ -123,13 +125,22 @@ export function EntryRow({
                   </span>
                 )}
               </div>
-              <span className={`shrink-0 ml-2 font-mono font-medium ${
+              <span className={`shrink-0 ml-2 font-mono font-medium whitespace-nowrap ${
                 pick.golferPosition === "CUT" || pick.golferPosition === "WD"
                   ? "text-accent-danger" : scoreColor(pick.golferScore)
               }`}>
                 {pick.golferPosition === "CUT" ? "CUT"
                   : pick.golferPosition === "WD" ? "WD"
-                  : pick.golferScore !== null ? formatScore(pick.golferScore)
+                  : pick.golferScore !== null ? (
+                    <>
+                      {formatScore(pick.golferScore)}
+                      {pick.holesCompleted > 0 && (
+                        <span className="text-text-muted font-normal text-[10px] ml-1">
+                          {pick.holesCompleted >= 18 ? "F" : `thru ${pick.holesCompleted}`}
+                        </span>
+                      )}
+                    </>
+                  )
                   : "\u2014"}
               </span>
             </div>
