@@ -1,7 +1,25 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getOrCreateUser } from "@/lib/auth";
 import { PoolNav } from "@/components/ui/PoolNav";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const pool = await prisma.pool.findUnique({
+    where: { id: params.id },
+    select: { name: true },
+  });
+
+  return {
+    title: pool?.name ?? "Pool",
+    description:
+      "View pool details, invite players, and manage your golf pool.",
+  };
+}
 
 export default async function PoolLayout({
   children,
