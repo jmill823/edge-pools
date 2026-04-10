@@ -8,32 +8,32 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  clerkId       String   @unique
-  email         String   @unique
-  displayName   String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  clerkId     String   @unique
+  email       String   @unique
+  displayName String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  organizedPools  Pool[]        @relation("Organizer")
-  memberships     PoolMember[]
-  entries         Entry[]
+  organizedPools Pool[]       @relation("Organizer")
+  memberships    PoolMember[]
+  entries        Entry[]
 }
 
 model Tournament {
-  id          String           @id @default(cuid())
-  name        String
-  course      String?
-  startDate   DateTime
-  endDate     DateTime
-  status      TournamentStatus @default(UPCOMING)
-  year        Int
+  id               String           @id @default(cuid())
+  name             String
+  course           String?
+  startDate        DateTime
+  endDate          DateTime
+  status           TournamentStatus @default(UPCOMING)
+  year             Int
   slashGolfTournId String?
-  lastSyncAt  DateTime?
-  createdAt   DateTime         @default(now())
+  lastSyncAt       DateTime?
+  createdAt        DateTime         @default(now())
 
-  pools       Pool[]
-  scores      GolferScore[]
+  pools  Pool[]
+  scores GolferScore[]
 }
 
 enum TournamentStatus {
@@ -43,40 +43,45 @@ enum TournamentStatus {
 }
 
 model Golfer {
-  id            String   @id @default(cuid())
-  slashGolfId   String?  @unique
-  name          String
-  country       String?
-  owgr          Int?
-  imageUrl      String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  slashGolfId String?  @unique
+  name        String
+  country     String?
+  owgr        Int?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  categoryAssignments  CategoryGolfer[]
-  picks                Pick[]
-  replacedPicks        Pick[]        @relation("OriginalGolfer")
-  scores               GolferScore[]
+  categoryAssignments CategoryGolfer[]
+  picks               Pick[]
+  replacedPicks       Pick[]           @relation("OriginalGolfer")
+  scores              GolferScore[]
 }
 
 model Pool {
-  id              String     @id @default(cuid())
-  name            String
-  organizerId     String
-  tournamentId    String
-  inviteCode      String     @unique
-  picksDeadline   DateTime
-  status          PoolStatus @default(SETUP)
-  acceptingMembers Boolean  @default(true)
-  maxEntries      Int        @default(1)
-  rules           String?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  id               String     @id @default(cuid())
+  name             String
+  organizerId      String
+  tournamentId     String
+  inviteCode       String     @unique
+  picksDeadline    DateTime
+  status           PoolStatus @default(SETUP)
+  acceptingMembers Boolean    @default(true)
+  maxEntries       Int        @default(1)
+  rules            String?
+  missedCutPenalty String     @default("+8")
+  scoringMode      String     @default("total")
+  bestX            Int?
+  bestY            Int?
+  tiebreaker       String     @default("lowest_final_round")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 
-  organizer       User         @relation("Organizer", fields: [organizerId], references: [id])
-  tournament      Tournament   @relation(fields: [tournamentId], references: [id])
-  categories      Category[]
-  members         PoolMember[]
-  entries         Entry[]
+  organizer           User                 @relation("Organizer", fields: [organizerId], references: [id])
+  tournament          Tournament           @relation(fields: [tournamentId], references: [id])
+  categories          Category[]
+  members             PoolMember[]
+  entries             Entry[]
   pendingReplacements PendingReplacement[]
 }
 
@@ -90,15 +95,15 @@ enum PoolStatus {
 }
 
 model PoolMember {
-  id          String   @id @default(cuid())
-  poolId      String
-  userId      String
-  role        PoolRole @default(PLAYER)
-  hasPaid     Boolean  @default(false)
-  joinedAt    DateTime @default(now())
+  id       String   @id @default(cuid())
+  poolId   String
+  userId   String
+  role     PoolRole @default(PLAYER)
+  hasPaid  Boolean  @default(false)
+  joinedAt DateTime @default(now())
 
-  pool        Pool @relation(fields: [poolId], references: [id])
-  user        User @relation(fields: [userId], references: [id])
+  pool Pool @relation(fields: [poolId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@unique([poolId, userId])
 }
@@ -109,91 +114,104 @@ enum PoolRole {
 }
 
 model Category {
-  id          String   @id @default(cuid())
-  poolId      String
-  name        String
-  qualifier   String?
-  sortOrder   Int
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  poolId    String
+  name      String
+  qualifier String?
+  sortOrder Int
+  createdAt DateTime @default(now())
 
-  pool        Pool              @relation(fields: [poolId], references: [id])
-  golfers     CategoryGolfer[]
-  picks       Pick[]
+  pool    Pool             @relation(fields: [poolId], references: [id])
+  golfers CategoryGolfer[]
+  picks   Pick[]
 }
 
 model CategoryGolfer {
-  id          String @id @default(cuid())
-  categoryId  String
-  golferId    String
+  id         String @id @default(cuid())
+  categoryId String
+  golferId   String
 
-  category    Category @relation(fields: [categoryId], references: [id])
-  golfer      Golfer   @relation(fields: [golferId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+  golfer   Golfer   @relation(fields: [golferId], references: [id])
 
   @@unique([categoryId, golferId])
 }
 
 model Entry {
-  id          String   @id @default(cuid())
-  poolId      String
-  userId      String
-  entryNumber Int      @default(1)
-  teamName    String   @default("")
-  teamScore   Float?
-  rank        Int?
+  id           String   @id @default(cuid())
+  poolId       String
+  userId       String
+  entryNumber  Int      @default(1)
+  teamName     String   @default("")
+  teamScore    Float?
+  rank         Int?
   previousRank Int?
-  submittedAt DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  submittedAt  DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  pool        Pool   @relation(fields: [poolId], references: [id])
-  user        User   @relation(fields: [userId], references: [id])
-  picks       Pick[]
+  pool  Pool   @relation(fields: [poolId], references: [id])
+  user  User   @relation(fields: [userId], references: [id])
+  picks Pick[]
 
   @@unique([poolId, userId, entryNumber])
 }
 
 model Pick {
-  id                String  @id @default(cuid())
-  entryId           String
-  categoryId        String
-  golferId          String
-  isReplacement     Boolean @default(false)
-  originalGolferId  String?
+  id               String  @id @default(cuid())
+  entryId          String
+  categoryId       String
+  golferId         String
+  isReplacement    Boolean @default(false)
+  originalGolferId String?
 
-  entry             Entry    @relation(fields: [entryId], references: [id])
-  category          Category @relation(fields: [categoryId], references: [id])
-  golfer            Golfer   @relation(fields: [golferId], references: [id])
-  originalGolfer    Golfer?  @relation("OriginalGolfer", fields: [originalGolferId], references: [id])
+  entry          Entry    @relation(fields: [entryId], references: [id])
+  category       Category @relation(fields: [categoryId], references: [id])
+  golfer         Golfer   @relation(fields: [golferId], references: [id])
+  originalGolfer Golfer?  @relation("OriginalGolfer", fields: [originalGolferId], references: [id])
 
   @@unique([entryId, categoryId])
 }
 
 model GolferScore {
-  id              String   @id @default(cuid())
-  golferId        String
-  tournamentId    String
-  round           Int
-  holesCompleted  Int      @default(0)
-  roundScore      Int?
-  totalScore      Int?
-  position        String?
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  golferId       String
+  tournamentId   String
+  round          Int
+  holesCompleted Int      @default(0)
+  roundScore     Int?
+  totalScore     Int?
+  position       String?
+  updatedAt      DateTime @updatedAt
 
-  golfer          Golfer     @relation(fields: [golferId], references: [id])
-  tournament      Tournament @relation(fields: [tournamentId], references: [id])
+  golfer     Golfer     @relation(fields: [golferId], references: [id])
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
 
   @@unique([golferId, tournamentId, round])
 }
 
 model PendingReplacement {
-  id                  String   @id @default(cuid())
+  id                  String    @id @default(cuid())
   poolId              String
   pickId              String
   originalGolferId    String
   replacementGolferId String
-  reason              String   // "WD" or "CUT"
-  status              String   @default("PENDING") // PENDING, CONFIRMED, OVERRIDDEN
+  reason              String // "WD" or "CUT"
+  status              String    @default("PENDING") // PENDING, CONFIRMED, OVERRIDDEN
   confirmedAt         DateTime?
-  createdAt           DateTime @default(now())
+  createdAt           DateTime  @default(now())
 
-  pool                Pool     @relation(fields: [poolId], references: [id])
+  pool Pool @relation(fields: [poolId], references: [id])
+}
+
+model TransferRequest {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  poolType    String
+  description String
+  fileData    String?
+  fileName    String?
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

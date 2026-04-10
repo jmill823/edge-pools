@@ -73,6 +73,11 @@ export async function POST(req: Request) {
     picksDeadline,
     maxEntries,
     rules,
+    missedCutPenalty,
+    scoringMode,
+    bestX,
+    bestY,
+    tiebreaker,
   }: {
     name: string;
     tournamentId: string;
@@ -80,6 +85,11 @@ export async function POST(req: Request) {
     picksDeadline: string;
     maxEntries: number;
     rules?: string;
+    missedCutPenalty?: string;
+    scoringMode?: string;
+    bestX?: number;
+    bestY?: number;
+    tiebreaker?: string;
   } = body;
 
   if (!name || !tournamentId || !categories?.length || !picksDeadline) {
@@ -110,6 +120,11 @@ export async function POST(req: Request) {
       picksDeadline: new Date(picksDeadline),
       maxEntries: maxEntries || 1,
       rules: rules || null,
+      missedCutPenalty: missedCutPenalty || "+8",
+      scoringMode: scoringMode || "total",
+      bestX: bestX ?? null,
+      bestY: bestY ?? null,
+      tiebreaker: tiebreaker || "lowest_final_round",
       status: "SETUP",
       categories: {
         create: categories.map((cat) => ({

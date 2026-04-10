@@ -18,6 +18,12 @@ interface PoolData {
   maxEntries: number;
   picksDeadline: string;
   rules: string | null;
+  missedCutPenalty: string;
+  scoringMode: string;
+  bestX: number | null;
+  bestY: number | null;
+  tiebreaker: string;
+  categoryCount: number;
   tournamentId: string;
   tournament: { name: string; startDate: string; endDate: string; course: string | null };
   memberCount: number;
@@ -57,7 +63,10 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
     setMembers(updated);
   }, []);
 
-  const handleSettingsChange = useCallback((settings: { name: string; picksDeadline: string; maxEntries: number; rules: string | null }) => {
+  const handleSettingsChange = useCallback((settings: {
+    name: string; picksDeadline: string; maxEntries: number; rules: string | null;
+    missedCutPenalty: string; scoringMode: string; bestX: number | null; bestY: number | null; tiebreaker: string;
+  }) => {
     setPool((p) => ({ ...p, ...settings }));
     router.refresh();
   }, [router]);
@@ -120,6 +129,12 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
         picksDeadline={pool.picksDeadline}
         maxEntries={pool.maxEntries}
         rules={pool.rules}
+        missedCutPenalty={pool.missedCutPenalty}
+        scoringMode={pool.scoringMode}
+        bestX={pool.bestX}
+        bestY={pool.bestY}
+        tiebreaker={pool.tiebreaker}
+        categoryCount={pool.categoryCount}
         onSettingsChange={handleSettingsChange}
       />
 

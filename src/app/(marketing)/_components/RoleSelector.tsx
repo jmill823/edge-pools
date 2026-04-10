@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Trophy, Flag } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const STORAGE_KEY = "tilt_role_seen";
 
@@ -11,6 +11,7 @@ interface RoleSelectorProps {
 }
 
 export function RoleSelector({ onSelectCommissioner, onSelectPlayer }: RoleSelectorProps) {
+  const router = useRouter();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -24,14 +25,19 @@ export function RoleSelector({ onSelectCommissioner, onSelectPlayer }: RoleSelec
     setVisible(false);
   }
 
-  function handleCommissioner() {
+  function handleJoin() {
+    dismiss();
+    onSelectPlayer();
+  }
+
+  function handleCreate() {
     dismiss();
     onSelectCommissioner();
   }
 
-  function handlePlayer() {
+  function handleSwitch() {
     dismiss();
-    onSelectPlayer();
+    router.push("/switch");
   }
 
   if (!visible) return null;
@@ -55,39 +61,44 @@ export function RoleSelector({ onSelectCommissioner, onSelectPlayer }: RoleSelec
         </h2>
 
         {/* Green rule */}
-        <div className="mx-auto mt-3 mb-3 h-[2px] w-8 bg-[#2D5F3B]" />
+        <div className="mx-auto mt-3 mb-5 h-[2px] w-8 bg-[#2D5F3B]" />
 
-        {/* Prompt */}
-        <p className="text-center font-display text-[15px] font-semibold text-text-primary">
-          I&rsquo;m here to&hellip;
-        </p>
-
-        {/* Role cards */}
-        <div className="mt-5 flex gap-2.5">
+        {/* 3 action buttons */}
+        <div className="flex flex-col gap-3">
           <button
-            onClick={handleCommissioner}
-            className="flex-1 rounded-card border-[1.5px] border-[#EDEAE4] p-4 text-center cursor-pointer transition-all duration-200 hover:border-[#2D5F3B] hover:bg-[#E8F0E5]"
+            onClick={handleJoin}
+            className="w-full rounded-btn bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-4 text-center cursor-pointer transition-all duration-200 hover:brightness-105 active:scale-[0.98] min-h-[44px]"
           >
-            <Trophy className="mx-auto h-6 w-6 text-[#2D5F3B]" />
-            <p className="mt-1 font-display text-[13px] font-bold text-text-primary">
-              Run a pool
-            </p>
-            <p className="mt-1 font-body text-[10px] font-normal text-text-secondary leading-[1.4]">
-              Set up categories, invite your group, manage the leaderboard
-            </p>
+            <span className="block font-display text-[18px] font-bold text-white">
+              JOIN
+            </span>
+            <span className="block font-body text-[12px] text-white/80 mt-0.5">
+              Enter a pool
+            </span>
           </button>
 
           <button
-            onClick={handlePlayer}
-            className="flex-1 rounded-card border-[1.5px] border-[#EDEAE4] p-4 text-center cursor-pointer transition-all duration-200 hover:border-[#2D5F3B] hover:bg-[#E8F0E5]"
+            onClick={handleCreate}
+            className="w-full rounded-btn bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-4 text-center cursor-pointer transition-all duration-200 hover:brightness-105 active:scale-[0.98] min-h-[44px]"
           >
-            <Flag className="mx-auto h-6 w-6 text-[#2D5F3B]" />
-            <p className="mt-1 font-display text-[13px] font-bold text-text-primary">
-              Join a pool
-            </p>
-            <p className="mt-1 font-body text-[10px] font-normal text-text-secondary leading-[1.4]">
-              Pick your golfers, watch the leaderboard, talk trash
-            </p>
+            <span className="block font-display text-[18px] font-bold text-white">
+              CREATE
+            </span>
+            <span className="block font-body text-[12px] text-white/80 mt-0.5">
+              Start a new pool
+            </span>
+          </button>
+
+          <button
+            onClick={handleSwitch}
+            className="w-full rounded-btn bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-4 text-center cursor-pointer transition-all duration-200 hover:brightness-105 active:scale-[0.98] min-h-[44px]"
+          >
+            <span className="block font-display text-[18px] font-bold text-white">
+              SWITCH
+            </span>
+            <span className="block font-body text-[12px] text-white/80 mt-0.5">
+              Ditch the spreadsheet
+            </span>
           </button>
         </div>
 

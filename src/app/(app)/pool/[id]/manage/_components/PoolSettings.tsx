@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
 import { InlineFeedback } from "@/components/ui/InlineFeedback";
+import { ScoringConfig } from "@/components/ui/ScoringConfig";
 
 interface PoolSettingsProps {
   poolId: string;
@@ -11,7 +12,23 @@ interface PoolSettingsProps {
   picksDeadline: string;
   maxEntries: number;
   rules: string | null;
-  onSettingsChange: (settings: { name: string; picksDeadline: string; maxEntries: number; rules: string | null }) => void;
+  missedCutPenalty: string;
+  scoringMode: string;
+  bestX: number | null;
+  bestY: number | null;
+  tiebreaker: string;
+  categoryCount: number;
+  onSettingsChange: (settings: {
+    name: string;
+    picksDeadline: string;
+    maxEntries: number;
+    rules: string | null;
+    missedCutPenalty: string;
+    scoringMode: string;
+    bestX: number | null;
+    bestY: number | null;
+    tiebreaker: string;
+  }) => void;
 }
 
 export function PoolSettings({
@@ -21,17 +38,29 @@ export function PoolSettings({
   picksDeadline,
   maxEntries,
   rules,
+  missedCutPenalty,
+  scoringMode,
+  bestX,
+  bestY,
+  tiebreaker,
+  categoryCount,
   onSettingsChange,
 }: PoolSettingsProps) {
   const editable = status === "SETUP";
 
   const [formName, setFormName] = useState(name);
   const [formDeadline, setFormDeadline] = useState(
-    // Convert ISO to datetime-local format for input
     picksDeadline ? new Date(picksDeadline).toISOString().slice(0, 16) : ""
   );
   const [formMaxEntries, setFormMaxEntries] = useState(maxEntries);
   const [formRules, setFormRules] = useState(rules || "");
+  const [formScoring, setFormScoring] = useState({
+    missedCutPenalty,
+    scoringMode,
+    bestX,
+    bestY,
+    tiebreaker,
+  });
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [dirty, setDirty] = useState(false);
@@ -50,6 +79,7 @@ export function PoolSettings({
           picksDeadline: new Date(formDeadline).toISOString(),
           maxEntries: formMaxEntries,
           rules: formRules.trim() || null,
+          ...formScoring,
         }),
       });
       if (!res.ok) {
@@ -62,6 +92,11 @@ export function PoolSettings({
         picksDeadline: updated.picksDeadline,
         maxEntries: updated.maxEntries,
         rules: updated.rules,
+        missedCutPenalty: updated.missedCutPenalty,
+        scoringMode: updated.scoringMode,
+        bestX: updated.bestX,
+        bestY: updated.bestY,
+        tiebreaker: updated.tiebreaker,
       });
       setFeedback({ type: "success", message: "Settings saved" });
       setDirty(false);
@@ -70,15 +105,34 @@ export function PoolSettings({
     } finally {
       setSaving(false);
     }
-  }, [poolId, formName, formDeadline, formMaxEntries, formRules, onSettingsChange]);
+  }, [poolId, formName, formDeadline, formMaxEntries, formRules, formScoring, onSettingsChange]);
 
   const deadline = new Date(picksDeadline);
   const deadlineDisplay = isNaN(deadline.getTime())
     ? "—"
     : `${deadline.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} at ${deadline.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
 
+  const penaltyLabel = {
+    "+8": "+8 per missed round",
+    "+10": "+10 per missed round",
+    "repeat_best": "Repeat best completed round",
+    "repeat_worst": "Repeat worst completed round",
+  }[missedCutPenalty] ?? `${missedCutPenalty} per missed round`;
+
+  const modeLabel = {
+    "total": "Total strokes",
+    "best_x_of_y": `Best ${bestY} of ${bestX}`,
+    "drop_worst": "Drop worst",
+  }[scoringMode] ?? scoringMode;
+
+  const tiebreakerLabel = {
+    "lowest_final_round": "Lowest final round",
+    "lowest_r1": "Lowest Round 1",
+    "commissioner_decides": "Commissioner decides",
+    "scorecard_playoff": "Scorecard playoff",
+  }[tiebreaker] ?? tiebreaker;
+
   if (!editable) {
-    // Read-only display
     return (
       <div className="rounded-card border border-border bg-surface p-4">
         <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
@@ -89,6 +143,9 @@ export function PoolSettings({
           <ReadOnlyField label="Picks deadline" value={deadlineDisplay} mono />
           <ReadOnlyField label="Max entries per player" value={String(maxEntries)} mono />
           {rules && <ReadOnlyField label="House rules" value={rules} />}
+          <ReadOnlyField label="Missed-cut penalty" value={penaltyLabel} />
+          <ReadOnlyField label="Scoring mode" value={modeLabel} />
+          <ReadOnlyField label="Tiebreaker" value={tiebreakerLabel} />
         </div>
         <p className="mt-3 font-body text-xs text-text-muted">
           Settings are locked after pool is opened.
@@ -177,6 +234,22 @@ export function PoolSettings({
             rows={3}
             className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors duration-200 resize-none"
             placeholder="Payment details, tiebreaker rules, etc."
+          />
+        </div>
+
+        {/* Scoring Configuration */}
+        <div className="border-t border-border pt-4">
+          <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
+            Scoring Configuration
+          </p>
+          <ScoringConfig
+            missedCutPenalty={formScoring.missedCutPenalty}
+            scoringMode={formScoring.scoringMode}
+            bestX={formScoring.bestX}
+            bestY={formScoring.bestY}
+            tiebreaker={formScoring.tiebreaker}
+            categoryCount={categoryCount}
+            onChange={(config) => { setFormScoring(config); markDirty(); }}
           />
         </div>
 

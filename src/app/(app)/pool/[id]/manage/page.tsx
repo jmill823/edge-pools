@@ -17,7 +17,7 @@ export default async function ManagePage({
       tournament: {
         select: { id: true, name: true, startDate: true, endDate: true, course: true, lastSyncAt: true },
       },
-      _count: { select: { members: true, entries: true } },
+      _count: { select: { members: true, entries: true, categories: true } },
     },
   });
 
@@ -61,6 +61,12 @@ export default async function ManagePage({
         maxEntries: pool.maxEntries,
         picksDeadline: pool.picksDeadline.toISOString(),
         rules: pool.rules,
+        missedCutPenalty: pool.missedCutPenalty,
+        scoringMode: pool.scoringMode,
+        bestX: pool.bestX,
+        bestY: pool.bestY,
+        tiebreaker: pool.tiebreaker,
+        categoryCount: pool._count.categories,
         tournamentId: pool.tournament.id,
         tournament: {
           name: pool.tournament.name,

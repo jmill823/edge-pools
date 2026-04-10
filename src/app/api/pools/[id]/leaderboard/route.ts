@@ -139,6 +139,11 @@ export async function GET(
       maxEntries: pool.maxEntries,
       picksDeadline: pool.picksDeadline,
       inviteCode: pool.inviteCode,
+      missedCutPenalty: pool.missedCutPenalty,
+      scoringMode: pool.scoringMode,
+      bestX: pool.bestX,
+      bestY: pool.bestY,
+      tiebreaker: pool.tiebreaker,
     },
     tournament: {
       name: pool.tournament.name,

@@ -73,8 +73,8 @@ export async function PATCH(
     allowed.acceptingMembers = body.acceptingMembers;
   }
 
-  // Pool settings (name, deadline, maxEntries, rules) only editable in SETUP
-  const settingsFields = ["name", "picksDeadline", "maxEntries", "rules"];
+  // Pool settings only editable in SETUP
+  const settingsFields = ["name", "picksDeadline", "maxEntries", "rules", "missedCutPenalty", "scoringMode", "bestX", "bestY", "tiebreaker"];
   const hasSettings = settingsFields.some((f) => body[f] !== undefined);
   if (hasSettings && pool.status !== "SETUP") {
     return NextResponse.json(
@@ -88,6 +88,11 @@ export async function PATCH(
     allowed.picksDeadline = new Date(body.picksDeadline);
   if (body.maxEntries !== undefined) allowed.maxEntries = body.maxEntries;
   if (body.rules !== undefined) allowed.rules = body.rules;
+  if (body.missedCutPenalty !== undefined) allowed.missedCutPenalty = body.missedCutPenalty;
+  if (body.scoringMode !== undefined) allowed.scoringMode = body.scoringMode;
+  if (body.bestX !== undefined) allowed.bestX = body.bestX;
+  if (body.bestY !== undefined) allowed.bestY = body.bestY;
+  if (body.tiebreaker !== undefined) allowed.tiebreaker = body.tiebreaker;
 
   const updated = await prisma.pool.update({
     where: { id: params.id },

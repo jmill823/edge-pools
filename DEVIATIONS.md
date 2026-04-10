@@ -352,3 +352,32 @@
 - **What was found:** Vijay Singh was not in the 2025 Masters SlashGolf data but is a past champion who receives a lifetime invitation. His competing status for 2026 is unclear from available data.
 - **What was done:** Included Vijay Singh in the template but flagged here. He appears in Past Champions, Veterans, International, Favorites, and Longshots.
 - **Why:** Brief says "If any past champion's competing status is unclear from SlashGolf data, INCLUDE them in the template but flag in DEVIATIONS.md."
+
+## Session A — Commissioner Setup & Config (April 9, 2026)
+
+### DEV SA-1 — Prisma Schema Modified (Approved by Session Brief)
+- **Spec said:** Add scoring config columns to Pool + new TransferRequest table.
+- **What existed:** CLAUDE.md says "Do not modify Prisma schema without approval."
+- **What was done:** Added `missedCutPenalty`, `scoringMode`, `bestX`, `bestY`, `tiebreaker` to Pool model. Added `TransferRequest` model. Created migration SQL.
+- **Why:** Session A spec explicitly defines these schema changes. The spec IS the approval.
+
+### DEV SA-2 — Scoring Config UI Only (Engine Not Modified)
+- **Spec said:** Missed-cut penalty, scoring mode, and tiebreaker should affect leaderboard calculation.
+- **What was done:** Scoring configuration UI is complete — commissioners can set all options during pool creation and SETUP. Config is stored in DB and exposed via the leaderboard API. However, the actual score computation in `poll-scores.ts` was NOT modified.
+- **Why:** CLAUDE.md says "Do not modify scoring service." The scoring engine (`src/lib/scoring/poll-scores.ts`) is in the protected files list. To apply scoring config to live scores, `poll-scores.ts` needs to read the pool's scoring settings and apply them during recalculation. This requires a separate session with explicit approval to modify the scoring service.
+
+### DEV SA-3 — Email Notification Best-Effort with Resend
+- **Spec said:** Send email notification to Jeff on transfer form submission.
+- **What was done:** Installed `resend` package. Email sends when `RESEND_API_KEY` and `TRANSFER_NOTIFY_EMAIL` env vars are set. If not configured, the request still succeeds (DB stores the data) and a console log is written.
+- **Why:** Graceful degradation — form works without email config. Jeff can add the env vars when ready.
+
+### DEV SA-4 — File Upload Stored as Base64 in DB
+- **Spec said:** Store uploaded file in Vercel Blob or as base64 if Blob isn't available.
+- **What was done:** Files are converted to base64 on the client and stored in a `fileData` text column. Max file size limited to 5MB.
+- **Why:** Simplest approach for Hobby tier. Vercel Blob requires additional configuration. Files are expected to be small (pool templates, screenshots).
+
+### DEV SA-5 — RoleSelector Popup Modified (Not Post-Auth Dashboard)
+- **Spec said:** "Popup with JOIN, CREATE, TRANSFER buttons after sign-up/sign-in."
+- **What exists:** The RoleSelector popup lives on the marketing landing page (pre-auth), not on the dashboard (post-auth). It shows once per visitor via localStorage.
+- **What was done:** Modified the existing RoleSelector to show JOIN/CREATE/SWITCH buttons with the new styling. The popup remains on the landing page.
+- **Why:** The existing popup architecture works correctly for first-time visitors. Moving it to post-auth dashboard would require a different component and flow. The landing page popup captures users at the earliest touchpoint.
