@@ -135,8 +135,8 @@ export function EntryRow({
                     <>
                       {formatScore(pick.golferScore)}
                       {pick.holesCompleted > 0 && (
-                        <span className="text-text-muted font-normal text-[10px] ml-1">
-                          {pick.holesCompleted >= 18 ? "F" : `thru ${pick.holesCompleted}`}
+                        <span className="text-text-secondary font-normal text-xs">
+                          {pick.holesCompleted >= 18 ? " · F" : ` · thru ${pick.holesCompleted}`}
                         </span>
                       )}
                     </>
