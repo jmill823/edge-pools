@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { InlineFeedback } from "@/components/ui/InlineFeedback";
+import { EmailInviteSection } from "./_components/EmailInviteSection";
 
 interface PoolInfo {
   id: string;
@@ -193,6 +194,9 @@ export default function InvitePage({ params }: { params: { id: string } }) {
             {pool.inviteCode}
           </p>
         </div>
+
+        {/* Email invites */}
+        <EmailInviteSection poolId={pool.id} />
 
         {/* Open Pool — only in SETUP */}
         {pool.status === "SETUP" && (

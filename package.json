@@ -18,7 +18,8 @@
     "prisma": "^5.22.0",
     "react": "^18",
     "react-dom": "^18",
-    "resend": "^6.10.0"
+    "resend": "^6.10.0",
+    "xlsx": "^0.18.5"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
