@@ -1,36 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getOrCreateUser } from "@/lib/auth";
+import { getGuestPlayer } from "@/lib/guest-auth";
 import { prisma } from "@/lib/db";
 import { calculateMockWinProbability } from "@/lib/scoring/mock-win-probability";
 import { calculateMockCutProbability } from "@/lib/scoring/mock-cut-probability";
 
+/**
+ * GET — Guest-accessible leaderboard. Same data as authenticated leaderboard,
+ * but auth is via guest cookie instead of Clerk.
+ */
 export async function GET(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const user = await getOrCreateUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const guestPlayer = await getGuestPlayer(params.id);
+  if (!guestPlayer) {
+    return NextResponse.json({ error: "Not authenticated as guest" }, { status: 401 });
   }
 
   const pool = await prisma.pool.findUnique({
     where: { id: params.id },
-    include: {
-      tournament: true,
-      members: { where: { userId: user.id } },
-    },
+    include: { tournament: true },
   });
 
   if (!pool) {
     return NextResponse.json({ error: "Pool not found" }, { status: 404 });
   }
 
-  // Check membership
-  if (pool.members.length === 0) {
-    return NextResponse.json({ error: "Not a member" }, { status: 403 });
-  }
-
-  // Fetch all entries with picks and golfer scores (includes guest entries)
   const entries = await prisma.entry.findMany({
     where: { poolId: pool.id },
     include: {
@@ -47,7 +42,6 @@ export async function GET(
     orderBy: [{ rank: "asc" }, { submittedAt: "asc" }],
   });
 
-  // Get latest golfer scores for this tournament
   const golferIds = Array.from(
     new Set(entries.flatMap((e) => e.picks.map((p) => p.golferId)))
   );
@@ -73,19 +67,12 @@ export async function GET(
     ])
   );
 
-  // Count golfers currently on course
   const onCourse = golferScores.filter(
     (s) => s.holesCompleted > 0 && s.holesCompleted < 18 && s.position !== "CUT" && s.position !== "WD"
   ).length;
 
-  // Check for pending replacements
-  const pendingReplacements = await prisma.pendingReplacement.count({
-    where: { poolId: pool.id, status: "PENDING" },
-  });
-
   const isScored = ["LIVE", "COMPLETE", "ARCHIVED"].includes(pool.status);
 
-  // Format leaderboard
   const leaderboard = entries.map((entry) => {
     const sortedPicks = entry.picks
       .sort((a, b) => a.category.sortOrder - b.category.sortOrder)
@@ -105,7 +92,6 @@ export async function GET(
         };
       });
 
-    // Calculate mock probabilities (only when pool is scored)
     const winProbability = isScored
       ? calculateMockWinProbability(entry.teamScore, entry.rank, entries.length)
       : null;
@@ -128,7 +114,7 @@ export async function GET(
       rank: entry.rank,
       previousRank: entry.previousRank,
       submittedAt: entry.submittedAt,
-      isCurrentUser: entry.userId === user.id,
+      isCurrentUser: entry.guestPlayerId === guestPlayer.id,
       winProbability,
       cutProbability,
       picks: sortedPicks,
@@ -158,7 +144,7 @@ export async function GET(
         : null,
     },
     onCourse,
-    pendingReplacements,
+    pendingReplacements: 0,
     leaderboard,
   });
 }

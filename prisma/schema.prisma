@@ -82,6 +82,7 @@ model Pool {
   categories          Category[]
   members             PoolMember[]
   entries             Entry[]
+  guestPlayers        GuestPlayer[]
   pendingReplacements PendingReplacement[]
 }
 
@@ -138,20 +139,22 @@ model CategoryGolfer {
 }
 
 model Entry {
-  id           String   @id @default(cuid())
-  poolId       String
-  userId       String
-  entryNumber  Int      @default(1)
-  teamName     String   @default("")
-  teamScore    Float?
-  rank         Int?
-  previousRank Int?
-  submittedAt  DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String   @id @default(cuid())
+  poolId         String
+  userId         String?
+  guestPlayerId  String?
+  entryNumber    Int      @default(1)
+  teamName       String   @default("")
+  teamScore      Float?
+  rank           Int?
+  previousRank   Int?
+  submittedAt    DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  pool  Pool   @relation(fields: [poolId], references: [id])
-  user  User   @relation(fields: [userId], references: [id])
-  picks Pick[]
+  pool        Pool         @relation(fields: [poolId], references: [id])
+  user        User?        @relation(fields: [userId], references: [id])
+  guestPlayer GuestPlayer? @relation(fields: [guestPlayerId], references: [id])
+  picks       Pick[]
 
   @@unique([poolId, userId, entryNumber])
 }
@@ -201,6 +204,20 @@ model PendingReplacement {
   createdAt           DateTime  @default(now())
 
   pool Pool @relation(fields: [poolId], references: [id])
+}
+
+model GuestPlayer {
+  id          String   @id @default(cuid())
+  poolId      String
+  displayName String
+  email       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pool    Pool    @relation(fields: [poolId], references: [id])
+  entries Entry[]
+
+  @@unique([poolId, email])
 }
 
 model TransferRequest {

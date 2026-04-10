@@ -19,6 +19,10 @@ export default clerkMiddleware(async (auth, req) => {
   if (pathname.startsWith('/api/golfers')) return NextResponse.next()
   if (pathname.startsWith('/api/pools/join/')) return NextResponse.next()
 
+  // Guest player routes — no Clerk auth required
+  if (pathname.match(/^\/api\/pools\/[^/]+\/guest\//)) return NextResponse.next()
+  if (pathname.startsWith('/guest-pool/')) return NextResponse.next()
+
   // Protected pages — redirect to sign-in
   if (isProtectedPage(req)) {
     const session = await auth()

@@ -381,3 +381,27 @@
 - **What exists:** The RoleSelector popup lives on the marketing landing page (pre-auth), not on the dashboard (post-auth). It shows once per visitor via localStorage.
 - **What was done:** Modified the existing RoleSelector to show JOIN/CREATE/SWITCH buttons with the new styling. The popup remains on the landing page.
 - **Why:** The existing popup architecture works correctly for first-time visitors. Moving it to post-auth dashboard would require a different component and flow. The landing page popup captures users at the earliest touchpoint.
+
+---
+
+## Session D — Guest Picks (No Account Required) | April 9, 2026
+
+### DEV D-1 — Guest pages use `/guest-pool/[id]/picks` URL instead of `/pool/[id]/guest-picks`
+- **Spec said:** Player lands on picks grid after guest join, implied same `/pool/[id]/` URL structure.
+- **What was done:** Guest picks live at `/guest-pool/[id]/picks` and guest leaderboard at `/guest-pool/[id]/leaderboard`, under a separate `(guest)` route group.
+- **Why:** The existing `/pool/[id]/` routes are behind the `(app)` route group's `pool/[id]/layout.tsx`, which requires Clerk auth and checks PoolMember membership. Putting guest pages in the same route group would require extensive changes to the auth-gated layout. A separate `(guest)` route group with its own minimal layout avoids modifying the commissioner auth flow.
+
+### DEV D-2 — Guest auth via HttpOnly cookies, not URL tokens
+- **Spec said:** "invite link + email combo is sufficient auth." Implied email-based lookup on each request.
+- **What was done:** On guest join, an HttpOnly cookie (`guest_pool_{poolId}`) is set containing the guestPlayerId. Subsequent API requests authenticate via this cookie.
+- **Why:** Re-entering email on every page load would be terrible UX. A cookie persists the session naturally. The cookie is per-pool, HttpOnly, SameSite=Lax, with 90-day expiry — secure enough for a casual golf pool while maintaining the "no account" simplicity.
+
+### DEV D-3 — Guest entries use separate API routes (`/api/pools/[id]/guest/*`)
+- **Spec said:** Implied modifying existing API routes to handle both auth types.
+- **What was done:** Created parallel guest API routes (`guest/join`, `guest/entries`, `guest/entries/mine`, `guest/entries/[entryId]`, `guest/categories`, `guest/leaderboard`, `guest/info`).
+- **Why:** Modifying existing authenticated routes risks regressions in the commissioner flow. Parallel routes keep the guest and Clerk auth paths cleanly separated. Both code paths share the same Prisma queries and validation logic — just different auth checks.
+
+### DEV D-4 — Entry.userId made nullable instead of adding CHECK constraint
+- **Spec said:** "One of user_id or guest_player_id must be set (not both, not neither)."
+- **What was done:** `userId` is nullable in Prisma schema. No database-level CHECK constraint for the XOR rule — enforced in application code.
+- **Why:** Prisma doesn't support CHECK constraints natively. Adding raw SQL for this would complicate the migration and go against the project's Prisma-first approach. The API routes enforce that guest entries always have `guestPlayerId` and Clerk entries always have `userId`.
