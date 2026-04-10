@@ -15,7 +15,7 @@ export async function GET(
         orderBy: { sortOrder: "asc" },
         include: { _count: { select: { golfers: true } } },
       },
-      _count: { select: { members: true } },
+      _count: { select: { members: true, guestPlayers: true } },
     },
   });
 
@@ -34,7 +34,7 @@ export async function GET(
       name: c.name,
       golferCount: c._count.golfers,
     })),
-    memberCount: pool._count.members,
+    memberCount: pool._count.members + pool._count.guestPlayers,
     maxEntries: pool.maxEntries,
     picksDeadline: pool.picksDeadline,
     acceptingMembers: pool.acceptingMembers,

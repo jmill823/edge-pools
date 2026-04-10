@@ -41,6 +41,7 @@ export async function GET(
     where: { poolId: params.id },
     include: {
       user: { select: { displayName: true, email: true } },
+      guestPlayer: { select: { displayName: true, email: true } },
       picks: {
         include: {
           golfer: { select: { name: true, country: true, owgr: true } },
