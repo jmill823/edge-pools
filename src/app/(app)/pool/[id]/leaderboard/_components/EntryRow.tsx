@@ -25,29 +25,31 @@ export function EntryRow({
       {/* Team row */}
       <button
         onClick={onToggle}
-        className={`w-full flex items-center px-3 py-2.5 text-left transition-colors duration-150 min-h-[44px] cursor-pointer border-b border-border/50 ${
-          isYou
-            ? "bg-[var(--neutral-you-row)]"
-            : "hover:bg-surface-alt"
-        }`}
+        className="w-full flex items-center px-3 py-2.5 text-left transition-colors duration-150 min-h-[44px] cursor-pointer"
+        style={{
+          borderBottom: "0.5px solid var(--neutral-row-border)",
+          background: isYou ? "var(--neutral-you-row)" : undefined,
+        }}
       >
         {/* POS */}
-        <span className="w-[36px] shrink-0 font-mono text-xs font-bold text-[#C4B896]">
+        <span className="w-[36px] shrink-0 font-mono text-xs font-semibold" style={{ color: "var(--neutral-muted)" }}>
           {hasScores ? entry.positionDisplay : "\u2014"}
         </span>
 
-        {/* ENTRY */}
+        {/* ENTRY — gold for non-You, dark for You */}
         <span
-          className={`flex-1 min-w-[100px] truncate font-sans text-[12px] ${
-            isYou ? "font-semibold" : "font-medium"
-          } text-text-primary`}
-          style={{ maxWidth: "120px" }}
+          className="flex-1 min-w-[100px] truncate font-sans text-[12px]"
+          style={{
+            maxWidth: "120px",
+            color: isYou ? "var(--neutral-text)" : "var(--theme-text)",
+            fontWeight: isYou ? 700 : 500,
+          }}
         >
           {entry.teamName}
         </span>
 
         {/* MC column — ghosted */}
-        <span className="w-[36px] shrink-0 text-center font-mono text-[9px] text-text-muted opacity-45">
+        <span className="w-[36px] shrink-0 text-center font-mono text-[9px] opacity-45" style={{ color: "var(--score-pending)" }}>
           {entry.activePicks}/{entry.totalPicks}
         </span>
 
@@ -56,8 +58,9 @@ export function EntryRow({
           <span
             key={rs.round}
             className={`w-[36px] shrink-0 text-right font-mono text-[10px] ${
-              hasScores ? scoreColorClass(rs.color) : "text-text-muted"
+              hasScores ? scoreColorClass(rs.color) : ""
             }`}
+            style={!hasScores ? { color: "var(--score-pending)" } : undefined}
           >
             {hasScores ? rs.display : "-"}
           </span>
@@ -66,8 +69,9 @@ export function EntryRow({
         {/* TOTAL */}
         <span
           className={`w-[48px] shrink-0 text-right font-mono text-[12px] font-medium ${
-            hasScores ? scoreColorClass(entry.totalColor) : "text-text-muted"
+            hasScores ? scoreColorClass(entry.totalColor) : ""
           }`}
+          style={!hasScores ? { color: "var(--score-pending)" } : undefined}
         >
           {hasScores ? entry.totalDisplay : "-"}
         </span>
@@ -76,38 +80,42 @@ export function EntryRow({
       {/* Expanded golfer details */}
       {isExpanded && (
         <div
-          className="bg-surface border-b border-border overflow-hidden"
+          className="bg-surface overflow-hidden"
           style={{
             animation: "expandIn 200ms ease forwards",
+            borderBottom: "0.5px solid var(--neutral-row-border)",
           }}
         >
-          {/* Golfer column headers */}
-          <div className="flex items-center px-3 py-1.5 bg-surface-alt border-b border-border/50">
-            <span className="w-[30px] shrink-0 font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          {/* Golfer column headers — gold */}
+          <div
+            className="flex items-center px-3 py-1.5"
+            style={{ background: "var(--theme-primary)" }}
+          >
+            <span className="w-[30px] shrink-0 font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
               POS
             </span>
-            <span className="w-[36px] shrink-0 font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[36px] shrink-0 font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
               CAT
             </span>
-            <span className="flex-1 min-w-[80px] font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="flex-1 min-w-[80px] font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
               PLAYER
             </span>
-            <span className="w-[30px] shrink-0 text-center font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[30px] shrink-0 text-center font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
               THRU
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
               R1
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
               R2
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
               R3
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
               R4
             </span>
-            <span className="w-[40px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[40px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
               TOTAL
             </span>
           </div>
@@ -121,23 +129,24 @@ export function EntryRow({
             return (
               <div
                 key={golfer.golferId}
-                className={`flex items-center px-3 py-1.5 border-b border-border/30 ${rowOpacity}`}
+                className={`flex items-center px-3 py-1.5 ${rowOpacity}`}
+                style={{ borderBottom: "0.5px solid var(--neutral-row-border)" }}
               >
                 {/* POS */}
-                <span className="w-[30px] shrink-0 font-mono text-[10px] text-text-secondary">
+                <span className="w-[30px] shrink-0 font-mono text-[10px]" style={{ color: "var(--neutral-secondary)" }}>
                   {isMcOrWd ? "-" : golfer.positionDisplay}
                 </span>
 
-                {/* CAT */}
-                <span className="w-[36px] shrink-0 font-sans text-[9px] font-medium text-accent-primary">
+                {/* CAT — gold */}
+                <span className="w-[36px] shrink-0 font-sans text-[9px] font-medium" style={{ color: "var(--theme-text)" }}>
                   {golfer.categoryAbbrev}
                 </span>
 
                 {/* PLAYER */}
-                <span className="flex-1 min-w-[80px] font-sans text-[11px] text-text-primary truncate">
+                <span className="flex-1 min-w-[80px] font-sans text-[11px] truncate" style={{ color: "var(--neutral-text)" }}>
                   {formatGolferNameShort(golfer.golferName)}
                   {golfer.isReplacement && golfer.originalGolferName && (
-                    <span className="ml-1 text-[9px] text-accent-danger">
+                    <span className="ml-1 text-[9px]" style={{ color: "var(--score-over)" }}>
                       (was <span className="line-through">{formatGolferNameShort(golfer.originalGolferName)}</span>)
                     </span>
                   )}
@@ -146,15 +155,15 @@ export function EntryRow({
                 {/* THRU */}
                 <span className="w-[30px] shrink-0 text-center">
                   {golfer.status === "cut" ? (
-                    <span className="inline-block px-1 py-0.5 rounded-[3px] bg-text-muted/20 text-text-muted font-sans text-[8px] font-medium">
+                    <span className="inline-block px-1 py-0.5 rounded-[3px] font-sans text-[8px] font-medium" style={{ background: "rgba(var(--neutral-muted), 0.2)", color: "var(--neutral-muted)" }}>
                       MC
                     </span>
                   ) : golfer.status === "withdrawn" ? (
-                    <span className="inline-block px-1 py-0.5 rounded-[3px] bg-text-muted/20 text-text-muted font-sans text-[8px] font-medium">
+                    <span className="inline-block px-1 py-0.5 rounded-[3px] font-sans text-[8px] font-medium" style={{ background: "rgba(var(--neutral-muted), 0.2)", color: "var(--neutral-muted)" }}>
                       WD
                     </span>
                   ) : (
-                    <span className="font-mono text-[10px] text-text-muted">
+                    <span className="font-mono text-[10px]" style={{ color: "var(--score-pending)" }}>
                       {golfer.thruDisplay}
                     </span>
                   )}
@@ -185,7 +194,7 @@ export function EntryRow({
           {/* Roster rule summary */}
           {rosterRuleSummary && (
             <div className="px-3 py-1.5 text-center">
-              <span className="font-sans text-[9px] text-text-muted italic">
+              <span className="font-sans text-[9px] italic" style={{ color: "var(--neutral-muted)" }}>
                 {rosterRuleSummary}
               </span>
             </div>

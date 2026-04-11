@@ -7,25 +7,33 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <>
       <header>
         <div className="mx-auto flex h-14 items-center justify-between px-4 w-full sm:max-w-[80%]">
-          <Link
-            href="/"
-            className="font-sans text-lg font-bold tracking-tight text-accent-primary"
-          >
-            TILT
+          {/* TILT wordmark — gold gradient, rotated */}
+          <Link href="/" className="inline-block" style={{ transform: "rotate(-3deg)" }}>
+            <span
+              className="font-sans text-[22px] font-black italic leading-none"
+              style={{
+                letterSpacing: "-0.5px",
+                background: "linear-gradient(180deg, var(--brand-gold-gradient-start), var(--brand-gold-gradient-end))",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              TILT
+            </span>
           </Link>
           <nav className="flex items-center gap-4">
             <SignedOut>
               <Link
                 href="/sign-in"
-                className="font-sans text-sm font-medium text-text-secondary hover:text-text-primary transition-colors duration-200"
+                className="font-sans text-[10px] font-semibold transition-opacity duration-200 hover:opacity-80"
+                style={{
+                  color: "var(--neutral-secondary)",
+                  border: "1.5px solid var(--neutral-border)",
+                  borderRadius: "5px",
+                  padding: "4px 12px",
+                }}
               >
-                Sign In
-              </Link>
-              <Link
-                href="/sign-up"
-                className="rounded-btn bg-accent-primary px-4 py-2 font-sans text-sm font-medium text-white hover:opacity-90 transition-opacity duration-200 min-h-[44px] inline-flex items-center justify-center"
-              >
-                Sign Up
+                Sign in
               </Link>
             </SignedOut>
             <SignedIn>
@@ -37,11 +45,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t border-border bg-surface py-2">
-        <div className="mx-auto max-w-content px-4 flex items-center justify-center gap-2">
-          <p className="font-sans text-xs font-semibold text-accent-primary">TILT</p>
-          <span className="text-border">&middot;</span>
-          <p className="font-sans text-[10px] text-text-muted">&copy; 2026</p>
+      {/* Simplified footer — hidden on mobile when bottom nav is present */}
+      <footer className="hidden sm:block py-2" style={{ borderTop: "0.5px solid var(--neutral-light-border)" }}>
+        <div className="mx-auto max-w-content px-4 text-center">
+          <p className="font-sans text-[10px]" style={{ color: "var(--neutral-icon)" }}>
+            playtilt.io
+          </p>
         </div>
       </footer>
     </>

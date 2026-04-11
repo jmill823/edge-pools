@@ -479,3 +479,29 @@
 - **What was found:** 65+ files used `font-display` and `font-body` Tailwind classes.
 - **What was done:** Kept `display` and `body` as aliases in `tailwind.config.ts` mapping to Montserrat, AND replaced all instances in component files with `font-sans`. Both approaches ensure Montserrat renders regardless of which class name is used.
 - **Why:** Belt-and-suspenders approach. If any component file was missed by the sweep, it still gets Montserrat via the alias.
+
+---
+
+## Rebrand Phase 3 — In-App Pages (Apr 10, 2026)
+
+### DEV RP3-1 — Confetti.tsx retains old green hex values
+- **Spec said:** No old green accent colors remain except in score contexts.
+- **What was found:** `Confetti.tsx` uses `#1B5E3B` and `#2D7A4F` in its decorative COLORS array alongside gold, red, and blue.
+- **What was done:** Left unchanged.
+- **Why:** These are visual celebration particle colors, not brand accents. Changing them would make confetti monochrome gold which defeats the purpose.
+
+### DEV RP3-2 — score-utils.ts retains green for score highlighting
+- **Spec said:** Score colors stay green/red always.
+- **What was found:** `score-utils.ts` uses `#1B5E3B` in hole-by-hole birdie/eagle highlighting.
+- **What was done:** Left unchanged per spec — score colors are never themed.
+
+### DEV RP3-3 — BottomNav replaces PoolNav mobile bar
+- **Spec said:** Bottom nav with 5 tabs (HOME, BOARD, PICKS, POOL, MORE).
+- **What was found:** PoolNav already had a 4-tab mobile bottom bar (Picks, Leaderboard, My Entries, Manage).
+- **What was done:** Removed mobile bar from PoolNav (kept desktop tabs). BottomNav now handles mobile navigation with the 5-tab spec. PoolNav desktop tabs updated to gold active state.
+- **Why:** BottomNav has HOME and MORE tabs that PoolNav didn't have, plus the More drawer integration.
+
+### DEV RP3-4 — Theme routing via inline style instead of layout wrapper
+- **Spec said:** Implement bg-app vs bg-brand routing in root layout or layout wrapper.
+- **What was done:** Applied `background: var(--bg-app)` directly on the pool layout container div. Root layout default is `bg-brand` via globals.css.
+- **Why:** Simplest implementation — no wrapper component needed. The (app) layout inherits bg-brand from globals.css, and pool pages override to bg-app via their layout.
