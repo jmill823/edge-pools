@@ -25,9 +25,13 @@ export function TestimonialCards() {
         {testimonials.map((t, i) => (
           <div
             key={i}
-            className="min-w-[240px] max-w-[260px] shrink-0 snap-start rounded-[6px] border border-[#E8E0CE] bg-[#FDF8EE] p-4"
+            className="min-w-[240px] max-w-[260px] shrink-0 snap-start rounded-[6px] p-4"
+            style={{
+              background: "var(--bg-brand)",
+              border: "1px solid var(--neutral-border)",
+            }}
           >
-            <p className="font-sans text-[12px] italic leading-[1.5] text-[#3E3830]">
+            <p className="font-sans text-[12px] italic leading-[1.5]" style={{ color: "#3E3830" }}>
               &ldquo;{t.quote}&rdquo;
             </p>
             <div className="mt-3.5 flex items-center gap-2">
@@ -37,10 +41,10 @@ export function TestimonialCards() {
                 </span>
               </div>
               <div>
-                <p className="font-sans text-[10px] font-semibold text-[#3E3830]">
+                <p className="font-sans text-[10px] font-semibold" style={{ color: "#3E3830" }}>
                   {t.name}
                 </p>
-                <p className="font-sans text-[9px] text-[#ABA69E] leading-[1.3]">
+                <p className="font-sans text-[9px] leading-[1.3]" style={{ color: "var(--neutral-icon)" }}>
                   {t.detail}
                 </p>
               </div>
