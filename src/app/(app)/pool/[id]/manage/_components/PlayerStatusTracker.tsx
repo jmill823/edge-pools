@@ -61,7 +61,7 @@ export function PlayerStatusTracker({ poolId, members, maxEntries, onMembersChan
     <div className="rounded-card border border-border bg-surface overflow-hidden">
       {/* Header */}
       <div className="px-4 py-3 border-b border-border bg-surface-alt">
-        <p className="font-display text-sm font-semibold text-text-primary">
+        <p className="font-sans text-sm font-semibold text-text-primary">
           Player Status
         </p>
       </div>
@@ -70,16 +70,16 @@ export function PlayerStatusTracker({ poolId, members, maxEntries, onMembersChan
       {totalMembers > 0 && (
         <div className="grid grid-cols-[1fr_40px_40px_40px_40px] items-center gap-0 px-4 py-2 border-b border-border">
           <div />
-          <span className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
+          <span className="font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
             Inv
           </span>
-          <span className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
+          <span className="font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
             Reg
           </span>
-          <span className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
+          <span className="font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
             Picks
           </span>
-          <span className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
+          <span className="font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.3px] text-center leading-tight">
             Paid
           </span>
         </div>
@@ -87,7 +87,7 @@ export function PlayerStatusTracker({ poolId, members, maxEntries, onMembersChan
 
       {/* Member rows */}
       {totalMembers === 0 ? (
-        <p className="px-4 py-8 text-center font-body text-sm text-text-muted">
+        <p className="px-4 py-8 text-center font-sans text-sm text-text-muted">
           No members yet
         </p>
       ) : (
@@ -99,16 +99,16 @@ export function PlayerStatusTracker({ poolId, members, maxEntries, onMembersChan
                 {/* Name + meta */}
                 <div className="min-w-0 pr-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-body text-[13px] font-medium text-text-primary truncate">
+                    <span className="font-sans text-[13px] font-medium text-text-primary truncate">
                       {m.displayName}
                     </span>
                     {m.role === "ORGANIZER" && (
-                      <span className="font-body text-[10px] font-medium text-accent-secondary bg-[#FDF4E3] rounded-data px-1.5 py-0.5 shrink-0">
+                      <span className="font-sans text-[10px] font-medium text-accent-secondary bg-[#FDF4E3] rounded-data px-1.5 py-0.5 shrink-0">
                         Host
                       </span>
                     )}
                   </div>
-                  <p className="font-body text-xs text-text-muted truncate mt-0.5">
+                  <p className="font-sans text-xs text-text-muted truncate mt-0.5">
                     {hasPicksSet ? (
                       <span>
                         {m.entriesSubmitted} {m.entriesSubmitted === 1 ? "entry" : "entries"}
@@ -188,7 +188,7 @@ function SummaryCard({ label, count, total }: { label: string; count: number; to
       <p className={`font-mono text-base font-bold ${isLow ? "text-[#8A6B1E]" : "text-text-primary"}`}>
         {count}/{total}
       </p>
-      <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mt-0.5">
+      <p className="font-sans text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mt-0.5">
         {label}
       </p>
     </div>

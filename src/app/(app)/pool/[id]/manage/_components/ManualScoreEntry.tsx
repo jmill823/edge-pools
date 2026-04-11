@@ -126,14 +126,14 @@ export function ManualScoreEntry({ tournamentId, onClose, onScoresUpdated }: Man
   };
 
   if (loading) {
-    return <p className="font-body text-sm text-text-muted">Loading golfers...</p>;
+    return <p className="font-sans text-sm text-text-muted">Loading golfers...</p>;
   }
 
   if (error) {
     return (
       <div>
-        <p className="font-body text-sm text-accent-danger">{error}</p>
-        <button onClick={onClose} className="mt-2 font-body text-sm text-accent-primary hover:underline cursor-pointer">
+        <p className="font-sans text-sm text-accent-danger">{error}</p>
+        <button onClick={onClose} className="mt-2 font-sans text-sm text-accent-primary hover:underline cursor-pointer">
           Close
         </button>
       </div>
@@ -143,12 +143,12 @@ export function ManualScoreEntry({ tournamentId, onClose, onScoresUpdated }: Man
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <p className="font-body text-sm font-medium text-text-primary">
+        <p className="font-sans text-sm font-medium text-text-primary">
           Manual Score Entry ({golfers.length} golfer{golfers.length !== 1 ? "s" : ""})
         </p>
         <button
           onClick={onClose}
-          className="font-body text-xs text-text-muted hover:text-text-primary cursor-pointer"
+          className="font-sans text-xs text-text-muted hover:text-text-primary cursor-pointer"
         >
           Close
         </button>
@@ -164,13 +164,13 @@ export function ManualScoreEntry({ tournamentId, onClose, onScoresUpdated }: Man
         <table className="w-full">
           <thead className="sticky top-0 bg-surface-alt">
             <tr>
-              <th className="text-left px-2 py-1.5 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+              <th className="text-left px-2 py-1.5 font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
                 Golfer
               </th>
-              <th className="text-right px-2 py-1.5 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] w-[60px]">
+              <th className="text-right px-2 py-1.5 font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] w-[60px]">
                 Current
               </th>
-              <th className="text-right px-2 py-1.5 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] w-[70px]">
+              <th className="text-right px-2 py-1.5 font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] w-[70px]">
                 New Score
               </th>
             </tr>
@@ -187,7 +187,7 @@ export function ManualScoreEntry({ tournamentId, onClose, onScoresUpdated }: Man
                   className={`border-t border-border/50 ${isChanged ? "bg-[#FDF4E3]" : ""}`}
                 >
                   <td className="px-2 py-1.5">
-                    <span className="font-body text-xs font-medium text-text-primary">{golfer.name}</span>
+                    <span className="font-sans text-xs font-medium text-text-primary">{golfer.name}</span>
                   </td>
                   <td className="px-2 py-1.5 text-right">
                     <span className={`font-mono text-xs ${

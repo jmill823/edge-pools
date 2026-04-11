@@ -130,18 +130,18 @@ export function ReplacementQueue({ poolId, pendingCount, onReplacementProcessed 
 
   return (
     <div>
-      <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-2">
+      <p className="font-sans text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-2">
         WD/CUT Replacements
       </p>
 
       {pendingCount > 0 && (
         <div className="mb-2 rounded-data bg-[#FDF4E3] px-3 py-2 flex items-center justify-between">
-          <p className="font-body text-sm font-medium text-[#8A6B1E]">
+          <p className="font-sans text-sm font-medium text-[#8A6B1E]">
             {pendingCount} replacement{pendingCount !== 1 ? "s" : ""} need confirmation
           </p>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="font-body text-xs font-medium text-accent-primary hover:underline cursor-pointer"
+            className="font-sans text-xs font-medium text-accent-primary hover:underline cursor-pointer"
           >
             {expanded ? "Hide" : "Review"}
           </button>
@@ -149,7 +149,7 @@ export function ReplacementQueue({ poolId, pendingCount, onReplacementProcessed 
       )}
 
       {pendingCount === 0 && (
-        <p className="font-body text-sm text-text-muted">No pending replacements</p>
+        <p className="font-sans text-sm text-text-muted">No pending replacements</p>
       )}
 
       {feedback && (
@@ -161,9 +161,9 @@ export function ReplacementQueue({ poolId, pendingCount, onReplacementProcessed 
       {expanded && pendingCount > 0 && (
         <div className="space-y-3 mt-2">
           {loading ? (
-            <p className="font-body text-sm text-text-muted">Loading...</p>
+            <p className="font-sans text-sm text-text-muted">Loading...</p>
           ) : replacements.length === 0 ? (
-            <p className="font-body text-sm text-text-muted">No pending replacements found</p>
+            <p className="font-sans text-sm text-text-muted">No pending replacements found</p>
           ) : (
             replacements.map((r) => (
               <div key={r.id} className="rounded-data border border-border bg-surface-alt p-3">
@@ -174,15 +174,15 @@ export function ReplacementQueue({ poolId, pendingCount, onReplacementProcessed 
                   }`}>
                     {r.reason}
                   </span>
-                  <span className="font-body text-sm font-medium text-text-primary line-through">
+                  <span className="font-sans text-sm font-medium text-text-primary line-through">
                     {r.originalGolferName}
                   </span>
                 </div>
 
                 {/* Proposed replacement */}
                 <div className="mb-2">
-                  <span className="font-body text-xs text-text-muted">Proposed: </span>
-                  <span className="font-body text-sm font-medium text-text-primary">
+                  <span className="font-sans text-xs text-text-muted">Proposed: </span>
+                  <span className="font-sans text-sm font-medium text-text-primary">
                     {r.replacementGolferName}
                   </span>
                   {r.replacementScore !== null && (
@@ -195,7 +195,7 @@ export function ReplacementQueue({ poolId, pendingCount, onReplacementProcessed 
                 </div>
 
                 {/* Affected entry */}
-                <p className="font-body text-xs text-text-secondary mb-3">
+                <p className="font-sans text-xs text-text-secondary mb-3">
                   {r.categoryName} · {r.playerName}{r.entryNumber > 1 ? ` (E${r.entryNumber})` : ""}
                 </p>
 
@@ -203,14 +203,14 @@ export function ReplacementQueue({ poolId, pendingCount, onReplacementProcessed 
                 {overrideId === r.id ? (
                   <div className="space-y-2">
                     <div>
-                      <label className="font-body text-xs font-medium text-text-secondary block mb-1">
+                      <label className="font-sans text-xs font-medium text-text-secondary block mb-1">
                         Select replacement golfer:
                       </label>
                       {eligibleGolfers.length > 0 ? (
                         <select
                           value={selectedOverride}
                           onChange={(e) => setSelectedOverride(e.target.value)}
-                          className="w-full rounded-[6px] border border-border bg-surface px-3 py-2 font-body text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15"
+                          className="w-full rounded-[6px] border border-border bg-surface px-3 py-2 font-sans text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15"
                         >
                           <option value="">Choose a golfer...</option>
                           {eligibleGolfers.map((g) => (
@@ -220,7 +220,7 @@ export function ReplacementQueue({ poolId, pendingCount, onReplacementProcessed 
                           ))}
                         </select>
                       ) : (
-                        <p className="font-body text-xs text-text-muted">
+                        <p className="font-sans text-xs text-text-muted">
                           Loading eligible golfers...
                         </p>
                       )}

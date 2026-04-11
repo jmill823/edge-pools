@@ -2,14 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  color: #1A1A18;
-  background: #FDFBF7;
+:root {
+  /* Brand Layer (permanent) */
+  --brand-gold-gradient-start: #9E8A52;
+  --brand-gold-gradient-end: #8A7844;
+  --brand-gold-rule: #B09A60;
+  --brand-gold-cta-border: #C4B07A;
+  --brand-gold-cta-text: #7A6A2E;
+  --brand-gold-dark: #6B5C24;
+  --brand-drawer-bg: #5C4E20;
+
+  /* Background Tiers */
+  --bg-brand: #FDF8EE;
+  --bg-app: #F8F7F5;
+
+  /* Theme Layer (swappable per tournament — gold is default) */
+  --theme-primary: #B09A60;
+  --theme-text: #9E8A52;
+  --theme-active: #9E8A52;
+  --theme-dark: #5C4E20;
+
+  /* Neutral Layer (never changes) */
+  --neutral-text: #1A1A18;
+  --neutral-secondary: #6B6560;
+  --neutral-muted: #8A8580;
+  --neutral-border: #D8D0C0;
+  --neutral-light-border: #EDE5D4;
+  --neutral-icon: #AEA28E;
+  --neutral-star: #C4C0B8;
+  --neutral-you-row: #F5F2EB;
+  --neutral-row-border: #F0EBDF;
+
+  /* Score Colors (permanent — never themed) */
+  --score-under: #2D7A4F;
+  --score-over: #A3342D;
+  --score-even: #6B6560;
+  --score-pending: #C4C0B8;
 }
 
-/* Ensure warm cream background on all page-level surfaces */
+body {
+  color: var(--neutral-text);
+  background: var(--bg-brand);
+}
+
 html {
-  background: #FDFBF7;
+  background: var(--bg-brand);
 }
 
 /* Safe area padding for mobile bottom nav */

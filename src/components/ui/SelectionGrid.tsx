@@ -84,13 +84,13 @@ export function SelectionGrid({
                   }}
                 >
                   <span
-                    className="block font-display text-[11px] font-semibold uppercase tracking-[0.3px]"
-                    style={{ color: "#1A1A18" }}
+                    className="block font-sans text-[11px] font-semibold uppercase tracking-[0.3px]"
+                    style={{ color: "var(--neutral-text)" }}
                   >
                     {cat.name}
                   </span>
                   {cat.qualifier && (
-                    <span className="block font-body text-[9px] font-normal mt-0.5" style={{ textTransform: "none", color: "#1A1A18" }}>
+                    <span className="block font-sans text-[9px] font-normal mt-0.5" style={{ textTransform: "none", color: "var(--neutral-text)" }}>
                       {cat.qualifier}
                     </span>
                   )}
@@ -151,11 +151,11 @@ export function SelectionGrid({
                     >
                       {/* Avatar circle */}
                       <span
-                        className="shrink-0 flex items-center justify-center rounded-full font-body text-[9px] font-semibold text-white"
+                        className="shrink-0 flex items-center justify-center rounded-full font-sans text-[9px] font-semibold text-white"
                         style={{
                           width: 24,
                           height: 24,
-                          backgroundColor: isSelected ? color.dot : isUsedElsewhere ? "#D4D0C8" : color.dot,
+                          backgroundColor: isSelected ? color.dot : isUsedElsewhere ? "var(--neutral-border)" : color.dot,
                           outline: isSelected ? "2px solid white" : undefined,
                           outlineOffset: isSelected ? -1 : undefined,
                         }}
@@ -166,7 +166,7 @@ export function SelectionGrid({
                       {/* Name + flag — no truncate so flags always show */}
                       <span className="flex-1 min-w-0">
                         <span
-                          className={`block font-body text-[12px] leading-tight break-words ${
+                          className={`block font-sans text-[12px] leading-tight break-words ${
                             isSelected
                               ? "font-semibold"
                               : isUsedElsewhere
@@ -174,7 +174,7 @@ export function SelectionGrid({
                                 : "font-normal"
                           }`}
                           style={{
-                            color: isSelected ? color.text : isUsedElsewhere ? "#A39E96" : "#1A1A18",
+                            color: isSelected ? color.text : isUsedElsewhere ? "var(--neutral-muted)" : "var(--neutral-text)",
                             letterSpacing: "-0.2px",
                           }}
                         >
@@ -196,8 +196,8 @@ export function SelectionGrid({
                             width: 16,
                             height: 16,
                             fontSize: 10,
-                            color: "#A39E96",
-                            backgroundColor: "#F5F1EB",
+                            color: "var(--neutral-muted)",
+                            backgroundColor: "var(--neutral-you-row)",
                           }}
                         >
                           {catCount}

@@ -154,7 +154,7 @@ export function PaymentTracker({
     <div className="rounded-card border border-border bg-surface overflow-hidden">
       {/* Header */}
       <div className="px-4 py-3 border-b border-border bg-surface-alt">
-        <p className="font-display text-sm font-semibold text-text-primary">Payments</p>
+        <p className="font-sans text-sm font-semibold text-text-primary">Payments</p>
       </div>
 
       <div className="p-4 space-y-4">
@@ -165,7 +165,7 @@ export function PaymentTracker({
         {/* Payment settings — entry fee + payment info */}
         <div className="space-y-3">
           <div>
-            <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+            <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
               Entry fee
             </label>
             <input
@@ -173,11 +173,11 @@ export function PaymentTracker({
               value={entryFee}
               onChange={(e) => { setEntryFee(e.target.value); setSettingsDirty(true); }}
               placeholder="$20"
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-body text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-sans text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors"
             />
           </div>
           <div>
-            <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+            <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
               Payment info (shown in reminders)
             </label>
             <input
@@ -185,7 +185,7 @@ export function PaymentTracker({
               value={paymentInfo}
               onChange={(e) => { setPaymentInfo(e.target.value); setSettingsDirty(true); }}
               placeholder="Venmo @jeff-m or Zelle jeff@email.com"
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-body text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-sans text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors"
             />
           </div>
           {settingsDirty && (
@@ -199,7 +199,7 @@ export function PaymentTracker({
         {!loading && totalEntries > 0 && (
           <div>
             <div className="flex items-baseline justify-between mb-1.5">
-              <span className="font-display text-lg font-bold text-text-primary">
+              <span className="font-sans text-lg font-bold text-text-primary">
                 {paidCount} of {totalEntries} paid
               </span>
               <span className="font-mono text-xs text-text-muted">{paidPct}%</span>
@@ -215,9 +215,9 @@ export function PaymentTracker({
 
         {/* Entry list */}
         {loading ? (
-          <div className="py-6 text-center font-body text-sm text-text-muted">Loading...</div>
+          <div className="py-6 text-center font-sans text-sm text-text-muted">Loading...</div>
         ) : entries.length === 0 ? (
-          <div className="py-6 text-center font-body text-sm text-text-muted">No entries yet</div>
+          <div className="py-6 text-center font-sans text-sm text-text-muted">No entries yet</div>
         ) : (
           <ul className="divide-y divide-border -mx-4">
             {sorted.map((entry) => {
@@ -230,13 +230,13 @@ export function PaymentTracker({
                   </span>
                   {/* Name */}
                   <div className="flex-1 min-w-0">
-                    <p className="font-body text-sm font-medium text-text-primary truncate">
+                    <p className="font-sans text-sm font-medium text-text-primary truncate">
                       {entry.teamName || entry.displayName}
                       {entry.entryNumber > 1 && (
                         <span className="text-text-muted text-xs ml-1">E{entry.entryNumber}</span>
                       )}
                     </p>
-                    <p className="font-body text-xs text-text-muted truncate">
+                    <p className="font-sans text-xs text-text-muted truncate">
                       {isPaid ? "Paid" : "Unpaid"}
                     </p>
                   </div>
@@ -245,7 +245,7 @@ export function PaymentTracker({
                     <button
                       onClick={() => togglePayment(entry.id, entry.paymentStatus)}
                       disabled={toggleLoading === entry.id}
-                      className={`px-2.5 py-1.5 rounded-btn font-body text-xs font-medium transition-colors cursor-pointer min-h-[36px] ${
+                      className={`px-2.5 py-1.5 rounded-btn font-sans text-xs font-medium transition-colors cursor-pointer min-h-[36px] ${
                         isPaid
                           ? "bg-surface-alt text-text-secondary hover:bg-border"
                           : "bg-accent-success text-white hover:bg-accent-success/90"
@@ -256,7 +256,7 @@ export function PaymentTracker({
                     {!isPaid && (
                       <button
                         onClick={() => setReminderEntry(entry)}
-                        className="px-2.5 py-1.5 rounded-btn bg-[#FDF4E3] text-[#8A6B1E] font-body text-xs font-medium hover:bg-[#F5EDD5] transition-colors cursor-pointer min-h-[36px]"
+                        className="px-2.5 py-1.5 rounded-btn bg-[#FDF4E3] text-[#8A6B1E] font-sans text-xs font-medium hover:bg-[#F5EDD5] transition-colors cursor-pointer min-h-[36px]"
                       >
                         Remind
                       </button>

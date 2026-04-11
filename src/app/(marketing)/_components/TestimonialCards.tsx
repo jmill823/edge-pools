@@ -27,20 +27,20 @@ export function TestimonialCards() {
             key={i}
             className="min-w-[240px] max-w-[260px] shrink-0 snap-start rounded-[6px] border border-[#E8E0CE] bg-[#FDF8EE] p-4"
           >
-            <p className="font-body text-[12px] italic leading-[1.5] text-[#3E3830]">
+            <p className="font-sans text-[12px] italic leading-[1.5] text-[#3E3830]">
               &ldquo;{t.quote}&rdquo;
             </p>
             <div className="mt-3.5 flex items-center gap-2">
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F0EAD8]">
-                <span className="font-body text-[11px] font-medium text-[#8A6B1E]">
+                <span className="font-sans text-[11px] font-medium text-[#8A6B1E]">
                   A
                 </span>
               </div>
               <div>
-                <p className="font-body text-[10px] font-semibold text-[#3E3830]">
+                <p className="font-sans text-[10px] font-semibold text-[#3E3830]">
                   {t.name}
                 </p>
-                <p className="font-body text-[9px] text-[#ABA69E] leading-[1.3]">
+                <p className="font-sans text-[9px] text-[#ABA69E] leading-[1.3]">
                   {t.detail}
                 </p>
               </div>

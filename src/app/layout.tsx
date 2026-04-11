@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Space_Grotesk, Work_Sans, Space_Mono } from "next/font/google";
+import { Montserrat, Space_Mono } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
+  variable: "--font-montserrat",
   display: "swap",
-});
-
-const workSans = Work_Sans({
-  subsets: ["latin"],
-  variable: "--font-work-sans",
-  display: "swap",
+  weight: ["400", "500", "600", "700", "900"],
+  style: ["normal", "italic"],
 });
 
 const spaceMono = Space_Mono({
@@ -70,7 +66,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${spaceGrotesk.variable} ${workSans.variable} ${spaceMono.variable} font-body antialiased min-h-screen flex flex-col bg-background text-text-primary`}
+          className={`${montserrat.variable} ${spaceMono.variable} font-sans antialiased min-h-screen flex flex-col bg-background text-text-primary`}
         >
           {children}
         </body>

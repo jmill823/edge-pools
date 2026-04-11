@@ -34,10 +34,10 @@ export function SuccessScreen({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
         </svg>
       </div>
-      <h2 className="font-display text-2xl font-bold text-text-primary">
+      <h2 className="font-sans text-2xl font-bold text-text-primary">
         {isEdit ? "Picks Updated!" : showEntryNumber ? `Entry ${entryNumber} Submitted!` : "Picks Submitted!"}
       </h2>
-      <p className="mt-2 font-body text-text-secondary">
+      <p className="mt-2 font-sans text-text-secondary">
         You picked {pickCount} golfers for {poolName}.
       </p>
 

@@ -87,7 +87,7 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
   }, [data?.pool.status, load]);
 
   if (loading) return <div className="mx-auto max-w-leaderboard px-4 py-8"><LoadingSkeleton variant="page" lines={6} /></div>;
-  if (error) return <div className="mx-auto max-w-leaderboard px-4 py-12 text-center font-body text-accent-danger">{error}</div>;
+  if (error) return <div className="mx-auto max-w-leaderboard px-4 py-12 text-center font-sans text-accent-danger">{error}</div>;
   if (!data) return null;
 
   const { pool, tournament, entries, rosterRuleSummary, templateName } = data;
@@ -105,10 +105,10 @@ export default function LeaderboardPage({ params }: { params: { id: string } }) 
       {/* Header bar */}
       <div className="flex items-start justify-between mb-3">
         <div className="min-w-0 flex-1">
-          <p className="font-display text-sm font-semibold text-text-primary truncate">
+          <p className="font-sans text-sm font-semibold text-text-primary truncate">
             {tournament.name}
           </p>
-          <p className="font-body text-xs text-text-secondary mt-0.5">
+          <p className="font-sans text-xs text-text-secondary mt-0.5">
             {pool.name} — {templateName}
           </p>
         </div>

@@ -88,7 +88,7 @@ export default function GuestLeaderboardPage({ params }: { params: { id: string 
   }, [data?.pool.status, load]);
 
   if (loading) return <div className="mx-auto max-w-leaderboard px-4 py-8"><LoadingSkeleton variant="page" lines={6} /></div>;
-  if (error) return <div className="mx-auto max-w-leaderboard px-4 py-12 text-center font-body text-accent-danger">{error}</div>;
+  if (error) return <div className="mx-auto max-w-leaderboard px-4 py-12 text-center font-sans text-accent-danger">{error}</div>;
   if (!data) return null;
 
   const { pool, tournament, leaderboard } = data;
@@ -101,8 +101,8 @@ export default function GuestLeaderboardPage({ params }: { params: { id: string 
   return (
     <div className="mx-auto max-w-leaderboard px-4 py-4">
       <div className="mb-2">
-        <h1 className="font-display text-lg font-bold text-text-primary">{pool.name}</h1>
-        <p className="font-body text-sm text-text-secondary">{tournament.name}</p>
+        <h1 className="font-sans text-lg font-bold text-text-primary">{pool.name}</h1>
+        <p className="font-sans text-sm text-text-secondary">{tournament.name}</p>
       </div>
 
       <div className="mb-4">
@@ -130,28 +130,28 @@ export default function GuestLeaderboardPage({ params }: { params: { id: string 
 
       {/* Simple guest leaderboard table */}
       {leaderboard.length === 0 ? (
-        <div className="py-12 text-center font-body text-sm text-text-muted">
+        <div className="py-12 text-center font-sans text-sm text-text-muted">
           No entries yet.
         </div>
       ) : (
         <>
           <div className="flex items-center px-3 py-2 border-b border-border">
-            <span className="w-[30px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Rank</span>
-            <span className="flex-1 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
-            <span className="w-[40px] text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Score</span>
+            <span className="w-[30px] font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Rank</span>
+            <span className="flex-1 font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
+            <span className="w-[40px] text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Score</span>
           </div>
           {leaderboard.map((entry) => (
             <button
               key={entry.id}
               onClick={() => setExpanded(expanded === entry.id ? null : entry.id)}
               className={`w-full flex items-center px-3 py-2.5 text-left border-b border-border/50 min-h-[44px] cursor-pointer ${
-                entry.isCurrentUser ? "bg-[#E8F0E5]" : "hover:bg-surface-alt"
+                entry.isCurrentUser ? "bg-[var(--neutral-you-row)]" : "hover:bg-surface-alt"
               }`}
             >
               <span className="w-[30px] shrink-0 font-mono text-xs font-bold text-[#C4B896]">
                 {hasScores ? formatRankWithTies(entry.rank, allRanks) : "\u2014"}
               </span>
-              <span className="flex-1 truncate font-body text-sm font-medium text-text-primary">
+              <span className="flex-1 truncate font-sans text-sm font-medium text-text-primary">
                 {entry.teamName}
               </span>
               <span className={`w-[40px] shrink-0 text-right font-mono text-[13px] font-bold ${hasScores ? scoreColor(entry.teamScore) : "text-text-muted"}`}>

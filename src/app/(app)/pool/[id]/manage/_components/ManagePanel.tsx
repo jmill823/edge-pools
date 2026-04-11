@@ -90,10 +90,10 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, invite
     <div className="mx-auto max-w-content px-4 py-6 space-y-5">
       {/* Pool Info Header */}
       <div className="rounded-card border border-border bg-surface p-4 shadow-subtle">
-        <h1 className="font-display text-lg font-bold text-text-primary truncate">{pool.name}</h1>
-        <p className="font-body text-sm text-text-secondary mt-0.5">{pool.tournament.name}</p>
+        <h1 className="font-sans text-lg font-bold text-text-primary truncate">{pool.name}</h1>
+        <p className="font-sans text-sm text-text-secondary mt-0.5">{pool.tournament.name}</p>
         {pool.tournament.course && (
-          <p className="font-body text-xs text-text-muted mt-0.5">{pool.tournament.course}</p>
+          <p className="font-sans text-xs text-text-muted mt-0.5">{pool.tournament.course}</p>
         )}
       </div>
 

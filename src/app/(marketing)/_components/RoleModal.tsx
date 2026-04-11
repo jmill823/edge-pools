@@ -72,7 +72,7 @@ export function RoleModal({ initialView = "select", onClose }: RoleModalProps) {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-[#ABA69E] hover:text-[#3E3830] hover:bg-[#F5F1EB] transition-colors duration-200 cursor-pointer"
+          className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-[var(--neutral-icon)] hover:text-[#3E3830] hover:bg-[#F5F1EB] transition-colors duration-200 cursor-pointer"
           aria-label="Close"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -136,11 +136,11 @@ function SelectView({
   return (
     <div>
       {/* TILT wordmark */}
-      <h2 className="text-center font-display text-[36px] font-[900] italic tracking-[4px] text-[#1A1A18] leading-none">
+      <h2 className="text-center font-sans text-[36px] font-[900] italic tracking-[4px] text-text-primary leading-none">
         TILT
       </h2>
-      <div className="mx-auto mt-3 mb-5 h-[2px] w-8 bg-[#2D5F3B]" />
-      <p className="text-center font-body text-[15px] font-semibold text-[#1A1A18] mb-4">
+      <div className="mx-auto mt-3 mb-5 h-[2px] w-8 bg-accent-primary" />
+      <p className="text-center font-sans text-[15px] font-semibold text-text-primary mb-4">
         I&rsquo;m here to&hellip;
       </p>
 
@@ -167,7 +167,7 @@ function SelectView({
 
       <button
         onClick={onClose}
-        className="mt-4 w-full text-center font-body text-[10px] text-[#ABA69E] hover:text-[#6B6560] transition-colors duration-200 cursor-pointer"
+        className="mt-4 w-full text-center font-sans text-[10px] text-[var(--neutral-icon)] hover:text-[#6B6560] transition-colors duration-200 cursor-pointer"
       >
         Just browsing
       </button>
@@ -189,17 +189,17 @@ function RoleCard({
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-[6px] bg-[#E8F0E5] px-3 py-3 text-left hover:bg-[#DCE8D8] transition-colors duration-200 active:scale-[0.98] cursor-pointer"
+      className="w-full rounded-[6px] bg-[var(--neutral-you-row)] px-3 py-3 text-left hover:bg-[var(--neutral-light-border)] transition-colors duration-200 active:scale-[0.98] cursor-pointer"
     >
       <div className="flex items-baseline gap-2">
-        <span className="font-body text-[13px] font-[800] uppercase tracking-[1px] text-[#2D5F3B]">
+        <span className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-accent-primary">
           {label}
         </span>
-        <span className="font-body text-[9px] font-medium text-[#8BBF9A]">
+        <span className="font-sans text-[9px] font-medium text-[#8BBF9A]">
           [{number}]
         </span>
       </div>
-      <p className="mt-0.5 font-body text-[11px] font-normal text-[#6B6560] leading-[1.4]">
+      <p className="mt-0.5 font-sans text-[11px] font-normal text-[#6B6560] leading-[1.4]">
         {description}
       </p>
     </button>
@@ -232,40 +232,40 @@ function FlowView({
   return (
     <div>
       {/* Badge */}
-      <span className="inline-block rounded-[4px] bg-[#E8F0E5] px-2 py-0.5 font-body text-[9px] font-bold uppercase tracking-[0.5px] text-[#2D5F3B]">
+      <span className="inline-block rounded-[4px] bg-[var(--neutral-you-row)] px-2 py-0.5 font-sans text-[9px] font-bold uppercase tracking-[0.5px] text-accent-primary">
         {badge}
       </span>
 
       {/* Title */}
-      <h3 className="mt-3 font-display text-[20px] font-bold text-[#1A1A18]">
+      <h3 className="mt-3 font-sans text-[20px] font-bold text-text-primary">
         {title}
       </h3>
       <p
-        className="mt-2 font-body text-[12px] font-normal text-[#6B6560] leading-[1.5]"
+        className="mt-2 font-sans text-[12px] font-normal text-[#6B6560] leading-[1.5]"
         dangerouslySetInnerHTML={{ __html: subtitle }}
       />
 
       {/* Timeline */}
       <div className="mt-6 relative">
-        <div className="absolute left-3.5 top-7 bottom-7 w-[2px] bg-[#E8F0E5]" />
+        <div className="absolute left-3.5 top-7 bottom-7 w-[2px] bg-[var(--neutral-you-row)]" />
         <div className="space-y-6">
           {steps.map((step, i) => (
             <div key={step.heading} className="flex gap-3 relative">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#E8F0E5] z-10">
-                <span className="font-mono text-[13px] font-bold text-[#2D5F3B]">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--neutral-you-row)] z-10">
+                <span className="font-mono text-[13px] font-bold text-accent-primary">
                   {i + 1}
                 </span>
               </div>
               <div className="flex-1 pt-0.5">
                 <div className="flex items-baseline justify-between gap-2">
-                  <p className="font-display text-[13px] font-bold text-[#1A1A18]">
+                  <p className="font-sans text-[13px] font-bold text-text-primary">
                     {step.heading}
                   </p>
-                  <span className="font-mono text-[9px] text-[#ABA69E] shrink-0">
+                  <span className="font-mono text-[9px] text-[var(--neutral-icon)] shrink-0">
                     {step.time}
                   </span>
                 </div>
-                <p className="mt-1 font-body text-[11px] font-normal text-[#6B6560] leading-[1.4]">
+                <p className="mt-1 font-sans text-[11px] font-normal text-[#6B6560] leading-[1.4]">
                   {step.description}
                 </p>
               </div>
@@ -277,7 +277,7 @@ function FlowView({
       {/* CTA */}
       <button
         onClick={() => router.push(ctaHref)}
-        className="mt-6 flex items-center justify-center w-full rounded-[6px] bg-[#1A1A18] py-3.5 font-body text-[14px] font-bold uppercase tracking-[0.5px] text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer"
+        className="mt-6 flex items-center justify-center w-full rounded-[6px] bg-[var(--neutral-text)] py-3.5 font-sans text-[14px] font-bold uppercase tracking-[0.5px] text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer"
       >
         {ctaLabel}
       </button>
@@ -285,7 +285,7 @@ function FlowView({
       {/* Crosslink */}
       <button
         onClick={onCrosslinkClick}
-        className="mt-3 w-full text-center font-body text-[10px] text-[#2D5F3B] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+        className="mt-3 w-full text-center font-sans text-[10px] text-accent-primary hover:opacity-80 transition-opacity duration-200 cursor-pointer"
         dangerouslySetInnerHTML={{ __html: crosslinkText }}
       />
     </div>

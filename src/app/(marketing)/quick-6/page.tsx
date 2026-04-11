@@ -54,14 +54,14 @@ export default function Quick6Page() {
       <main className="flex-1">
         <article className="mx-auto max-w-[720px] px-4 py-12 sm:py-16">
           {/* H1 */}
-          <h1 className="font-display text-[32px] sm:text-[40px] font-[900] leading-[1.1] tracking-tight text-text-primary">
+          <h1 className="font-sans text-[32px] sm:text-[40px] font-[900] leading-[1.1] tracking-tight text-text-primary">
             Quick-6 Golf Pool
           </h1>
 
           <div className="mt-2 h-[3px] w-[48px] bg-accent-primary" />
 
           {/* Intro */}
-          <div className="mt-8 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+          <div className="mt-8 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
             <p>
               The Quick-6 is a 6-category golf pool format designed for the
               weekend. After the Friday cut, the field gets smaller and the
@@ -76,14 +76,14 @@ export default function Quick6Page() {
 
           {/* Categories */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               The six categories
             </h2>
             <ul className="mt-4 space-y-3">
               {categories.map((cat) => (
                 <li key={cat.name} className="flex items-start gap-3">
                   <span className="mt-[6px] block h-[7px] w-[7px] shrink-0 rounded-full bg-accent-primary" />
-                  <p className="font-body text-[14px] leading-[1.6] text-text-secondary">
+                  <p className="font-sans text-[14px] leading-[1.6] text-text-secondary">
                     <span className="font-semibold text-text-primary">
                       {cat.name}
                     </span>{" "}
@@ -92,7 +92,7 @@ export default function Quick6Page() {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 font-body text-[14px] leading-[1.6] text-text-muted">
+            <p className="mt-4 font-sans text-[14px] leading-[1.6] text-text-muted">
               Categories are populated automatically after the cut. Only golfers
               who made the weekend are available to pick.
             </p>
@@ -100,10 +100,10 @@ export default function Quick6Page() {
 
           {/* Cross-category rule */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               Same cross-category rule
             </h2>
-            <div className="mt-4 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+            <div className="mt-4 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
               <p>
                 Pick a golfer in one category, he&rsquo;s gone from every other
                 category on your sheet. Even with only 6 categories, this rule
@@ -116,10 +116,10 @@ export default function Quick6Page() {
 
           {/* Why it works */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               Why Quick-6 works
             </h2>
-            <div className="mt-4 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+            <div className="mt-4 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
               <p>
                 Not every group wants to commit before the tournament starts.
                 The Quick-6 is built for the group chat that lights up Friday
@@ -142,10 +142,10 @@ export default function Quick6Page() {
 
           {/* Scoring */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               How scoring works
             </h2>
-            <div className="mt-4 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+            <div className="mt-4 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
               <p>
                 Total strokes across Rounds 3 and 4. Lowest weekend score wins.
                 Commissioner sets tiebreakers before picks lock.
@@ -155,10 +155,10 @@ export default function Quick6Page() {
 
           {/* Run it on TILT */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               Run it on TILT
             </h2>
-            <div className="mt-4 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+            <div className="mt-4 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
               <p>
                 Set up your Quick-6 pool in under 3 minutes after the cut.
                 Categories auto-populate with weekend players. Share the invite
@@ -172,13 +172,13 @@ export default function Quick6Page() {
           <div className="mt-10 flex flex-col sm:flex-row gap-3">
             <Link
               href="/dashboard/create"
-              className="inline-flex items-center justify-center rounded-[4px] bg-text-primary px-6 py-3 font-body text-[13px] font-semibold tracking-[0.5px] uppercase text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
+              className="inline-flex items-center justify-center rounded-[4px] bg-text-primary px-6 py-3 font-sans text-[13px] font-semibold tracking-[0.5px] uppercase text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
             >
               Create your pool &rarr;
             </Link>
             <Link
               href="/pool-formats/quick-6-post-cut-pick-sheet.pdf"
-              className="inline-flex items-center justify-center rounded-[4px] border-[1.5px] border-text-primary px-6 py-3 font-body text-[13px] font-semibold tracking-[0.5px] uppercase text-text-primary hover:bg-surface-alt transition-colors duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
+              className="inline-flex items-center justify-center rounded-[4px] border-[1.5px] border-text-primary px-6 py-3 font-sans text-[13px] font-semibold tracking-[0.5px] uppercase text-text-primary hover:bg-surface-alt transition-colors duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
             >
               Download the Quick-6 Pick Sheet (PDF)
             </Link>

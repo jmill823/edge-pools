@@ -206,7 +206,7 @@ export default function GuestPicksPage({ params }: { params: { id: string } }) {
   if (authError) {
     return (
       <div className="mx-auto max-w-content px-4 py-12 text-center">
-        <p className="font-body text-sm text-text-secondary mb-4">Your session has expired. Please rejoin the pool.</p>
+        <p className="font-sans text-sm text-text-secondary mb-4">Your session has expired. Please rejoin the pool.</p>
         <Button variant="primary" onClick={() => router.back()}>Go Back</Button>
       </div>
     );
@@ -251,13 +251,13 @@ export default function GuestPicksPage({ params }: { params: { id: string } }) {
   return (
     <div className="flex flex-col h-[calc(100vh-120px)] sm:h-[calc(100vh-180px)] mx-auto w-full md:w-[80%] md:max-w-[1200px]">
       <div className="px-4 pt-2 pb-1 shrink-0 text-center">
-        <p className="font-body text-xs text-text-muted">{pool.name}</p>
+        <p className="font-sans text-xs text-text-muted">{pool.name}</p>
       </div>
 
       <div className="px-4 pt-1 pb-2 shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-display text-lg font-bold text-text-primary">{headerLabel}</h2>
+            <h2 className="font-sans text-lg font-bold text-text-primary">{headerLabel}</h2>
             <span className="font-mono text-xs text-text-secondary">{pickCount} of {categories.length} complete</span>
           </div>
           {!readOnly && pool.picksDeadline && <Countdown deadline={pool.picksDeadline} onExpired={() => setExpired(true)} />}
@@ -267,7 +267,7 @@ export default function GuestPicksPage({ params }: { params: { id: string } }) {
           <div className="mt-2 flex gap-2 overflow-x-auto">
             {allEntries.map((e) => (
               <button key={e.id} onClick={() => handleEntrySwitch(e.id)}
-                className={`shrink-0 rounded-data px-3 py-1 font-body text-xs font-medium min-h-[32px] cursor-pointer transition-colors duration-200 ${
+                className={`shrink-0 rounded-data px-3 py-1 font-sans text-xs font-medium min-h-[32px] cursor-pointer transition-colors duration-200 ${
                   editingEntry?.id === e.id ? "bg-accent-primary text-white" : "bg-surface-alt text-text-secondary border border-border"
                 }`}>
                 {e.teamName || `Entry ${e.entryNumber}`}
@@ -279,17 +279,17 @@ export default function GuestPicksPage({ params }: { params: { id: string } }) {
 
       {!readOnly && (
         <div className="px-4 pb-2 shrink-0">
-          <label className="block font-body text-xs font-medium text-text-secondary mb-1">Name your team</label>
+          <label className="block font-sans text-xs font-medium text-text-secondary mb-1">Name your team</label>
           <input type="text" value={teamName} onChange={(e) => setTeamName(e.target.value.slice(0, 30))}
             placeholder="Danny's Daggers, The Long Shot Squad..."
-            className="w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 font-body text-sm text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
+            className="w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 font-sans text-sm text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
             maxLength={30} />
           <span className="block mt-0.5 font-mono text-[10px] text-text-muted text-right">{teamName.length}/30</span>
         </div>
       )}
 
       {readOnly && allEntries.length > 0 && (
-        <div className="mx-4 mb-2 rounded-data bg-[#FDF4E3] px-3 py-2 font-body text-xs text-[#8A6B1E] shrink-0">
+        <div className="mx-4 mb-2 rounded-data bg-[#FDF4E3] px-3 py-2 font-sans text-xs text-[#8A6B1E] shrink-0">
           {expired ? "Deadline passed. Your picks are locked." : "Picks are locked."}
         </div>
       )}
@@ -331,10 +331,10 @@ function GuestSuccessScreen({
   return (
     <div className="mx-auto max-w-content px-4 py-12 text-center">
       <div className="text-4xl mb-4">&#x1F3CC;&#xFE0F;</div>
-      <h2 className="font-display text-xl font-bold text-text-primary">
+      <h2 className="font-sans text-xl font-bold text-text-primary">
         {isEdit ? "Picks Updated!" : "You're In!"}
       </h2>
-      <p className="font-body text-sm text-text-secondary mt-2">
+      <p className="font-sans text-sm text-text-secondary mt-2">
         {showEntryNumber
           ? `Entry ${entryNumber} for ${poolName} — ${pickCount} picks ${isEdit ? "updated" : "locked in"}.`
           : `${poolName} — ${pickCount} picks ${isEdit ? "updated" : "locked in"}.`}
@@ -343,7 +343,7 @@ function GuestSuccessScreen({
       <div className="mt-6 space-y-3">
         <Link
           href={`/guest-pool/${poolId}/leaderboard`}
-          className="block w-full rounded-btn bg-accent-primary px-4 py-3 font-body text-sm font-medium text-white hover:opacity-90 transition-opacity duration-200 min-h-[44px] text-center"
+          className="block w-full rounded-btn bg-accent-primary px-4 py-3 font-sans text-sm font-medium text-white hover:opacity-90 transition-opacity duration-200 min-h-[44px] text-center"
         >
           View Leaderboard
         </Link>
@@ -351,14 +351,14 @@ function GuestSuccessScreen({
         {canAddMore && onAddAnother && (
           <button
             onClick={onAddAnother}
-            className="block w-full rounded-btn border border-border bg-surface px-4 py-3 font-body text-sm font-medium text-text-primary hover:bg-surface-alt transition-colors duration-200 min-h-[44px] cursor-pointer"
+            className="block w-full rounded-btn border border-border bg-surface px-4 py-3 font-sans text-sm font-medium text-text-primary hover:bg-surface-alt transition-colors duration-200 min-h-[44px] cursor-pointer"
           >
             Add Another Entry ({currentEntryCount} of {maxEntries})
           </button>
         )}
       </div>
 
-      <p className="font-body text-xs text-text-muted mt-6">
+      <p className="font-sans text-xs text-text-muted mt-6">
         Bookmark this page to come back and check the leaderboard.
       </p>
     </div>
@@ -366,5 +366,5 @@ function GuestSuccessScreen({
 }
 
 function Msg({ text }: { text: string }) {
-  return <div className="mx-auto max-w-content px-4 py-12 text-center"><p className="font-body text-sm text-text-secondary">{text}</p></div>;
+  return <div className="mx-auto max-w-content px-4 py-12 text-center"><p className="font-sans text-sm text-text-secondary">{text}</p></div>;
 }

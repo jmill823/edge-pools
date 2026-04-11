@@ -82,8 +82,8 @@ export default function SwitchPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">Got it.</h1>
-          <p className="mt-2 font-body text-sm text-text-secondary max-w-[320px] mx-auto">
+          <h1 className="font-sans text-2xl font-bold text-text-primary">Got it.</h1>
+          <p className="mt-2 font-sans text-sm text-text-secondary max-w-[320px] mx-auto">
             We&rsquo;ll set up your pool and reach out within 24 hours.
           </p>
           <Link href="/" className="mt-6 inline-block">
@@ -101,15 +101,15 @@ export default function SwitchPage() {
       <div className="mx-auto max-w-content px-4 py-12">
         {/* Header */}
         <Link href="/" className="inline-block mb-8">
-          <span className="font-display text-[24px] font-[900] italic tracking-[3px] text-text-primary">
+          <span className="font-sans text-[24px] font-[900] italic tracking-[3px] text-text-primary">
             TILT
           </span>
         </Link>
 
-        <h1 className="font-display text-2xl font-bold text-text-primary">
+        <h1 className="font-sans text-2xl font-bold text-text-primary">
           Ditch the spreadsheet
         </h1>
-        <p className="mt-1 font-body text-sm text-text-secondary">
+        <p className="mt-1 font-sans text-sm text-text-secondary">
           Tell us about your pool and we&rsquo;ll handle the setup.
         </p>
 
@@ -122,7 +122,7 @@ export default function SwitchPage() {
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           {/* Name */}
           <div>
-            <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+            <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
               Name *
             </label>
             <input
@@ -130,13 +130,13 @@ export default function SwitchPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 min-h-[44px]"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 min-h-[44px]"
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+            <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
               Email *
             </label>
             <input
@@ -144,20 +144,20 @@ export default function SwitchPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 min-h-[44px]"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 min-h-[44px]"
             />
           </div>
 
           {/* Pool Type */}
           <div>
-            <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+            <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
               Pool Type *
             </label>
             <select
               value={poolType}
               onChange={(e) => setPoolType(e.target.value)}
               required
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 min-h-[44px]"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 min-h-[44px]"
             >
               <option value="">Select type...</option>
               {POOL_TYPES.map((t) => (
@@ -168,7 +168,7 @@ export default function SwitchPage() {
 
           {/* Description */}
           <div>
-            <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+            <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
               Tell us about your pool *
             </label>
             <textarea
@@ -177,30 +177,30 @@ export default function SwitchPage() {
               required
               rows={4}
               placeholder="~players, scoring, rules, format — categories, etc. We'll take care of the rest."
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 resize-none"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 resize-none"
             />
           </div>
 
           {/* Free callout */}
           <div className="rounded-data bg-[#ECFDF5] px-4 py-2.5">
-            <p className="font-body text-sm font-medium text-[#059669]">
+            <p className="font-sans text-sm font-medium text-[#059669]">
               Your first pool will be set up for free.
             </p>
           </div>
 
           {/* File Upload */}
           <div>
-            <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+            <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
               Current Template (optional)
             </label>
             <input
               type="file"
               accept={ACCEPTED_FILE_TYPES}
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm file:mr-3 file:rounded-data file:border-0 file:bg-surface-alt file:px-3 file:py-1 file:font-body file:text-xs file:text-text-secondary file:cursor-pointer min-h-[44px]"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm file:mr-3 file:rounded-data file:border-0 file:bg-surface-alt file:px-3 file:py-1 file:font-sans file:text-xs file:text-text-secondary file:cursor-pointer min-h-[44px]"
             />
             {file && (
-              <p className="mt-1 font-body text-xs text-text-muted">{file.name} ({(file.size / 1024).toFixed(0)} KB)</p>
+              <p className="mt-1 font-sans text-xs text-text-muted">{file.name} ({(file.size / 1024).toFixed(0)} KB)</p>
             )}
           </div>
 

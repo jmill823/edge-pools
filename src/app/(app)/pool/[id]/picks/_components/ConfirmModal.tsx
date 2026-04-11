@@ -35,10 +35,10 @@ export function ConfirmModal({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50">
       <div className="w-full max-w-lg bg-surface rounded-t-[8px] sm:rounded-card max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 z-10 bg-surface px-6 pt-6 pb-3 border-b border-border">
-          <h2 className="font-display text-lg font-bold text-text-primary">
+          <h2 className="font-sans text-lg font-bold text-text-primary">
             {isEdit ? "Confirm Updated Picks" : "Confirm Your Picks"}
           </h2>
-          <p className="mt-1 font-body text-sm text-text-secondary">{poolName}</p>
+          <p className="mt-1 font-sans text-sm text-text-secondary">{poolName}</p>
         </div>
 
         {error && (
@@ -51,8 +51,8 @@ export function ConfirmModal({
           {picks.map((pick, i) => (
             <div key={i} className="flex items-center justify-between py-2 border-b border-surface-alt last:border-0">
               <div className="min-w-0">
-                <span className="font-body text-xs text-text-muted">{pick.categoryName}</span>
-                <span className="block font-body text-sm font-medium text-text-primary truncate">{pick.golferName}</span>
+                <span className="font-sans text-xs text-text-muted">{pick.categoryName}</span>
+                <span className="block font-sans text-sm font-medium text-text-primary truncate">{pick.golferName}</span>
               </div>
               <div className="flex items-center gap-2 shrink-0 font-mono text-xs text-text-muted">
                 {pick.golferCountry && <span>{pick.golferCountry}</span>}

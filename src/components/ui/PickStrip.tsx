@@ -27,10 +27,10 @@ export function PickStrip({ picks, maxVisible }: PickStripProps) {
             key={i}
             className="shrink-0 rounded-data bg-surface-alt border border-border px-2.5 py-1.5 min-w-[90px] max-w-[130px]"
           >
-            <div className="font-body text-[9px] text-text-muted uppercase tracking-[0.5px] truncate leading-tight">
+            <div className="font-sans text-[9px] text-text-muted uppercase tracking-[0.5px] truncate leading-tight">
               {pick.categoryName}
             </div>
-            <div className="font-body text-xs font-medium text-text-primary truncate mt-0.5 leading-tight">
+            <div className="font-sans text-xs font-medium text-text-primary truncate mt-0.5 leading-tight">
               {lastName(pick.golferName)}
             </div>
             {pick.score !== undefined && pick.score !== null && (
@@ -41,7 +41,7 @@ export function PickStrip({ picks, maxVisible }: PickStripProps) {
           </div>
         ))}
         {remaining > 0 && (
-          <div className="shrink-0 flex items-center px-2 font-body text-[10px] text-text-muted font-medium">
+          <div className="shrink-0 flex items-center px-2 font-sans text-[10px] text-text-muted font-medium">
             +{remaining} more
           </div>
         )}

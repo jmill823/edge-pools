@@ -28,8 +28,8 @@ export function TemplateSelector({ templates, selected, onSelect }: TemplateSele
               : "border-border hover:border-accent-primary/40"
           }`}
         >
-          <div className="font-body font-medium text-text-primary">{t.templateName}</div>
-          <div className="mt-1 font-body text-xs text-text-secondary">
+          <div className="font-sans font-medium text-text-primary">{t.templateName}</div>
+          <div className="mt-1 font-sans text-xs text-text-secondary">
             {t.categories.length} categories:{" "}
             {t.categories.map((c) => c.name).join(", ")}
           </div>

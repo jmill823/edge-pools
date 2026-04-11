@@ -33,21 +33,21 @@ export function Testimonials() {
               key={t.name}
               className="shrink-0 snap-start w-[260px] max-w-[300px] rounded-card border border-border bg-surface p-4"
             >
-              <p className="font-body text-[12px] font-normal italic text-text-primary leading-[1.5]">
+              <p className="font-sans text-[12px] font-normal italic text-text-primary leading-[1.5]">
                 &ldquo;{t.quote}&rdquo;
               </p>
               <div className="my-3 h-px bg-border" />
               <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#E8F0E5]">
-                  <span className="font-body text-[10px] font-semibold text-[#2D5F3B]">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--neutral-you-row)]">
+                  <span className="font-sans text-[10px] font-semibold text-accent-primary">
                     {t.initials}
                   </span>
                 </div>
                 <div>
-                  <p className="font-body text-[11px] font-semibold text-text-primary">
+                  <p className="font-sans text-[11px] font-semibold text-text-primary">
                     {t.name}
                   </p>
-                  <p className="font-body text-[9px] font-normal text-text-muted">
+                  <p className="font-sans text-[9px] font-normal text-text-muted">
                     {t.detail}
                   </p>
                 </div>

@@ -76,7 +76,7 @@ export function ScoringConfig({
     onChange({ ...current, ...partial });
   }
 
-  const selectClass = `w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px] ${
+  const selectClass = `w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px] ${
     disabled ? "opacity-50 cursor-not-allowed" : ""
   }`;
 
@@ -86,7 +86,7 @@ export function ScoringConfig({
     <div className="space-y-5">
       {/* Scoring Type */}
       <div>
-        <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+        <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
           Scoring Type
         </label>
         <select
@@ -105,7 +105,7 @@ export function ScoringConfig({
 
       {/* Missed-Cut Penalty */}
       <div>
-        <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+        <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
           Missed-Cut Penalty
         </label>
         <select
@@ -120,7 +120,7 @@ export function ScoringConfig({
         </select>
         {missedCutPenaltyType === "fixed-per-round" && (
           <div className="mt-2 flex items-center gap-2">
-            <span className="font-body text-sm text-text-secondary">+</span>
+            <span className="font-sans text-sm text-text-secondary">+</span>
             <input
               type="number"
               value={missedCutFixedPenalty ?? 4}
@@ -136,14 +136,14 @@ export function ScoringConfig({
                 disabled ? "opacity-50 cursor-not-allowed" : ""
               }`}
             />
-            <span className="font-body text-sm text-text-secondary">per missed round</span>
+            <span className="font-sans text-sm text-text-secondary">per missed round</span>
           </div>
         )}
       </div>
 
       {/* Tiebreaker */}
       <div>
-        <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+        <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
           Tiebreaker
         </label>
         <select
@@ -160,7 +160,7 @@ export function ScoringConfig({
 
       {/* Roster Rule */}
       <div>
-        <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+        <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
           Roster Rule
         </label>
         <select
@@ -192,12 +192,12 @@ export function ScoringConfig({
           <div className="mt-3 space-y-3">
             {/* Mode toggle */}
             <div className="flex items-center gap-2">
-              <label className="font-body text-xs text-text-secondary">Mode:</label>
+              <label className="font-sans text-xs text-text-secondary">Mode:</label>
               <select
                 value={rosterRuleMode}
                 onChange={(e) => update({ rosterRuleMode: e.target.value })}
                 disabled={disabled}
-                className={`rounded-btn border border-border bg-surface px-2 py-1.5 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 ${
+                className={`rounded-btn border border-border bg-surface px-2 py-1.5 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 ${
                   disabled ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
@@ -208,7 +208,7 @@ export function ScoringConfig({
             </div>
 
             {/* Count input */}
-            <div className="flex items-center gap-2 font-body text-sm text-text-primary">
+            <div className="flex items-center gap-2 font-sans text-sm text-text-primary">
               <span>{rosterRule === "best-of" ? "Keep best" : "Drop worst"}</span>
               <input
                 type="number"

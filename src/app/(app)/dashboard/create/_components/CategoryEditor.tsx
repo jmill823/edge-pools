@@ -69,7 +69,7 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
               className="flex flex-1 items-center gap-2 text-left cursor-pointer min-w-0"
             >
               <span className="font-mono text-xs text-text-muted w-6 shrink-0">{cat.sortOrder}</span>
-              <span className="flex-1 font-body font-medium text-text-primary truncate">{cat.name}</span>
+              <span className="flex-1 font-sans font-medium text-text-primary truncate">{cat.name}</span>
               <span className="font-mono text-xs text-text-secondary shrink-0">
                 {cat.golfers.length} golfer{cat.golfers.length !== 1 ? "s" : ""}
               </span>
@@ -115,14 +115,14 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
                 type="text"
                 value={cat.name}
                 onChange={(e) => updateCategory(idx, { ...cat, name: e.target.value })}
-                className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
+                className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
                 placeholder="Category name"
               />
 
               {/* Golfer list */}
               <div className="space-y-1">
                 {cat.golfers.map((g) => (
-                  <div key={g.id} className="flex items-center justify-between rounded-data px-2 py-1.5 font-body text-sm hover:bg-surface-alt transition-colors duration-150">
+                  <div key={g.id} className="flex items-center justify-between rounded-data px-2 py-1.5 font-sans text-sm hover:bg-surface-alt transition-colors duration-150">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="text-text-primary truncate">{g.name}</span>
                       {g.country && <span className="text-xs text-text-muted">{g.country}</span>}
@@ -155,21 +155,21 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
                 <button
                   onClick={() => moveCategory(idx, -1)}
                   disabled={idx === 0}
-                  className="rounded-data px-2 py-1.5 font-body text-xs text-text-secondary hover:bg-surface-alt disabled:opacity-30 min-h-[32px] cursor-pointer transition-colors duration-200"
+                  className="rounded-data px-2 py-1.5 font-sans text-xs text-text-secondary hover:bg-surface-alt disabled:opacity-30 min-h-[32px] cursor-pointer transition-colors duration-200"
                 >
                   Move Up
                 </button>
                 <button
                   onClick={() => moveCategory(idx, 1)}
                   disabled={idx === categories.length - 1}
-                  className="rounded-data px-2 py-1.5 font-body text-xs text-text-secondary hover:bg-surface-alt disabled:opacity-30 min-h-[32px] cursor-pointer transition-colors duration-200"
+                  className="rounded-data px-2 py-1.5 font-sans text-xs text-text-secondary hover:bg-surface-alt disabled:opacity-30 min-h-[32px] cursor-pointer transition-colors duration-200"
                 >
                   Move Down
                 </button>
                 <div className="flex-1" />
                 <button
                   onClick={() => deleteCategory(idx)}
-                  className="rounded-data px-2 py-1.5 font-body text-xs text-accent-danger hover:bg-[#FCEAE9] min-h-[32px] cursor-pointer transition-colors duration-200"
+                  className="rounded-data px-2 py-1.5 font-sans text-xs text-accent-danger hover:bg-[#FCEAE9] min-h-[32px] cursor-pointer transition-colors duration-200"
                 >
                   Delete Category
                 </button>
@@ -181,7 +181,7 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
 
       <button
         onClick={addCategory}
-        className="w-full rounded-card border-2 border-dashed border-border py-3 font-body text-sm font-medium text-accent-primary hover:border-accent-primary/40 hover:bg-surface-alt min-h-[44px] cursor-pointer transition-colors duration-200"
+        className="w-full rounded-card border-2 border-dashed border-border py-3 font-sans text-sm font-medium text-accent-primary hover:border-accent-primary/40 hover:bg-surface-alt min-h-[44px] cursor-pointer transition-colors duration-200"
       >
         + Add Category
       </button>
@@ -222,7 +222,7 @@ function GolferSearch({
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onFocus={() => query && setOpen(true)}
         placeholder="Search golfers to add..."
-        className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
+        className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
       />
       {open && query && filtered.length > 0 && (
         <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-card border border-border bg-surface shadow-subtle">
@@ -230,7 +230,7 @@ function GolferSearch({
             <button
               key={g.id}
               onClick={() => { onSelect(g); setQuery(""); setOpen(false); }}
-              className="flex w-full items-center gap-2 px-3 py-2 font-body text-sm text-left hover:bg-surface-alt min-h-[40px] cursor-pointer transition-colors duration-150"
+              className="flex w-full items-center gap-2 px-3 py-2 font-sans text-sm text-left hover:bg-surface-alt min-h-[40px] cursor-pointer transition-colors duration-150"
             >
               <span className="flex-1 truncate text-text-primary">{g.name}</span>
               {g.country && <span className="text-xs text-text-muted">{g.country}</span>}

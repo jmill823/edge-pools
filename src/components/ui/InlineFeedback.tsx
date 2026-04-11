@@ -36,7 +36,7 @@ export function InlineFeedback({
       : "bg-[#FCEAE9] border-accent-danger text-accent-danger";
 
   return (
-    <div className={`flex items-start justify-between gap-2 rounded-btn border px-4 py-3 font-body text-sm font-medium ${styles}`}>
+    <div className={`flex items-start justify-between gap-2 rounded-btn border px-4 py-3 font-sans text-sm font-medium ${styles}`}>
       <span>{message}</span>
       <button
         onClick={() => {

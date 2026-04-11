@@ -166,10 +166,10 @@ export function EmailInviteSection({ poolId }: { poolId: string }) {
 
   return (
     <div className="rounded-card border border-border bg-surface p-5">
-      <h2 className="font-display text-sm font-bold text-text-primary uppercase tracking-wide">
+      <h2 className="font-sans text-sm font-bold text-text-primary uppercase tracking-wide">
         Invite by Email
       </h2>
-      <p className="mt-1 font-body text-xs text-text-secondary">
+      <p className="mt-1 font-sans text-xs text-text-secondary">
         Paste emails or upload a contact list to send pool invites
       </p>
 
@@ -261,7 +261,7 @@ export function EmailInviteSection({ poolId }: { poolId: string }) {
       {parseResult && !sendResult && (
         <div className="mt-4">
           {/* Summary counts */}
-          <div className="flex flex-wrap gap-3 text-xs font-body">
+          <div className="flex flex-wrap gap-3 text-xs font-sans">
             {readyCount > 0 && (
               <span className="rounded-full bg-[#E8F3ED] px-2.5 py-1 text-[#1B5E3B] font-medium">
                 {readyCount} ready to send

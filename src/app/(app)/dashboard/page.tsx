@@ -60,7 +60,7 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-content px-4 py-8">
       {/* Header */}
-      <h1 className="font-display text-2xl font-bold text-text-primary">
+      <h1 className="font-sans text-2xl font-bold text-text-primary">
         Welcome, {user?.firstName ?? "Player"}
       </h1>
 
@@ -101,7 +101,7 @@ export default function DashboardPage() {
         <>
           {activePools.length > 0 && (
             <>
-              <h2 className="mt-8 font-display text-xs font-medium text-text-muted uppercase tracking-[0.5px]">Active</h2>
+              <h2 className="mt-8 font-sans text-xs font-medium text-text-muted uppercase tracking-[0.5px]">Active</h2>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
                 {activePools.map((p) => (
                   <PoolCard key={p.id} pool={p} />
@@ -112,7 +112,7 @@ export default function DashboardPage() {
 
           {archivedPools.length > 0 && (
             <details className="mt-8">
-              <summary className="cursor-pointer font-body text-sm font-medium text-text-secondary hover:text-text-primary transition-colors duration-200">
+              <summary className="cursor-pointer font-sans text-sm font-medium text-text-secondary hover:text-text-primary transition-colors duration-200">
                 Past Pools ({archivedPools.length})
               </summary>
               <div className="mt-3 grid gap-4 sm:grid-cols-2 opacity-70">
@@ -141,8 +141,8 @@ function PoolCard({ pool }: { pool: PoolItem }) {
         {/* Top: name + badge */}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h3 className="font-display font-semibold text-text-primary truncate">{pool.name}</h3>
-            <p className="mt-0.5 font-body text-xs text-text-secondary">{pool.tournament.name}</p>
+            <h3 className="font-sans font-semibold text-text-primary truncate">{pool.name}</h3>
+            <p className="mt-0.5 font-sans text-xs text-text-secondary">{pool.tournament.name}</p>
           </div>
           <StatusBadge status={pool.status} />
         </div>
