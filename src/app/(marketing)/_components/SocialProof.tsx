@@ -6,24 +6,24 @@ export function SocialProof() {
   ];
 
   return (
-    <section className="border-t border-[#EDEAE4] py-8">
+    <section className="py-8" style={{ borderTop: "1px solid var(--neutral-border)" }}>
       <div className="mx-auto max-w-[720px] px-5">
         <div className="flex items-center justify-center gap-8">
           {stats.map((stat, i) => (
             <div key={stat.label} className="flex items-center gap-8">
-              {i > 0 && <div className="h-8 w-px bg-[#EDEAE4]" />}
+              {i > 0 && <div className="h-8 w-px" style={{ background: "var(--neutral-border)" }} />}
               <div className="text-center">
-                <p className="font-mono text-[24px] font-[800] text-[#1A1A18] tabular-nums">
+                <p className="font-sans text-[20px] font-bold tabular-nums" style={{ color: "var(--neutral-text)" }}>
                   {stat.number}
                 </p>
-                <p className="mt-1 font-sans text-[9px] font-medium uppercase tracking-[0.8px] text-[#8A8580]">
+                <p className="mt-1 font-sans text-[8px] font-medium uppercase tracking-[0.8px]" style={{ color: "#8A7D6B" }}>
                   {stat.label}
                 </p>
               </div>
             </div>
           ))}
         </div>
-        <p className="mt-3 text-center font-sans text-[10px] font-normal text-[#ABA69E]">
+        <p className="mt-3 text-center font-sans text-[10px] font-normal italic" style={{ color: "var(--neutral-icon)" }}>
           Born from the Masters 2K Contest (2010&ndash;2024)
         </p>
       </div>
