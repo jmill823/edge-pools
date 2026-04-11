@@ -65,8 +65,8 @@ function buildInviteHtml(params: Omit<InviteEmailParams, "to">) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background-color:#FDFBF7;color:#2C2925;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FDFBF7;padding:40px 20px;">
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background-color:#FAFAFA;color:#2C2925;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAFAFA;padding:40px 20px;">
     <tr>
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background-color:#FFFFFF;border-radius:12px;border:1px solid #E2DDD5;padding:40px 32px;">
@@ -76,7 +76,7 @@ function buildInviteHtml(params: Omit<InviteEmailParams, "to">) {
                 <strong>${commissionerName}</strong> invited you to join their golf pool for <strong>${tournamentName}</strong>.
               </p>
 
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FDFBF7;border-radius:8px;padding:20px;margin-bottom:24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAFAFA;border-radius:8px;padding:20px;margin-bottom:24px;">
                 <tr><td style="padding:4px 0;font-size:14px;color:#6B6560;">Pool</td><td style="padding:4px 0;font-size:14px;color:#2C2925;font-weight:600;text-align:right;">${poolName}</td></tr>
                 <tr><td style="padding:4px 0;font-size:14px;color:#6B6560;">Format</td><td style="padding:4px 0;font-size:14px;color:#2C2925;text-align:right;">${templateName} (${categoryCount} categories)</td></tr>
                 <tr><td style="padding:4px 0;font-size:14px;color:#6B6560;">Tournament</td><td style="padding:4px 0;font-size:14px;color:#2C2925;text-align:right;">${tournamentName}</td></tr>
