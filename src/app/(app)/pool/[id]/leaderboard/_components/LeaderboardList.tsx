@@ -69,7 +69,7 @@ export function LeaderboardList({
 }: LeaderboardListProps) {
   if (entries.length === 0) {
     return (
-      <div className="py-12 text-center font-sans text-sm text-text-muted">
+      <div className="py-12 text-center font-sans text-sm" style={{ color: "var(--neutral-muted)" }}>
         No entries yet. Picks will appear on the leaderboard after submission.
       </div>
     );
@@ -78,30 +78,33 @@ export function LeaderboardList({
   return (
     <div className="overflow-x-auto -mx-4 px-4">
       <div className="min-w-[520px]">
-        {/* Column headers */}
-        <div className="flex items-center px-3 py-2 border-b border-border">
-          <span className="w-[36px] shrink-0 font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+        {/* Gold column headers */}
+        <div
+          className="flex items-center px-3 py-2"
+          style={{ background: "var(--theme-primary)" }}
+        >
+          <span className="w-[36px] shrink-0 font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
             POS
           </span>
-          <span className="flex-1 min-w-[100px] font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="flex-1 min-w-[100px] font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
             ENTRY
           </span>
-          <span className="w-[36px] shrink-0 text-center font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] opacity-45">
+          <span className="w-[36px] shrink-0 text-center font-sans text-[8px] font-semibold text-white/45 uppercase tracking-[0.5px]">
             MC
           </span>
-          <span className="w-[36px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
             R1
           </span>
-          <span className="w-[36px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
             R2
           </span>
-          <span className="w-[36px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
             R3
           </span>
-          <span className="w-[36px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
             R4
           </span>
-          <span className="w-[48px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[48px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
             TOTAL
           </span>
         </div>
@@ -121,8 +124,8 @@ export function LeaderboardList({
         </div>
 
         {/* Footer */}
-        <div className="px-3 py-2.5 text-center border-t border-border">
-          <span className="font-sans text-[9px] text-text-muted">
+        <div className="px-3 py-2.5 text-center" style={{ borderTop: "0.5px solid var(--neutral-light-border)" }}>
+          <span className="font-sans text-[9px]" style={{ color: "var(--neutral-icon)" }}>
             {entryCount} {entryCount === 1 ? "entry" : "entries"} &middot; {tournamentName}
           </span>
         </div>

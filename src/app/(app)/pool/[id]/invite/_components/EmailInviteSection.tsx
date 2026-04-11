@@ -263,7 +263,7 @@ export function EmailInviteSection({ poolId }: { poolId: string }) {
           {/* Summary counts */}
           <div className="flex flex-wrap gap-3 text-xs font-sans">
             {readyCount > 0 && (
-              <span className="rounded-full bg-[#E8F3ED] px-2.5 py-1 text-[#1B5E3B] font-medium">
+              <span className="rounded-full px-2.5 py-1 font-medium" style={{ background: "var(--neutral-you-row)", color: "var(--theme-text)" }}>
                 {readyCount} ready to send
               </span>
             )}
@@ -289,7 +289,7 @@ export function EmailInviteSection({ poolId }: { poolId: string }) {
                 <span className="font-mono text-xs text-text-primary truncate">
                   {email}
                 </span>
-                <span className="ml-2 text-[10px] text-[#1B5E3B] font-medium whitespace-nowrap">
+                <span className="ml-2 text-[10px] font-medium whitespace-nowrap" style={{ color: "var(--theme-text)" }}>
                   Ready
                 </span>
               </div>

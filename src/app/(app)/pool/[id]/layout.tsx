@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getOrCreateUser } from "@/lib/auth";
 import { PoolNav } from "@/components/ui/PoolNav";
+import { BottomNav } from "@/components/layout/BottomNav";
 
 export async function generateMetadata({
   params,
@@ -57,7 +58,10 @@ export default async function PoolLayout({
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-theme(spacing.14)-theme(spacing.16))]">
+    <div
+      className="flex flex-col min-h-[calc(100vh-theme(spacing.14)-theme(spacing.16))]"
+      style={{ background: "var(--bg-app)" }}
+    >
       <PoolNav
         poolId={pool.id}
         poolName={pool.name}
@@ -65,8 +69,10 @@ export default async function PoolLayout({
         isOrganizer={isOrganizer}
         inviteCode={pool.inviteCode}
       />
-      {/* Content area — add bottom padding on mobile for tab bar */}
+      {/* Content area — bottom padding for mobile bottom nav */}
       <div className="flex-1 pb-20 sm:pb-0">{children}</div>
+      {/* Mobile bottom nav */}
+      <BottomNav poolId={pool.id} isOrganizer={isOrganizer} />
     </div>
   );
 }
