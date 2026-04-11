@@ -211,7 +211,55 @@ CLAUDE.md has the rules. This file has the experience. Every lesson here was lea
 | Picks visual upgrade | Apr 4 | Earth-tone palette, auto-advance, bubbles | Verify mandatory files exist before starting. |
 | Homepage redesign | Apr 4 | 76px TILT, role selector | Gate B skipped — branch should always exist for rollback. |
 
+| SEO + format pages | Apr 9 | Meta tags, /classic, /quick-6, sitemap | opengraph-image.tsx file convention overrides explicit metadata — remove file convention when using static OG PNGs. |
+| OG images v4 | Apr 10 | Split layout with leaderboard cards | Space Grotesk has no italic — use Montserrat Black Italic for bold italic TILT wordmark in canvas-rendered images. |
+| Landing redesign | Apr 10 | Hero, CTA modal, mini leaderboard, testimonials | Modal replaces auto-showing RoleSelector. Button-triggered is better UX. |
+| Field cleanup | Apr 10 | Remove 35 phantoms, add 31 missing players | Always cross-reference template against live SlashGolf field before activation. |
+| PDF generation | Apr 10 | Classic + Quick-6 pick sheets | See PDF GENERATION section below. |
+
+## PDF Generation (Critical — Read Before Making PDFs)
+
+### Working script: `scripts/make-pdfs.py`
+
+Run from project root:
+```bash
+python scripts/make-pdfs.py
+```
+
+Outputs to `public/pool-formats/`. Requires `reportlab` and `/tmp/masters-field.json` (for Quick-6 cut data).
+
+### What went wrong and why
+
+1. **`outputs/build_tilt_pdfs.py` hangs** — The original script tries to create `/mnt/user-data/outputs/` at import time. On Windows this blocks indefinitely. Never import from this file.
+
+2. **Variable TTF fonts hang reportlab** — Registering `SpaceGrotesk-Variable.ttf` or `WorkSans-Variable.ttf` via `pdfmetrics.registerFont(TTFont(...))` causes `canvas.save()` to hang (font subsetting on large variable fonts is extremely slow). Use Helvetica (built-in) instead.
+
+3. **Unicode characters garble in Helvetica** — Characters like Å, ø, é render as `Ã…`, `Ã¸`, `Ã©`. Fix: strip accents with `safe()` function before passing to reportlab. ASCII equivalents are acceptable for PDF display (Aberg, Hojgaard, Olazabal).
+
+4. **`stringWidth` while-loop can hang** — If the truncation logic uses `while c.stringWidth(dn+'..') > max_w: dn = dn[:-1]` and the string never gets short enough, it loops forever. Always add `len(dn) > 3` guard.
+
+### Rules for future PDF generation
+
+- **Use `scripts/make-pdfs.py`** — not `outputs/build_tilt_pdfs.py`
+- **Use Helvetica** — not TTF fonts. Built-in, fast, no embedding delay
+- **Strip accents** with `safe()` before any `drawString` call
+- **Guard all while loops** with length checks
+- **Quick-6 needs cut data** — fetch from SlashGolf first, save to `/tmp/masters-field.json`
+- **To regenerate cut data**: run the field fetch script (see Field Cleanup section in DEVIATIONS.md)
+- **Commit PDFs to `public/pool-formats/`** — they're served as static assets
+
+### Fetching cut data for Quick-6
+
+```python
+# Run this to refresh /tmp/masters-field.json before generating Quick-6 PDF
+import json, os
+apiKey = os.getenv('SLASHGOLF_API_KEY') or 'd1eb...'  # from .env.local
+apiHost = 'live-golf-data.p.rapidapi.com'
+# fetch https://{apiHost}/leaderboard?orgId=1&tournId=014&year=2026
+# save rows to /tmp/masters-field.json
+```
+
 ---
 
-*CC-LESSONS-LEARNED.md | Edge Pools | April 4, 2026*
+*CC-LESSONS-LEARNED.md | Edge Pools | April 10, 2026*
 *This file grows with every build. Never delete lessons — only add.*
