@@ -33,17 +33,17 @@ export function MiniLeaderboard() {
         {/* Table */}
         <div className="flex justify-center">
           <table className="w-auto max-w-[420px]" style={{ borderSpacing: 0 }}>
-            {/* Column headers — gold bg with white text */}
+            {/* Column headers — white bg with muted text */}
             <thead>
-              <tr style={{ background: "var(--theme-primary)" }}>
-                <th className="w-[30px] py-1.5 px-1 text-left font-sans text-[8px] font-semibold uppercase text-white tracking-[0.5px]">POS</th>
-                <th className="w-[130px] py-1.5 px-1 text-left font-sans text-[8px] font-semibold uppercase text-white tracking-[0.5px]">ENTRY</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-center font-sans text-[8px] font-semibold uppercase text-white/45 tracking-[0.5px]">MC</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-semibold uppercase text-white tracking-[0.5px]">R1</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-semibold uppercase text-white tracking-[0.5px]">R2</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-semibold uppercase text-white tracking-[0.5px]">R3</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-semibold uppercase text-white tracking-[0.5px]">R4</th>
-                <th className="w-[40px] py-1.5 px-1 text-right font-sans text-[8px] font-semibold uppercase text-white tracking-[0.5px]">TOTAL</th>
+              <tr className="bg-white" style={{ borderBottom: "0.5px solid var(--neutral-row-border)" }}>
+                <th className="w-[30px] py-1.5 px-1 text-left font-sans text-[8px] font-semibold uppercase text-[#6B7280] tracking-[0.5px]">POS</th>
+                <th className="w-[130px] py-1.5 px-1 text-left font-sans text-[8px] font-semibold uppercase text-[#6B7280] tracking-[0.5px]">ENTRY</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-center font-sans text-[8px] font-semibold uppercase text-[#6B7280]/45 tracking-[0.5px]">MC</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-semibold uppercase text-[#6B7280] tracking-[0.5px]">R1</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-semibold uppercase text-[#6B7280] tracking-[0.5px]">R2</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-semibold uppercase text-[#6B7280] tracking-[0.5px]">R3</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-semibold uppercase text-[#6B7280] tracking-[0.5px]">R4</th>
+                <th className="w-[40px] py-1.5 px-1 text-right font-sans text-[8px] font-semibold uppercase text-[#6B7280] tracking-[0.5px]">TOTAL</th>
               </tr>
             </thead>
             <tbody>

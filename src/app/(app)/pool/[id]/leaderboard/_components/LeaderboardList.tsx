@@ -78,33 +78,33 @@ export function LeaderboardList({
   return (
     <div className="overflow-x-auto -mx-4 px-4">
       <div className="min-w-[520px]">
-        {/* Gold column headers */}
+        {/* Column headers — white bg with muted text, separated from gold title bar */}
         <div
-          className="flex items-center px-3 py-2"
-          style={{ background: "var(--theme-primary)" }}
+          className="flex items-center px-3 py-2 bg-white"
+          style={{ borderBottom: "0.5px solid var(--neutral-row-border)" }}
         >
-          <span className="w-[36px] shrink-0 font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
             POS
           </span>
-          <span className="flex-1 min-w-[100px] font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+          <span className="flex-1 min-w-[100px] font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
             ENTRY
           </span>
-          <span className="w-[36px] shrink-0 text-center font-sans text-[8px] font-semibold text-white/45 uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-center font-sans text-[8px] font-semibold text-[#6B7280]/45 uppercase tracking-[0.5px]">
             MC
           </span>
-          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
             R1
           </span>
-          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
             R2
           </span>
-          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
             R3
           </span>
-          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
             R4
           </span>
-          <span className="w-[48px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+          <span className="w-[48px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
             TOTAL
           </span>
         </div>

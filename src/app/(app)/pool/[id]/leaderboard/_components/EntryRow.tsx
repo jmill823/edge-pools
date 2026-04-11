@@ -86,36 +86,36 @@ export function EntryRow({
             borderBottom: "0.5px solid var(--neutral-row-border)",
           }}
         >
-          {/* Golfer column headers — gold */}
+          {/* Golfer column headers — white bg with muted text */}
           <div
-            className="flex items-center px-3 py-1.5"
-            style={{ background: "var(--theme-primary)" }}
+            className="flex items-center px-3 py-1.5 bg-white"
+            style={{ borderBottom: "0.5px solid var(--neutral-row-border)" }}
           >
-            <span className="w-[30px] shrink-0 font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+            <span className="w-[30px] shrink-0 font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               POS
             </span>
-            <span className="w-[36px] shrink-0 font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+            <span className="w-[36px] shrink-0 font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               CAT
             </span>
-            <span className="flex-1 min-w-[80px] font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+            <span className="flex-1 min-w-[80px] font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               PLAYER
             </span>
-            <span className="w-[30px] shrink-0 text-center font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+            <span className="w-[30px] shrink-0 text-center font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               THRU
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               R1
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               R2
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               R3
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               R4
             </span>
-            <span className="w-[40px] shrink-0 text-right font-sans text-[8px] font-semibold text-white uppercase tracking-[0.5px]">
+            <span className="w-[40px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               TOTAL
             </span>
           </div>
