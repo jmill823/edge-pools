@@ -66,14 +66,14 @@ export default function ClassicPage() {
       <main className="flex-1">
         <article className="mx-auto max-w-[720px] px-4 py-12 sm:py-16">
           {/* H1 */}
-          <h1 className="font-display text-[32px] sm:text-[40px] font-[900] leading-[1.1] tracking-tight text-text-primary">
+          <h1 className="font-sans text-[32px] sm:text-[40px] font-[900] leading-[1.1] tracking-tight text-text-primary">
             Classic 9-Category Golf Pool
           </h1>
 
           <div className="mt-2 h-[3px] w-[48px] bg-accent-primary" />
 
           {/* Intro */}
-          <div className="mt-8 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+          <div className="mt-8 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
             <p>
               The Classic is a 9-category golf pool format built for groups that
               want real strategy, not just picking favorites and hoping.
@@ -88,14 +88,14 @@ export default function ClassicPage() {
 
           {/* Categories */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               The nine categories
             </h2>
             <ul className="mt-4 space-y-3">
               {categories.map((cat) => (
                 <li key={cat.name} className="flex items-start gap-3">
                   <span className="mt-[6px] block h-[7px] w-[7px] shrink-0 rounded-full bg-accent-primary" />
-                  <p className="font-body text-[14px] leading-[1.6] text-text-secondary">
+                  <p className="font-sans text-[14px] leading-[1.6] text-text-secondary">
                     <span className="font-semibold text-text-primary">
                       {cat.name}
                     </span>{" "}
@@ -108,10 +108,10 @@ export default function ClassicPage() {
 
           {/* Cross-category rule */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               The rule that changes everything
             </h2>
-            <div className="mt-4 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+            <div className="mt-4 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
               <p>
                 Once you pick a golfer in one category, he&rsquo;s removed from
                 every other category on your sheet. Scottie Scheffler is in your
@@ -125,10 +125,10 @@ export default function ClassicPage() {
 
           {/* Scoring */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               How scoring works
             </h2>
-            <div className="mt-4 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+            <div className="mt-4 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
               <p>
                 Total strokes across all four rounds. Lowest combined score
                 wins. Your commissioner sets the missed-cut penalty before the
@@ -140,10 +140,10 @@ export default function ClassicPage() {
 
           {/* Social proof */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               Why groups stick with it
             </h2>
-            <div className="mt-4 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+            <div className="mt-4 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
               <p>
                 We&rsquo;ve been running this format since 2010. Started with 5
                 entries, grew to 40+ with zero marketing. 68% of players come
@@ -162,10 +162,10 @@ export default function ClassicPage() {
 
           {/* Run it on TILT */}
           <section className="mt-10">
-            <h2 className="font-display text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
+            <h2 className="font-sans text-[13px] font-[800] uppercase tracking-[1px] text-text-primary">
               Run it on TILT
             </h2>
-            <div className="mt-4 space-y-4 font-body text-[15px] leading-[1.7] text-text-secondary">
+            <div className="mt-4 space-y-4 font-sans text-[15px] leading-[1.7] text-text-secondary">
               <p>
                 Set up your Classic pool in under 3 minutes. Categories are
                 pre-loaded &mdash; edit them if you want. Share the invite link.
@@ -179,13 +179,13 @@ export default function ClassicPage() {
           <div className="mt-10 flex flex-col sm:flex-row gap-3">
             <Link
               href="/dashboard/create"
-              className="inline-flex items-center justify-center rounded-[4px] bg-text-primary px-6 py-3 font-body text-[13px] font-semibold tracking-[0.5px] uppercase text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
+              className="inline-flex items-center justify-center rounded-[4px] bg-text-primary px-6 py-3 font-sans text-[13px] font-semibold tracking-[0.5px] uppercase text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
             >
               Create your pool &rarr;
             </Link>
             <Link
               href="/pool-formats/classic-9-category-pick-sheet.pdf"
-              className="inline-flex items-center justify-center rounded-[4px] border-[1.5px] border-text-primary px-6 py-3 font-body text-[13px] font-semibold tracking-[0.5px] uppercase text-text-primary hover:bg-surface-alt transition-colors duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
+              className="inline-flex items-center justify-center rounded-[4px] border-[1.5px] border-text-primary px-6 py-3 font-sans text-[13px] font-semibold tracking-[0.5px] uppercase text-text-primary hover:bg-surface-alt transition-colors duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
             >
               Download the Classic Pick Sheet (PDF)
             </Link>

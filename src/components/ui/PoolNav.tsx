@@ -43,7 +43,7 @@ export function PoolNav({ poolId, poolName, poolStatus, isOrganizer, inviteCode 
       {/* Pool name — no border, no background, floats on cream */}
       <div className="px-4 pt-4 pb-1">
         <div className="mx-auto w-full sm:max-w-[60%] text-center flex items-center justify-center gap-2">
-          <h1 className="font-display text-lg font-bold text-text-primary truncate">{poolName}</h1>
+          <h1 className="font-sans text-lg font-bold text-text-primary truncate">{poolName}</h1>
           {canShare && (
             <button
               onClick={() => setShowShare(true)}
@@ -66,7 +66,7 @@ export function PoolNav({ poolId, poolName, poolStatus, isOrganizer, inviteCode 
             <Link
               key={tab.segment}
               href={tab.href}
-              className={`text-center px-3 py-3 font-display text-[11px] font-medium uppercase tracking-[0.3px] transition-colors duration-200 border-b-2 cursor-pointer ${
+              className={`text-center px-3 py-3 font-sans text-[11px] font-medium uppercase tracking-[0.3px] transition-colors duration-200 border-b-2 cursor-pointer ${
                 isActive(tab.segment)
                   ? "border-accent-primary text-accent-primary"
                   : "border-transparent text-text-secondary hover:text-text-primary"
@@ -85,7 +85,7 @@ export function PoolNav({ poolId, poolName, poolStatus, isOrganizer, inviteCode 
             <Link
               key={tab.segment}
               href={tab.href}
-              className={`flex-1 flex flex-col items-center justify-center py-2 min-h-[56px] font-display text-xs font-medium transition-colors duration-200 cursor-pointer ${
+              className={`flex-1 flex flex-col items-center justify-center py-2 min-h-[56px] font-sans text-xs font-medium transition-colors duration-200 cursor-pointer ${
                 isActive(tab.segment)
                   ? "text-accent-primary"
                   : "text-text-muted hover:text-text-primary"

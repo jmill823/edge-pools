@@ -69,7 +69,7 @@ export function LeaderboardList({
 }: LeaderboardListProps) {
   if (entries.length === 0) {
     return (
-      <div className="py-12 text-center font-body text-sm text-text-muted">
+      <div className="py-12 text-center font-sans text-sm text-text-muted">
         No entries yet. Picks will appear on the leaderboard after submission.
       </div>
     );
@@ -80,28 +80,28 @@ export function LeaderboardList({
       <div className="min-w-[520px]">
         {/* Column headers */}
         <div className="flex items-center px-3 py-2 border-b border-border">
-          <span className="w-[36px] shrink-0 font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
             POS
           </span>
-          <span className="flex-1 min-w-[100px] font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="flex-1 min-w-[100px] font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
             ENTRY
           </span>
-          <span className="w-[36px] shrink-0 text-center font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] opacity-45">
+          <span className="w-[36px] shrink-0 text-center font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] opacity-45">
             MC
           </span>
-          <span className="w-[36px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
             R1
           </span>
-          <span className="w-[36px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
             R2
           </span>
-          <span className="w-[36px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
             R3
           </span>
-          <span className="w-[36px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[36px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
             R4
           </span>
-          <span className="w-[48px] shrink-0 text-right font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+          <span className="w-[48px] shrink-0 text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
             TOTAL
           </span>
         </div>
@@ -122,7 +122,7 @@ export function LeaderboardList({
 
         {/* Footer */}
         <div className="px-3 py-2.5 text-center border-t border-border">
-          <span className="font-body text-[9px] text-text-muted">
+          <span className="font-sans text-[9px] text-text-muted">
             {entryCount} {entryCount === 1 ? "entry" : "entries"} &middot; {tournamentName}
           </span>
         </div>

@@ -37,14 +37,14 @@ export function AcceptingMembersToggle({ poolId, status, acceptingMembers, onAcc
   return (
     <div className={`rounded-card border border-border bg-surface p-4 flex items-center justify-between gap-3 ${!canToggle ? "opacity-60" : ""}`}>
       <div>
-        <p className="font-body text-sm font-medium text-text-primary">Accepting new members</p>
-        <p className="font-body text-xs text-text-muted mt-0.5">
+        <p className="font-sans text-sm font-medium text-text-primary">Accepting new members</p>
+        <p className="font-sans text-xs text-text-muted mt-0.5">
           {acceptingMembers
             ? "Anyone with the invite link can join"
             : "Pool is closed to new members"}
         </p>
         {!canToggle && (
-          <p className="font-body text-[10px] text-text-muted mt-1">
+          <p className="font-sans text-[10px] text-text-muted mt-1">
             Cannot change after picks are locked.
           </p>
         )}

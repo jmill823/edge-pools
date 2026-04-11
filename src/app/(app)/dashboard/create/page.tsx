@@ -153,8 +153,8 @@ export default function CreatePoolPage() {
 
   return (
     <div className="mx-auto max-w-content px-4 py-8">
-      <h1 className="font-display text-2xl font-bold text-text-primary">Create a Pool</h1>
-      <p className="mt-1 font-body text-sm text-text-secondary">Set up your pool in a few steps.</p>
+      <h1 className="font-sans text-2xl font-bold text-text-primary">Create a Pool</h1>
+      <p className="mt-1 font-sans text-sm text-text-secondary">Set up your pool in a few steps.</p>
 
       {error && (
         <div className="mt-4">
@@ -182,11 +182,11 @@ export default function CreatePoolPage() {
                       : "border-border hover:border-[#10B981]/40"
                   } ${isGhosted && tournamentId !== t.id ? "opacity-50" : ""}`}
                 >
-                  <div className={`font-body font-medium text-text-primary ${isGhosted && tournamentId !== t.id ? "text-xs" : "text-sm"}`}>
+                  <div className={`font-sans font-medium text-text-primary ${isGhosted && tournamentId !== t.id ? "text-xs" : "text-sm"}`}>
                     {t.name}
                     {isDefault && <span className="ml-2 text-[10px] font-mono text-[#10B981] uppercase">This Week</span>}
                   </div>
-                  <div className="mt-0.5 font-body text-xs text-text-secondary">
+                  <div className="mt-0.5 font-sans text-xs text-text-secondary">
                     {t.course && <>{t.course} · </>}
                     {fmtDate(t.startDate)} – {fmtDate(t.endDate)}
                   </div>
@@ -203,7 +203,7 @@ export default function CreatePoolPage() {
             value={poolName}
             onChange={(e) => setPoolName(e.target.value)}
             placeholder="e.g., Mike's Masters Pool 2026"
-            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px]"
+            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px]"
           />
         </Section>
 
@@ -226,7 +226,7 @@ export default function CreatePoolPage() {
               type="datetime-local"
               value={picksDeadline}
               onChange={(e) => setPicksDeadline(e.target.value)}
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px]"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px]"
             />
           </Section>
 
@@ -236,7 +236,7 @@ export default function CreatePoolPage() {
                 type="button"
                 onClick={() => setMaxEntries((v) => Math.max(1, v - 1))}
                 disabled={maxEntries <= 1}
-                className="flex h-11 w-11 items-center justify-center rounded-btn border border-border font-body text-lg font-bold text-text-secondary hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
+                className="flex h-11 w-11 items-center justify-center rounded-btn border border-border font-sans text-lg font-bold text-text-secondary hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
               >
                 &minus;
               </button>
@@ -245,13 +245,13 @@ export default function CreatePoolPage() {
                 type="button"
                 onClick={() => setMaxEntries((v) => Math.min(5, v + 1))}
                 disabled={maxEntries >= 5}
-                className="flex h-11 w-11 items-center justify-center rounded-btn border border-border font-body text-lg font-bold text-text-secondary hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
+                className="flex h-11 w-11 items-center justify-center rounded-btn border border-border font-sans text-lg font-bold text-text-secondary hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
               >
                 +
               </button>
             </div>
             {maxEntries > 1 && (
-              <p className="mt-2 font-body text-xs text-text-muted">Players can submit up to {maxEntries} entries</p>
+              <p className="mt-2 font-sans text-xs text-text-muted">Players can submit up to {maxEntries} entries</p>
             )}
           </Section>
         </div>
@@ -278,7 +278,7 @@ export default function CreatePoolPage() {
             onChange={(e) => setRules(e.target.value)}
             placeholder="Prize structure, tiebreakers, etc."
             rows={3}
-            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
+            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
           />
         </Section>
 
@@ -294,7 +294,7 @@ export default function CreatePoolPage() {
 function Section({ num, label, children }: { num: string; label: string; children: React.ReactNode }) {
   return (
     <section>
-      <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+      <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
         {num}. {label}
       </label>
       <div className="mt-2">{children}</div>

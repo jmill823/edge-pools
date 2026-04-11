@@ -233,7 +233,7 @@ export default function PicksPage({ params }: { params: { id: string } }) {
       <div className="px-4 pt-3 pb-2 shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-display text-lg font-bold text-text-primary">{headerLabel}</h2>
+            <h2 className="font-sans text-lg font-bold text-text-primary">{headerLabel}</h2>
             <span className="font-mono text-xs text-text-secondary">{pickCount} of {categories.length} complete</span>
           </div>
           {!readOnly && pool.picksDeadline && <Countdown deadline={pool.picksDeadline} onExpired={() => setExpired(true)} />}
@@ -243,7 +243,7 @@ export default function PicksPage({ params }: { params: { id: string } }) {
           <div className="mt-2 flex gap-2 overflow-x-auto">
             {allEntries.map((e) => (
               <button key={e.id} onClick={() => handleEntrySwitch(e.id)}
-                className={`shrink-0 rounded-data px-3 py-1 font-body text-xs font-medium min-h-[32px] cursor-pointer transition-colors duration-200 ${
+                className={`shrink-0 rounded-data px-3 py-1 font-sans text-xs font-medium min-h-[32px] cursor-pointer transition-colors duration-200 ${
                   editingEntry?.id === e.id ? "bg-accent-primary text-white" : "bg-surface-alt text-text-secondary border border-border"
                 }`}>
                 {e.teamName || `Entry ${e.entryNumber}`}
@@ -256,17 +256,17 @@ export default function PicksPage({ params }: { params: { id: string } }) {
       {/* Team name input */}
       {!readOnly && (
         <div className="px-4 pb-2 shrink-0">
-          <label className="block font-body text-xs font-medium text-text-secondary mb-1">Name your team</label>
+          <label className="block font-sans text-xs font-medium text-text-secondary mb-1">Name your team</label>
           <input type="text" value={teamName} onChange={(e) => setTeamName(e.target.value.slice(0, 30))}
             placeholder="Danny's Daggers, The Long Shot Squad..."
-            className="w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 font-body text-sm text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
+            className="w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 font-sans text-sm text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
             maxLength={30} />
           <span className="block mt-0.5 font-mono text-[10px] text-text-muted text-right">{teamName.length}/30</span>
         </div>
       )}
 
       {readOnly && allEntries.length > 0 && (
-        <div className="mx-4 mb-2 rounded-data bg-[#FDF4E3] px-3 py-2 font-body text-xs text-[#8A6B1E] shrink-0">
+        <div className="mx-4 mb-2 rounded-data bg-[#FDF4E3] px-3 py-2 font-sans text-xs text-[#8A6B1E] shrink-0">
           {expired ? "Deadline passed. Your picks are locked." : "Picks are locked."}
         </div>
       )}
@@ -301,5 +301,5 @@ export default function PicksPage({ params }: { params: { id: string } }) {
 }
 
 function Msg({ text }: { text: string }) {
-  return <div className="mx-auto max-w-content px-4 py-12 text-center"><p className="font-body text-sm text-text-secondary">{text}</p></div>;
+  return <div className="mx-auto max-w-content px-4 py-12 text-center"><p className="font-sans text-sm text-text-secondary">{text}</p></div>;
 }

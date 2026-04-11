@@ -43,13 +43,13 @@ export function MyEntryCard({
         onClick={onTap}
         className="w-full p-3 text-left min-h-[44px] cursor-pointer"
       >
-        <span className="font-body text-xs font-medium text-accent-primary">My Entry</span>
+        <span className="font-sans text-xs font-medium text-accent-primary">My Entry</span>
         <div className="flex items-baseline justify-between gap-2 mt-0.5">
           <div className="flex items-baseline gap-2 min-w-0">
             <span className="font-mono text-2xl font-bold text-text-primary">
               {formatRankWithTies(rank, allRanks)}
             </span>
-            <span className="font-body text-sm font-semibold text-text-primary truncate">
+            <span className="font-sans text-sm font-semibold text-text-primary truncate">
               {teamName}
               {maxEntries > 1 && <span className="text-text-muted font-normal"> · E{entryNumber}</span>}
             </span>

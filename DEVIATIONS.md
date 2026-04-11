@@ -451,3 +451,31 @@
 - **What was found:** Space Grotesk does not include an italic variant — the typeface only ships regular (upright) weights.
 - **What was done:** Used bold (weight 900) non-italic for TILT wordmark in all three OG images.
 - **Why:** No italic axis exists in the variable font file. The on-site wordmark uses CSS `font-style: italic` which triggers synthetic italic in browsers, but `@napi-rs/canvas` does not synthesize italic from upright-only fonts.
+
+---
+
+## Rebrand Phase 1 — Foundation (Apr 10, 2026)
+
+### DEV RP1-1 — Email template retains old hex values
+- **Spec said:** Search the entire codebase for hardcoded hex values from the old palette and replace with variable references.
+- **What was found:** `src/lib/email/send-invite.ts` uses inline HTML styling with `#FDFBF7` and other old palette values. CSS variables cannot be used in email HTML (no `:root` support in email clients).
+- **What was done:** Left email template unchanged.
+- **Why:** Email HTML requires inline hex colors. CSS variables are not supported in email rendering engines (Gmail, Outlook, Apple Mail).
+
+### DEV RP1-2 — golf-utils.ts CATEGORY_COLORS retain old hex values
+- **Spec said:** Replace all hardcoded old palette hex values with variable references.
+- **What was found:** `src/lib/golf-utils.ts` defines `CATEGORY_COLORS` array with `#E8F0E5`, `#2D5F3B`, etc. These are functional category colors used in pick grids, not theme colors.
+- **What was done:** Left CATEGORY_COLORS unchanged.
+- **Why:** These are per-category visual identifiers (Forest, Sand, Sky, etc.) not theme colors. They need a separate design pass to remap to the new palette. Changing them blindly would break category visual identity.
+
+### DEV RP1-3 — OG image scripts retain old palette
+- **Spec said:** Replace hardcoded hex values.
+- **What was found:** `scripts/generate-og-images.ts` uses `#2D5F3B`, `#E8F0E5`, `#FDFBF7` for canvas rendering. OG image changes are explicitly deferred per spec.
+- **What was done:** Left OG scripts unchanged.
+- **Why:** Spec says "OG image changes (deferred)." Canvas rendering can't use CSS variables anyway.
+
+### DEV RP1-4 — font-display and font-body aliases preserved in Tailwind config
+- **Spec said:** Montserrat replaces Space Grotesk and Work Sans.
+- **What was found:** 65+ files used `font-display` and `font-body` Tailwind classes.
+- **What was done:** Kept `display` and `body` as aliases in `tailwind.config.ts` mapping to Montserrat, AND replaced all instances in component files with `font-sans`. Both approaches ensure Montserrat renders regardless of which class name is used.
+- **Why:** Belt-and-suspenders approach. If any component file was missed by the sweep, it still gets Montserrat via the alias.

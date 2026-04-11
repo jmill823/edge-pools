@@ -27,7 +27,7 @@ export function EntryRow({
         onClick={onToggle}
         className={`w-full flex items-center px-3 py-2.5 text-left transition-colors duration-150 min-h-[44px] cursor-pointer border-b border-border/50 ${
           isYou
-            ? "bg-[#E8F0E5]"
+            ? "bg-[var(--neutral-you-row)]"
             : "hover:bg-surface-alt"
         }`}
       >
@@ -38,7 +38,7 @@ export function EntryRow({
 
         {/* ENTRY */}
         <span
-          className={`flex-1 min-w-[100px] truncate font-body text-[12px] ${
+          className={`flex-1 min-w-[100px] truncate font-sans text-[12px] ${
             isYou ? "font-semibold" : "font-medium"
           } text-text-primary`}
           style={{ maxWidth: "120px" }}
@@ -83,31 +83,31 @@ export function EntryRow({
         >
           {/* Golfer column headers */}
           <div className="flex items-center px-3 py-1.5 bg-surface-alt border-b border-border/50">
-            <span className="w-[30px] shrink-0 font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[30px] shrink-0 font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
               POS
             </span>
-            <span className="w-[36px] shrink-0 font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[36px] shrink-0 font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
               CAT
             </span>
-            <span className="flex-1 min-w-[80px] font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="flex-1 min-w-[80px] font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
               PLAYER
             </span>
-            <span className="w-[30px] shrink-0 text-center font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[30px] shrink-0 text-center font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
               THRU
             </span>
-            <span className="w-[32px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
               R1
             </span>
-            <span className="w-[32px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
               R2
             </span>
-            <span className="w-[32px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
               R3
             </span>
-            <span className="w-[32px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
               R4
             </span>
-            <span className="w-[40px] shrink-0 text-right font-display text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
+            <span className="w-[40px] shrink-0 text-right font-sans text-[8px] font-medium text-text-muted uppercase tracking-[0.5px]">
               TOTAL
             </span>
           </div>
@@ -129,12 +129,12 @@ export function EntryRow({
                 </span>
 
                 {/* CAT */}
-                <span className="w-[36px] shrink-0 font-body text-[9px] font-medium text-[#2D5F3B]">
+                <span className="w-[36px] shrink-0 font-sans text-[9px] font-medium text-accent-primary">
                   {golfer.categoryAbbrev}
                 </span>
 
                 {/* PLAYER */}
-                <span className="flex-1 min-w-[80px] font-body text-[11px] text-text-primary truncate">
+                <span className="flex-1 min-w-[80px] font-sans text-[11px] text-text-primary truncate">
                   {formatGolferNameShort(golfer.golferName)}
                   {golfer.isReplacement && golfer.originalGolferName && (
                     <span className="ml-1 text-[9px] text-accent-danger">
@@ -146,11 +146,11 @@ export function EntryRow({
                 {/* THRU */}
                 <span className="w-[30px] shrink-0 text-center">
                   {golfer.status === "cut" ? (
-                    <span className="inline-block px-1 py-0.5 rounded-[3px] bg-text-muted/20 text-text-muted font-body text-[8px] font-medium">
+                    <span className="inline-block px-1 py-0.5 rounded-[3px] bg-text-muted/20 text-text-muted font-sans text-[8px] font-medium">
                       MC
                     </span>
                   ) : golfer.status === "withdrawn" ? (
-                    <span className="inline-block px-1 py-0.5 rounded-[3px] bg-text-muted/20 text-text-muted font-body text-[8px] font-medium">
+                    <span className="inline-block px-1 py-0.5 rounded-[3px] bg-text-muted/20 text-text-muted font-sans text-[8px] font-medium">
                       WD
                     </span>
                   ) : (
@@ -185,7 +185,7 @@ export function EntryRow({
           {/* Roster rule summary */}
           {rosterRuleSummary && (
             <div className="px-3 py-1.5 text-center">
-              <span className="font-body text-[9px] text-text-muted italic">
+              <span className="font-sans text-[9px] text-text-muted italic">
                 {rosterRuleSummary}
               </span>
             </div>

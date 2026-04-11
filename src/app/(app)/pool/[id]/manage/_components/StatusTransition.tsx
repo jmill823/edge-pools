@@ -86,13 +86,13 @@ export function StatusTransition({ poolId, status, onStatusChange }: StatusTrans
 
   return (
     <div className="rounded-card border border-border bg-surface p-4">
-      <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
+      <p className="font-sans text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
         Pool Status
       </p>
 
       <div className="flex items-center gap-3 mb-2">
         <StatusBadge status={status} />
-        <p className="font-body text-sm text-text-secondary">
+        <p className="font-sans text-sm text-text-secondary">
           {statusDescription[status] || ""}
         </p>
       </div>
@@ -121,13 +121,13 @@ export function StatusTransition({ poolId, status, onStatusChange }: StatusTrans
 
       {/* LIVE has no manual transition — auto-completes */}
       {status === "LIVE" && (
-        <p className="mt-3 font-body text-xs text-text-muted">
+        <p className="mt-3 font-sans text-xs text-text-muted">
           Pool will automatically complete when the tournament ends.
         </p>
       )}
 
       {status === "ARCHIVED" && (
-        <p className="mt-3 font-body text-xs text-text-muted">
+        <p className="mt-3 font-sans text-xs text-text-muted">
           This pool is archived. No further changes.
         </p>
       )}

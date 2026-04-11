@@ -66,7 +66,7 @@ export function HoleByHoleCard({ poolId, golferIds, golferNames, currentRound }:
       <div className="pt-2 pb-1">
         <button
           onClick={handleLoad}
-          className="font-body text-xs text-accent-primary hover:underline cursor-pointer"
+          className="font-sans text-xs text-accent-primary hover:underline cursor-pointer"
         >
           View hole-by-hole &rarr;
         </button>
@@ -77,7 +77,7 @@ export function HoleByHoleCard({ poolId, golferIds, golferNames, currentRound }:
   return (
     <div className="pt-2 pb-1">
       <div className="flex items-center justify-between mb-2">
-        <span className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
+        <span className="font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">
           Hole-by-Hole
         </span>
         {/* Round selector */}
@@ -102,16 +102,16 @@ export function HoleByHoleCard({ poolId, golferIds, golferNames, currentRound }:
       {loading && (
         <div className="flex items-center gap-2 py-3">
           <div className="h-3 w-3 border-2 border-accent-primary border-t-transparent rounded-full animate-spin" />
-          <span className="font-body text-xs text-text-muted">Loading scorecards…</span>
+          <span className="font-sans text-xs text-text-muted">Loading scorecards…</span>
         </div>
       )}
 
       {error && (
         <div className="py-2">
-          <p className="font-body text-xs text-accent-danger">{error}</p>
+          <p className="font-sans text-xs text-accent-danger">{error}</p>
           <button
             onClick={handleLoad}
-            className="mt-1 font-body text-xs text-accent-primary hover:underline cursor-pointer"
+            className="mt-1 font-sans text-xs text-accent-primary hover:underline cursor-pointer"
           >
             Retry
           </button>
@@ -124,7 +124,7 @@ export function HoleByHoleCard({ poolId, golferIds, golferNames, currentRound }:
             const card = scorecards[id];
             if (!card) {
               return (
-                <div key={id} className="text-xs font-body text-text-muted">
+                <div key={id} className="text-xs font-sans text-text-muted">
                   {golferNames[idx]}: No scorecard available
                 </div>
               );
@@ -176,7 +176,7 @@ function GolferScorecardRow({
     <div>
       {/* Golfer name + round score */}
       <div className="flex items-center justify-between mb-1">
-        <span className="font-body text-xs font-medium text-text-primary truncate">
+        <span className="font-sans text-xs font-medium text-text-primary truncate">
           {golferName}
         </span>
         <span className="font-mono text-xs font-bold text-text-secondary shrink-0 ml-2">

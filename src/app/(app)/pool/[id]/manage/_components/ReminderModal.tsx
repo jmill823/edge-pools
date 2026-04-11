@@ -76,7 +76,7 @@ export function ReminderModal({
       <div className="w-full max-w-md rounded-card bg-surface border border-border shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h3 className="font-display text-sm font-bold text-text-primary">
+          <h3 className="font-sans text-sm font-bold text-text-primary">
             Send Reminder
           </h3>
           <button
@@ -96,7 +96,7 @@ export function ReminderModal({
             <button
               key={t.label}
               onClick={() => selectTemplate(idx)}
-              className={`flex-1 px-3 py-2.5 font-display text-xs font-medium transition-colors cursor-pointer ${
+              className={`flex-1 px-3 py-2.5 font-sans text-xs font-medium transition-colors cursor-pointer ${
                 selectedIdx === idx
                   ? "text-accent-primary border-b-2 border-accent-primary"
                   : "text-text-muted hover:text-text-secondary"
@@ -113,9 +113,9 @@ export function ReminderModal({
             value={editedText}
             onChange={(e) => { setEditedText(e.target.value); setCopied(false); }}
             rows={4}
-            className="w-full rounded-btn border border-border bg-surface-alt px-3 py-2.5 font-body text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors resize-none"
+            className="w-full rounded-btn border border-border bg-surface-alt px-3 py-2.5 font-sans text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors resize-none"
           />
-          <p className="mt-1.5 font-body text-xs text-text-muted">
+          <p className="mt-1.5 font-sans text-xs text-text-muted">
             Edit the message above, then copy and send via your preferred channel.
           </p>
         </div>

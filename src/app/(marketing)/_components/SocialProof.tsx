@@ -16,14 +16,14 @@ export function SocialProof() {
                 <p className="font-mono text-[24px] font-[800] text-[#1A1A18] tabular-nums">
                   {stat.number}
                 </p>
-                <p className="mt-1 font-body text-[9px] font-medium uppercase tracking-[0.8px] text-[#8A8580]">
+                <p className="mt-1 font-sans text-[9px] font-medium uppercase tracking-[0.8px] text-[#8A8580]">
                   {stat.label}
                 </p>
               </div>
             </div>
           ))}
         </div>
-        <p className="mt-3 text-center font-body text-[10px] font-normal text-[#ABA69E]">
+        <p className="mt-3 text-center font-sans text-[10px] font-normal text-[#ABA69E]">
           Born from the Masters 2K Contest (2010&ndash;2024)
         </p>
       </div>

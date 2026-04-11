@@ -22,7 +22,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         className={`
           inline-flex items-center justify-center gap-2
-          rounded-btn px-5 py-2.5 font-body text-sm font-medium
+          rounded-btn px-5 py-2.5 font-sans text-sm font-medium
           min-h-[44px]
           transition-all duration-200
           active:scale-[0.98]

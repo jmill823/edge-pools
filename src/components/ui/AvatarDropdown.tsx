@@ -33,7 +33,7 @@ export function AvatarDropdown() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-primary text-white font-display text-xs font-bold cursor-pointer hover:brightness-90 transition-all duration-200"
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-primary text-white font-sans text-xs font-bold cursor-pointer hover:brightness-90 transition-all duration-200"
         aria-label="User menu"
       >
         {user?.imageUrl ? (
@@ -52,7 +52,7 @@ export function AvatarDropdown() {
         <div className="absolute right-0 top-full mt-2 w-[200px] rounded-card border border-border bg-surface shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-50">
           {/* User name */}
           <div className="px-4 py-3 border-b border-border">
-            <span className="block font-body text-sm font-medium text-text-primary truncate">
+            <span className="block font-sans text-sm font-medium text-text-primary truncate">
               {displayName}
             </span>
           </div>
@@ -61,7 +61,7 @@ export function AvatarDropdown() {
           <div className="py-1">
             <button
               onClick={() => { setOpen(false); router.push("/dashboard"); }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 min-h-[44px] font-body text-sm text-text-primary hover:bg-surface-alt transition-colors duration-150 cursor-pointer"
+              className="w-full flex items-center gap-3 px-4 py-2.5 min-h-[44px] font-sans text-sm text-text-primary hover:bg-surface-alt transition-colors duration-150 cursor-pointer"
             >
               <svg className="h-4 w-4 text-text-secondary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h4v11H3zM10 3h4v18h-4zM17 7h4v14h-4z" />
@@ -74,7 +74,7 @@ export function AvatarDropdown() {
           <div className="border-t border-border py-1">
             <button
               onClick={() => { setOpen(false); signOut({ redirectUrl: "/" }); }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 min-h-[44px] font-body text-sm text-text-primary hover:bg-surface-alt transition-colors duration-150 cursor-pointer"
+              className="w-full flex items-center gap-3 px-4 py-2.5 min-h-[44px] font-sans text-sm text-text-primary hover:bg-surface-alt transition-colors duration-150 cursor-pointer"
             >
               <svg className="h-4 w-4 text-text-secondary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

@@ -122,14 +122,16 @@ CLAUDE.md has the rules. This file has the experience. Every lesson here was lea
 
 ## 6. DESIGN SYSTEM LESSONS
 
-### Three Fonts Only — No Substitutions
-- Space Grotesk (headers, nav, column headers), Work Sans (body, team names, labels), Space Mono (scores, ranks, data).
-- No fourth font. No serifs. No generic fonts (Inter, Roboto, Arial, system-ui).
+### Two Fonts Only — No Substitutions
+- Montserrat (all UI text — headers, nav, body, labels, buttons). Space Mono (scores, ranks, data columns).
+- No third font. No serifs. No generic fonts (Inter, Roboto, Arial, system-ui).
 - CC defaults to system fonts or Inter when no design direction is given. The design spec prevents this. (Design system, Apr 2)
+- **UPDATE (Rebrand P1, Apr 10):** Space Grotesk and Work Sans removed. Montserrat replaces both.
 
 ### Warm Cream Background, Never Pure White
-- Page background is `#FDFBF7` on every page. Pure white (`#FFFFFF`) is only for cards and elevated elements.
+- Page background uses CSS vars: `var(--bg-brand)` (#FDF8EE) on brand pages, `var(--bg-app)` (#F8F7F5) on app pages. Pure white (`#FFFFFF`) is only for cards and elevated elements.
 - This is the single most visible design decision — if it's wrong, every page looks wrong. (Design spec, Apr 2)
+- **UPDATE (Rebrand P1, Apr 10):** Background shifted from #FDFBF7 to CSS variables.
 
 ### No Cold Grays
 - All gray values must have warm undertone. The color tokens in the design spec use warm grays (#E2DDD5, #6B6560, #A39E96).

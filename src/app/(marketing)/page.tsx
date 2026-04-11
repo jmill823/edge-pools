@@ -25,11 +25,11 @@ export default function HomePage() {
         {/* Hero */}
         <section className="pt-10 pb-8">
           <div className="mx-auto max-w-[960px] px-4 text-center">
-            <h1 className="font-display text-[76px] font-[900] italic tracking-[6px] leading-none text-[#1A1A18]">
+            <h1 className="font-sans text-[76px] font-[900] italic tracking-[6px] leading-none text-text-primary">
               TILT
             </h1>
-            <div className="mx-auto mt-4 h-[3px] w-12 bg-[#2D5F3B]" />
-            <p className="mt-5 font-body text-[17px] font-semibold tracking-[-0.3px] text-[#1A1A18]">
+            <div className="mx-auto mt-4 h-[3px] w-12 bg-accent-primary" />
+            <p className="mt-5 font-sans text-[17px] font-semibold tracking-[-0.3px] text-text-primary">
               Ditch the spreadsheet.
             </p>
           </div>
@@ -41,34 +41,34 @@ export default function HomePage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setModalView("commissioner")}
-                className="flex-1 rounded-[6px] bg-[#E8F0E5] pt-3.5 pb-2.5 text-center hover:bg-[#DCE8D8] transition-colors duration-200 active:scale-[0.98] cursor-pointer min-h-[44px]"
+                className="flex-1 rounded-[6px] bg-[var(--neutral-you-row)] pt-3.5 pb-2.5 text-center hover:bg-[var(--neutral-light-border)] transition-colors duration-200 active:scale-[0.98] cursor-pointer min-h-[44px]"
               >
-                <span className="block font-body text-[13px] font-[800] uppercase tracking-[1px] text-[#2D5F3B]">
+                <span className="block font-sans text-[13px] font-[800] uppercase tracking-[1px] text-accent-primary">
                   CREATE
                 </span>
-                <span className="block font-body text-[9px] font-medium text-[#8BBF9A] mt-0.5">
+                <span className="block font-sans text-[9px] font-medium text-[#8BBF9A] mt-0.5">
                   [1]
                 </span>
               </button>
               <button
                 onClick={() => setModalView("player")}
-                className="flex-1 rounded-[6px] bg-[#E8F0E5] pt-3.5 pb-2.5 text-center hover:bg-[#DCE8D8] transition-colors duration-200 active:scale-[0.98] cursor-pointer min-h-[44px]"
+                className="flex-1 rounded-[6px] bg-[var(--neutral-you-row)] pt-3.5 pb-2.5 text-center hover:bg-[var(--neutral-light-border)] transition-colors duration-200 active:scale-[0.98] cursor-pointer min-h-[44px]"
               >
-                <span className="block font-body text-[13px] font-[800] uppercase tracking-[1px] text-[#2D5F3B]">
+                <span className="block font-sans text-[13px] font-[800] uppercase tracking-[1px] text-accent-primary">
                   JOIN
                 </span>
-                <span className="block font-body text-[9px] font-medium text-[#8BBF9A] mt-0.5">
+                <span className="block font-sans text-[9px] font-medium text-[#8BBF9A] mt-0.5">
                   [2]
                 </span>
               </button>
               <button
                 onClick={() => router.push("/switch")}
-                className="flex-1 rounded-[6px] bg-[#E8F0E5] pt-3.5 pb-2.5 text-center hover:bg-[#DCE8D8] transition-colors duration-200 active:scale-[0.98] cursor-pointer min-h-[44px]"
+                className="flex-1 rounded-[6px] bg-[var(--neutral-you-row)] pt-3.5 pb-2.5 text-center hover:bg-[var(--neutral-light-border)] transition-colors duration-200 active:scale-[0.98] cursor-pointer min-h-[44px]"
               >
-                <span className="block font-body text-[13px] font-[800] uppercase tracking-[1px] text-[#2D5F3B]">
+                <span className="block font-sans text-[13px] font-[800] uppercase tracking-[1px] text-accent-primary">
                   IMPORT
                 </span>
-                <span className="block font-body text-[9px] font-medium text-[#8BBF9A] mt-0.5">
+                <span className="block font-sans text-[9px] font-medium text-[#8BBF9A] mt-0.5">
                   [3]
                 </span>
               </button>

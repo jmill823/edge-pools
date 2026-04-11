@@ -60,7 +60,7 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
   useEffect(() => { loadData(); }, [loadData]);
 
   if (loading) return <div className="mx-auto max-w-content px-4 py-8"><LoadingSkeleton variant="page" lines={5} /></div>;
-  if (!pool) return <div className="mx-auto max-w-content px-4 py-12 text-center font-body text-accent-danger">Pool not found</div>;
+  if (!pool) return <div className="mx-auto max-w-content px-4 py-12 text-center font-sans text-accent-danger">Pool not found</div>;
 
   const canEdit = pool.status === "OPEN" && new Date(pool.picksDeadline) > new Date();
   const hasScores = ["LIVE", "COMPLETE", "ARCHIVED"].includes(pool.status);
@@ -94,7 +94,7 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
   return (
     <div className="mx-auto w-full md:w-[80%] md:max-w-[1200px] px-4 py-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-display text-lg font-bold text-text-primary">
+        <h2 className="font-sans text-lg font-bold text-text-primary">
           {isMultiEntry ? "My Entries" : "My Picks"}
         </h2>
         {/* Single-entry: show edit button in header */}
@@ -125,7 +125,7 @@ export default function MyEntriesPage({ params }: { params: { id: string } }) {
       {canAddMore && isMultiEntry && (
         <Link href={`/pool/${params.id}/picks`} className="block mt-4">
           <div className="rounded-card border-2 border-dashed border-border p-4 text-center hover:bg-surface-alt transition-colors duration-200 min-h-[44px] flex flex-col items-center justify-center cursor-pointer">
-            <span className="font-body text-sm font-medium text-accent-primary">+ Add Entry {entries.length + 1}</span>
+            <span className="font-sans text-sm font-medium text-accent-primary">+ Add Entry {entries.length + 1}</span>
             <span className="font-mono text-xs text-text-muted mt-1">{entries.length} of {maxEntries} entries used</span>
           </div>
         </Link>
@@ -247,7 +247,7 @@ function EntryCard({
       <div className="bg-surface-alt px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3 min-w-0">
           <div className="min-w-0">
-            <span className="block font-body text-sm font-semibold text-text-primary truncate">
+            <span className="block font-sans text-sm font-semibold text-text-primary truncate">
               {entry.teamName || `Entry ${entry.entryNumber}`}
             </span>
             <span className="font-mono text-[10px] text-text-muted">
@@ -272,7 +272,7 @@ function EntryCard({
           {canEdit && !isEditing && (
             <button
               onClick={startEditing}
-              className="font-body text-xs font-medium text-accent-primary cursor-pointer hover:underline min-h-[44px] flex items-center px-2"
+              className="font-sans text-xs font-medium text-accent-primary cursor-pointer hover:underline min-h-[44px] flex items-center px-2"
             >
               Edit picks
             </button>
@@ -295,14 +295,14 @@ function EntryCard({
         <div className="border-t border-border">
           {/* Team name edit */}
           <div className="px-4 pt-3 pb-2">
-            <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+            <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
               Team name
             </label>
             <input
               type="text"
               value={editTeamName}
               onChange={(e) => setEditTeamName(e.target.value.slice(0, 30))}
-              className="w-full rounded-[6px] border border-border bg-surface px-3 py-2 font-body text-sm text-text-primary focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
+              className="w-full rounded-[6px] border border-border bg-surface px-3 py-2 font-sans text-sm text-text-primary focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
               maxLength={30}
             />
           </div>

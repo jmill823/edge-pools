@@ -19,10 +19,10 @@ export function MiniLeaderboard() {
       <div className="rounded-[8px] border border-[#EDEAE4] bg-white overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5">
-          <span className="font-body text-[10px] font-bold uppercase tracking-[0.8px] text-[#8A8580]">
+          <span className="font-sans text-[10px] font-bold uppercase tracking-[0.8px] text-[#8A8580]">
             Live Leaderboard
           </span>
-          <span className="rounded-[3px] bg-[#FCEBEB] px-2 py-0.5 font-body text-[8px] font-bold uppercase tracking-[0.5px] text-[#A3342D]">
+          <span className="rounded-[3px] bg-[#FCEBEB] px-2 py-0.5 font-sans text-[8px] font-bold uppercase tracking-[0.5px] text-[#A3342D]">
             LIVE &middot; R3
           </span>
         </div>
@@ -33,26 +33,26 @@ export function MiniLeaderboard() {
             {/* Column headers */}
             <thead>
               <tr className="border-b border-[#EDEAE4]">
-                <th className="w-[30px] py-1.5 px-1 text-left font-display text-[8px] font-medium uppercase text-[#C4C0B8] tracking-[0.5px]">POS</th>
-                <th className="w-[130px] py-1.5 px-1 text-left font-display text-[8px] font-medium uppercase text-[#C4C0B8] tracking-[0.5px]">ENTRY</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-center font-display text-[8px] font-medium uppercase text-[#C4C0B8] tracking-[0.5px] opacity-45">MC</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-right font-display text-[8px] font-medium uppercase text-[#C4C0B8] tracking-[0.5px]">R1</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-right font-display text-[8px] font-medium uppercase text-[#C4C0B8] tracking-[0.5px]">R2</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-right font-display text-[8px] font-medium uppercase text-[#C4C0B8] tracking-[0.5px]">R3</th>
-                <th className="w-[32px] py-1.5 px-[5px] text-right font-display text-[8px] font-medium uppercase text-[#C4C0B8] tracking-[0.5px]">R4</th>
-                <th className="w-[40px] py-1.5 px-1 text-right font-display text-[8px] font-medium uppercase text-[#C4C0B8] tracking-[0.5px]">TOTAL</th>
+                <th className="w-[30px] py-1.5 px-1 text-left font-sans text-[8px] font-medium uppercase text-[var(--neutral-star)] tracking-[0.5px]">POS</th>
+                <th className="w-[130px] py-1.5 px-1 text-left font-sans text-[8px] font-medium uppercase text-[var(--neutral-star)] tracking-[0.5px]">ENTRY</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-center font-sans text-[8px] font-medium uppercase text-[var(--neutral-star)] tracking-[0.5px] opacity-45">MC</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-medium uppercase text-[var(--neutral-star)] tracking-[0.5px]">R1</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-medium uppercase text-[var(--neutral-star)] tracking-[0.5px]">R2</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-medium uppercase text-[var(--neutral-star)] tracking-[0.5px]">R3</th>
+                <th className="w-[32px] py-1.5 px-[5px] text-right font-sans text-[8px] font-medium uppercase text-[var(--neutral-star)] tracking-[0.5px]">R4</th>
+                <th className="w-[40px] py-1.5 px-1 text-right font-sans text-[8px] font-medium uppercase text-[var(--neutral-star)] tracking-[0.5px]">TOTAL</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row, i) => (
                 <tr
                   key={i}
-                  className={`border-t border-[#EDEAE4] ${row.highlight ? "bg-[#E8F0E5]" : ""}`}
+                  className={`border-t border-[#EDEAE4] ${row.highlight ? "bg-[var(--neutral-you-row)]" : ""}`}
                 >
                   <td className="py-2 px-1 font-mono text-[11px] font-bold text-[#C4B896]">
                     {row.pos}
                   </td>
-                  <td className="py-2 px-1 font-body text-[12px] font-medium text-[#3E3830] truncate max-w-[130px]">
+                  <td className="py-2 px-1 font-sans text-[12px] font-medium text-[#3E3830] truncate max-w-[130px]">
                     {row.name}
                   </td>
                   <td className="py-2 px-[5px] text-center font-mono text-[9px] text-text-muted opacity-45">
@@ -81,7 +81,7 @@ export function MiniLeaderboard() {
 
         {/* Footer */}
         <div className="border-t border-[#EDEAE4] px-4 py-2 text-center">
-          <span className="font-body text-[9px] text-[#ABA69E]">
+          <span className="font-sans text-[9px] text-[var(--neutral-icon)]">
             22 entries &middot; The Masters 2026
           </span>
         </div>

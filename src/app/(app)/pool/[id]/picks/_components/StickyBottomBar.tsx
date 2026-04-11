@@ -24,12 +24,12 @@ export function StickyBottomBar({
       className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-4 border-t bg-surface shadow-[0_-2px_8px_rgba(0,0,0,0.08)]"
       style={{
         height: 56,
-        borderColor: "#E2DDD5",
+        borderColor: "var(--neutral-border)",
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
     >
       {/* Pick count */}
-      <span className="font-body text-sm text-text-secondary">
+      <span className="font-sans text-sm text-text-secondary">
         <span className="font-bold text-text-primary">{pickCount}</span> of {totalCategories} picks
       </span>
 
@@ -37,9 +37,9 @@ export function StickyBottomBar({
       <button
         onClick={onSubmit}
         disabled={!isComplete}
-        className="font-body text-sm font-medium px-5 py-2.5 rounded-btn transition-colors duration-200 min-h-[44px] cursor-pointer disabled:cursor-default"
+        className="font-sans text-sm font-medium px-5 py-2.5 rounded-btn transition-colors duration-200 min-h-[44px] cursor-pointer disabled:cursor-default"
         style={{
-          backgroundColor: isComplete ? "#2D5F3B" : "#D4D0C8",
+          backgroundColor: isComplete ? "var(--theme-primary)" : "var(--neutral-border)",
           color: isComplete ? "white" : "#8A8580",
         }}
       >

@@ -77,7 +77,7 @@ export function ScoringAdmin({ poolId, tournamentId, status, lastSyncAt, pending
 
   return (
     <div className="rounded-card border border-border bg-surface p-4">
-      <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
+      <p className="font-sans text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
         Scoring
       </p>
 
@@ -107,7 +107,7 @@ export function ScoringAdmin({ poolId, tournamentId, status, lastSyncAt, pending
 
       {syncStatus.level === "warning" && isLive && (
         <div className="mb-3 rounded-data bg-[#FDF4E3] px-3 py-2">
-          <p className="font-body text-xs text-[#8A6B1E]">
+          <p className="font-sans text-xs text-[#8A6B1E]">
             Scores may be delayed. Try polling manually.
           </p>
         </div>
@@ -115,7 +115,7 @@ export function ScoringAdmin({ poolId, tournamentId, status, lastSyncAt, pending
 
       {syncStatus.level === "danger" && isLive && (
         <div className="mb-3 rounded-data bg-[#FCEAE9] px-3 py-2">
-          <p className="font-body text-xs text-accent-danger">
+          <p className="font-sans text-xs text-accent-danger">
             Scores haven&apos;t updated in over 30 minutes.
           </p>
         </div>
@@ -153,7 +153,7 @@ export function ScoringAdmin({ poolId, tournamentId, status, lastSyncAt, pending
       {/* Manual Score Entry — only when LIVE */}
       {isLive && (
         <div className="border-t border-border pt-3 mt-3">
-          <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-2">
+          <p className="font-sans text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-2">
             Manual Fallback
           </p>
           {showManualEntry ? (
@@ -168,7 +168,7 @@ export function ScoringAdmin({ poolId, tournamentId, status, lastSyncAt, pending
           ) : (
             <button
               onClick={() => setShowManualEntry(true)}
-              className="font-body text-sm text-accent-primary hover:underline cursor-pointer"
+              className="font-sans text-sm text-accent-primary hover:underline cursor-pointer"
             >
               Enter scores manually &rarr;
             </button>
@@ -178,7 +178,7 @@ export function ScoringAdmin({ poolId, tournamentId, status, lastSyncAt, pending
 
       {/* Non-live states */}
       {!isLive && status !== "COMPLETE" && status !== "ARCHIVED" && (
-        <p className="font-body text-xs text-text-muted">
+        <p className="font-sans text-xs text-text-muted">
           Scoring controls will be available when the pool is live.
         </p>
       )}

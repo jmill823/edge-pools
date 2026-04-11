@@ -64,7 +64,7 @@ export function ResultCard({ poolName, tournamentName, top5, allRanks }: ResultC
           height: 540,
           backgroundColor: "#1e293b",
           padding: 40,
-          fontFamily: "'Space Grotesk', 'Work Sans', sans-serif",
+          fontFamily: "'Montserrat', sans-serif",
         }}
       >
         {/* TILT wordmark */}

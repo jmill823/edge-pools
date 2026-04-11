@@ -111,15 +111,15 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
   }
 
   if (loading || !isLoaded) {
-    return <div className="mx-auto max-w-md px-4 py-12 text-center font-body text-text-secondary">Loading...</div>;
+    return <div className="mx-auto max-w-md px-4 py-12 text-center font-sans text-text-secondary">Loading...</div>;
   }
 
   if (notFound) {
     return (
       <div className="mx-auto max-w-md px-4 py-12 text-center">
-        <h1 className="font-display text-2xl font-bold text-text-primary">Invalid Invite Link</h1>
-        <p className="mt-2 font-body text-sm text-text-secondary">This invite link is invalid. Check the code and try again.</p>
-        <Link href="/join" className="mt-4 inline-block font-body text-sm font-medium text-accent-primary hover:underline">&larr; Try Again</Link>
+        <h1 className="font-sans text-2xl font-bold text-text-primary">Invalid Invite Link</h1>
+        <p className="mt-2 font-sans text-sm text-text-secondary">This invite link is invalid. Check the code and try again.</p>
+        <Link href="/join" className="mt-4 inline-block font-sans text-sm font-medium text-accent-primary hover:underline">&larr; Try Again</Link>
       </div>
     );
   }
@@ -131,8 +131,8 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
     return (
       <div className="mx-auto max-w-md px-4 py-12 text-center">
         <div className="text-4xl mb-4">&#x1F44B;</div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Welcome back, {returnVisitName}!</h1>
-        <p className="mt-2 font-body text-sm text-text-secondary">Your picks are saved. Taking you there now...</p>
+        <h1 className="font-sans text-2xl font-bold text-text-primary">Welcome back, {returnVisitName}!</h1>
+        <p className="mt-2 font-sans text-sm text-text-secondary">Your picks are saved. Taking you there now...</p>
       </div>
     );
   }
@@ -153,9 +153,9 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
     <div className="mx-auto max-w-md px-4 py-12">
       {/* Header */}
       <div className="text-center mb-6">
-        <p className="font-body text-sm text-text-secondary">You&apos;re invited to</p>
-        <h1 className="font-display text-2xl font-bold text-text-primary mt-1">{pool.name}</h1>
-        <p className="font-body text-sm text-text-secondary mt-1">hosted by {pool.organizerName}</p>
+        <p className="font-sans text-sm text-text-secondary">You&apos;re invited to</p>
+        <h1 className="font-sans text-2xl font-bold text-text-primary mt-1">{pool.name}</h1>
+        <p className="font-sans text-sm text-text-secondary mt-1">hosted by {pool.organizerName}</p>
       </div>
 
       {/* Info strip */}
@@ -173,7 +173,7 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
           <div className="flex gap-2 min-w-max">
             {pool.categories.map((cat) => (
               <div key={cat.name} className="shrink-0 rounded-data bg-surface-alt border border-border px-3 py-2 min-w-[100px]">
-                <div className="font-body text-xs font-medium text-text-primary">{cat.name}</div>
+                <div className="font-sans text-xs font-medium text-text-primary">{cat.name}</div>
                 <div className="font-mono text-[10px] text-text-muted mt-0.5">{cat.golferCount} golfers</div>
               </div>
             ))}
@@ -183,8 +183,8 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
 
       {/* Deadline callout */}
       {pool.status === "OPEN" && (
-        <div className="rounded-card bg-[#FDF4E3] border border-[#E2DDD5] px-4 py-3 mb-4">
-          <p className="font-body text-sm font-medium text-[#8A6B1E]">Picks due {deadlineStr}</p>
+        <div className="rounded-card bg-[#FDF4E3] border border-[var(--neutral-border)] px-4 py-3 mb-4">
+          <p className="font-sans text-sm font-medium text-[#8A6B1E]">Picks due {deadlineStr}</p>
           {hoursLeft <= 48 && hoursLeft > 0 && (
             <p className="font-mono text-xs text-[#8A6B1E] mt-0.5">{hoursLeft} hours remaining</p>
           )}
@@ -194,8 +194,8 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
       {/* House rules */}
       {pool.rules && (
         <div className="rounded-card border border-border bg-surface-alt px-4 py-3 mb-4">
-          <p className="font-display text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] mb-1">House Rules</p>
-          <p className="font-body text-sm text-text-primary whitespace-pre-wrap">{pool.rules}</p>
+          <p className="font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px] mb-1">House Rules</p>
+          <p className="font-sans text-sm text-text-primary whitespace-pre-wrap">{pool.rules}</p>
         </div>
       )}
 
@@ -207,7 +207,7 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
 
       {/* CTA section */}
       {closedReason ? (
-        <div className="rounded-card bg-[#FDF4E3] px-3 py-3 font-body text-sm text-[#8A6B1E]">{closedReason}</div>
+        <div className="rounded-card bg-[#FDF4E3] px-3 py-3 font-sans text-sm text-[#8A6B1E]">{closedReason}</div>
       ) : isSignedIn ? (
         /* Signed-in user (commissioner or account holder) — use Clerk flow */
         <Button variant="primary" className="w-full" loading={joining} onClick={handleJoin}>
@@ -218,7 +218,7 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
         <div className="rounded-card border border-border bg-surface px-4 py-5">
           <form onSubmit={handleGuestJoin} className="space-y-3">
             <div>
-              <label htmlFor="guestName" className="block font-body text-xs font-medium text-text-secondary mb-1">
+              <label htmlFor="guestName" className="block font-sans text-xs font-medium text-text-secondary mb-1">
                 Display Name
               </label>
               <input
@@ -227,14 +227,14 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value.slice(0, 50))}
                 placeholder="How you want to appear on the leaderboard"
-                className="w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 font-body text-sm text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
+                className="w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 font-sans text-sm text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
                 maxLength={50}
                 required
                 autoFocus
               />
             </div>
             <div>
-              <label htmlFor="guestEmail" className="block font-body text-xs font-medium text-text-secondary mb-1">
+              <label htmlFor="guestEmail" className="block font-sans text-xs font-medium text-text-secondary mb-1">
                 Email
               </label>
               <input
@@ -243,7 +243,7 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
                 value={guestEmail}
                 onChange={(e) => setGuestEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 font-body text-sm text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
+                className="w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 font-sans text-sm text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-[rgba(27,94,59,0.15)]"
                 required
               />
             </div>
@@ -256,7 +256,7 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
               Make My Picks &rarr;
             </Button>
           </form>
-          <p className="mt-3 text-center font-body text-xs text-text-muted">
+          <p className="mt-3 text-center font-sans text-xs text-text-muted">
             No account needed. Just pick and play.
           </p>
 
@@ -265,7 +265,7 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
             <button
               type="button"
               onClick={() => router.push(`/sign-in?redirect_url=/join/${params.inviteCode}`)}
-              className="font-body text-xs text-text-secondary hover:text-accent-primary transition-colors duration-200 cursor-pointer"
+              className="font-sans text-xs text-text-secondary hover:text-accent-primary transition-colors duration-200 cursor-pointer"
             >
               Commissioner? Sign in instead
             </button>
@@ -278,7 +278,7 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
 
 function InfoChip({ label }: { label: string }) {
   return (
-    <span className="shrink-0 rounded-data bg-surface-alt px-3 py-1.5 font-body text-xs font-medium text-text-secondary">
+    <span className="shrink-0 rounded-data bg-surface-alt px-3 py-1.5 font-sans text-xs font-medium text-text-secondary">
       {label}
     </span>
   );

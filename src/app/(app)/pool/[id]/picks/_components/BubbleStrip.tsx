@@ -65,17 +65,17 @@ export function BubbleStrip({
                     ? "none"
                     : isActive
                       ? `2px dashed ${color.dot}`
-                      : "1.5px dashed #D4D0C8",
+                      : "1.5px dashed var(--neutral-border)",
                 }}
               >
                 {isFilled && (
-                  <span className="font-body text-[8px] font-semibold text-white leading-none">
+                  <span className="font-sans text-[8px] font-semibold text-white leading-none">
                     {getInitials(golfer!.name)}
                   </span>
                 )}
                 {isActive && (
                   <span
-                    className="font-body text-[10px] font-semibold leading-none"
+                    className="font-sans text-[10px] font-semibold leading-none"
                     style={{ color: color.text }}
                   >
                     ?
@@ -85,13 +85,13 @@ export function BubbleStrip({
 
               {/* Category label */}
               <span
-                className="text-[6px] font-body text-center leading-tight max-w-[30px] truncate"
+                className="text-[6px] font-sans text-center leading-tight max-w-[30px] truncate"
                 style={{
                   color: isFilled
-                    ? "#A39E96"
+                    ? "var(--neutral-muted)"
                     : isActive
                       ? color.text
-                      : "#D4D0C8",
+                      : "var(--neutral-border)",
                 }}
               >
                 {shortName}

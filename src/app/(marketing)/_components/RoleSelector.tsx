@@ -56,12 +56,12 @@ export function RoleSelector({ onSelectCommissioner, onSelectPlayer }: RoleSelec
         onClick={(e) => e.stopPropagation()}
       >
         {/* TILT wordmark */}
-        <h2 className="text-center font-display text-[36px] font-[900] italic tracking-[4px] text-text-primary leading-none">
+        <h2 className="text-center font-sans text-[36px] font-[900] italic tracking-[4px] text-text-primary leading-none">
           TILT
         </h2>
 
         {/* Green rule */}
-        <div className="mx-auto mt-3 mb-5 h-[2px] w-8 bg-[#2D5F3B]" />
+        <div className="mx-auto mt-3 mb-5 h-[2px] w-8 bg-accent-primary" />
 
         {/* 3 action buttons */}
         <div className="flex flex-col gap-3">
@@ -69,10 +69,10 @@ export function RoleSelector({ onSelectCommissioner, onSelectPlayer }: RoleSelec
             onClick={handleJoin}
             className="w-full rounded-btn bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-4 text-center cursor-pointer transition-all duration-200 hover:brightness-105 active:scale-[0.98] min-h-[44px]"
           >
-            <span className="block font-display text-[18px] font-bold text-white">
+            <span className="block font-sans text-[18px] font-bold text-white">
               JOIN
             </span>
-            <span className="block font-body text-[12px] text-white/80 mt-0.5">
+            <span className="block font-sans text-[12px] text-white/80 mt-0.5">
               Enter a pool
             </span>
           </button>
@@ -81,10 +81,10 @@ export function RoleSelector({ onSelectCommissioner, onSelectPlayer }: RoleSelec
             onClick={handleCreate}
             className="w-full rounded-btn bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-4 text-center cursor-pointer transition-all duration-200 hover:brightness-105 active:scale-[0.98] min-h-[44px]"
           >
-            <span className="block font-display text-[18px] font-bold text-white">
+            <span className="block font-sans text-[18px] font-bold text-white">
               CREATE
             </span>
-            <span className="block font-body text-[12px] text-white/80 mt-0.5">
+            <span className="block font-sans text-[12px] text-white/80 mt-0.5">
               Start a new pool
             </span>
           </button>
@@ -93,10 +93,10 @@ export function RoleSelector({ onSelectCommissioner, onSelectPlayer }: RoleSelec
             onClick={handleSwitch}
             className="w-full rounded-btn bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-4 text-center cursor-pointer transition-all duration-200 hover:brightness-105 active:scale-[0.98] min-h-[44px]"
           >
-            <span className="block font-display text-[18px] font-bold text-white">
+            <span className="block font-sans text-[18px] font-bold text-white">
               SWITCH
             </span>
-            <span className="block font-body text-[12px] text-white/80 mt-0.5">
+            <span className="block font-sans text-[12px] text-white/80 mt-0.5">
               Ditch the spreadsheet
             </span>
           </button>
@@ -105,7 +105,7 @@ export function RoleSelector({ onSelectCommissioner, onSelectPlayer }: RoleSelec
         {/* Skip link */}
         <button
           onClick={dismiss}
-          className="mt-4 w-full text-center font-body text-[10px] text-text-muted hover:text-text-secondary transition-colors duration-200 cursor-pointer"
+          className="mt-4 w-full text-center font-sans text-[10px] text-text-muted hover:text-text-secondary transition-colors duration-200 cursor-pointer"
         >
           Just browsing
         </button>

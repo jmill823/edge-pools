@@ -135,7 +135,7 @@ export function PoolSettings({
   if (!editable) {
     return (
       <div className="rounded-card border border-border bg-surface p-4">
-        <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
+        <p className="font-sans text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
           Pool Settings
         </p>
         <div className="space-y-3">
@@ -145,7 +145,7 @@ export function PoolSettings({
           {rules && <ReadOnlyField label="House rules" value={rules} />}
         </div>
         <div className="border-t border-border mt-4 pt-4">
-          <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
+          <p className="font-sans text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
             Scoring Configuration
           </p>
           <div className="space-y-3">
@@ -154,7 +154,7 @@ export function PoolSettings({
             <ReadOnlyField label="Tiebreaker" value={tiebreakerLabel} />
             <ReadOnlyField label="Roster rule" value={rosterRuleLabel} />
           </div>
-          <p className="mt-3 font-body text-xs text-text-muted">
+          <p className="mt-3 font-sans text-xs text-text-muted">
             Scoring settings are locked once the pool is locked.
           </p>
         </div>
@@ -164,7 +164,7 @@ export function PoolSettings({
 
   return (
     <div className="rounded-card border border-border bg-surface p-4">
-      <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
+      <p className="font-sans text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
         Pool Settings
       </p>
 
@@ -177,20 +177,20 @@ export function PoolSettings({
       <div className="space-y-4">
         {/* Pool Name */}
         <div>
-          <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+          <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
             Pool name
           </label>
           <input
             type="text"
             value={formName}
             onChange={(e) => { setFormName(e.target.value); markDirty(); }}
-            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors duration-200"
+            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors duration-200"
           />
         </div>
 
         {/* Picks Deadline */}
         <div>
-          <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+          <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
             Picks deadline
           </label>
           <input
@@ -203,7 +203,7 @@ export function PoolSettings({
 
         {/* Max Entries */}
         <div>
-          <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+          <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
             Max entries per player
           </label>
           <div className="flex items-center gap-3">
@@ -233,25 +233,25 @@ export function PoolSettings({
 
         {/* House Rules */}
         <div>
-          <label className="block font-body text-xs font-medium text-text-secondary mb-1">
+          <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
             House rules (optional)
           </label>
           <textarea
             value={formRules}
             onChange={(e) => { setFormRules(e.target.value); markDirty(); }}
             rows={3}
-            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-body text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors duration-200 resize-none"
+            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm text-text-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/15 focus:outline-none transition-colors duration-200 resize-none"
             placeholder="Payment details, tiebreaker rules, etc."
           />
         </div>
 
         {/* Scoring Configuration */}
         <div className="border-t border-border pt-4">
-          <p className="font-display text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
+          <p className="font-sans text-[10px] font-medium text-text-muted uppercase tracking-[0.5px] mb-3">
             Scoring Configuration
           </p>
           {!scoringEditable && (
-            <p className="font-body text-xs text-text-muted mb-3">
+            <p className="font-sans text-xs text-text-muted mb-3">
               Scoring settings are locked once the pool is locked.
             </p>
           )}
@@ -283,8 +283,8 @@ export function PoolSettings({
 function ReadOnlyField({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div>
-      <p className="font-body text-xs font-medium text-text-secondary">{label}</p>
-      <p className={`mt-0.5 text-sm text-text-primary ${mono ? "font-mono" : "font-body"}`}>
+      <p className="font-sans text-xs font-medium text-text-secondary">{label}</p>
+      <p className={`mt-0.5 text-sm text-text-primary ${mono ? "font-mono" : "font-sans"}`}>
         {value}
       </p>
     </div>

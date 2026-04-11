@@ -1,12 +1,22 @@
 export function LandingFooter() {
   return (
-    <footer className="py-8 text-center">
-      <p className="font-display text-[11px] font-[800] tracking-[2px] text-[#ABA69E]">
-        TILT
-      </p>
-      <p className="mt-1 font-body text-[9px] font-normal text-[#C4C0B8]">
-        &copy; 2026 Edge Fantasy Sports LLC
-      </p>
-    </footer>
+    <>
+      {/* Footer divider — matches header divider */}
+      <div
+        style={{
+          height: "0.5px",
+          background: "var(--neutral-light-border)",
+          margin: "0 10%",
+        }}
+      />
+      <footer className="py-8 text-center">
+        <p
+          className="font-sans text-[10px] font-normal"
+          style={{ color: "var(--neutral-icon)" }}
+        >
+          playtilt.io
+        </p>
+      </footer>
+    </>
   );
 }

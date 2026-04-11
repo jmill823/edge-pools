@@ -33,8 +33,8 @@ export function PickStrip({ categories, selections, golferLookup }: PickStripPro
                 picked ? "bg-surface-alt border border-accent-primary/30" : "bg-surface-alt border border-border"
               }`}
             >
-              <div className="font-body text-[9px] text-text-muted uppercase tracking-[0.5px] truncate leading-tight">{cat.name}</div>
-              <div className={`font-body text-xs font-medium truncate mt-0.5 leading-tight ${
+              <div className="font-sans text-[9px] text-text-muted uppercase tracking-[0.5px] truncate leading-tight">{cat.name}</div>
+              <div className={`font-sans text-xs font-medium truncate mt-0.5 leading-tight ${
                 picked ? "text-text-primary" : "text-text-muted"
               }`}>
                 {golfer ? lastName(golfer.name) : "\u2014"}
