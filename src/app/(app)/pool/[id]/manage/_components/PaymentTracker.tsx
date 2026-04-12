@@ -12,6 +12,7 @@ interface PaymentEntry {
   entryNumber: number;
   teamName: string;
   paymentStatus: string;
+  isGuest: boolean;
 }
 
 interface PaymentTrackerProps {
@@ -141,10 +142,12 @@ export function PaymentTracker({
     }
   }, [entries, poolName, tournamentName]);
 
-  // Sort: unpaid first, then paid
+  // Sort: unpaid first, then paid; within each group alphabetical by team name
   const sorted = [...entries].sort((a, b) => {
-    if (a.paymentStatus === b.paymentStatus) return a.displayName.localeCompare(b.displayName);
-    return a.paymentStatus === "unpaid" ? -1 : 1;
+    if (a.paymentStatus !== b.paymentStatus) return a.paymentStatus === "unpaid" ? -1 : 1;
+    const nameA = (a.teamName || a.displayName).toLowerCase();
+    const nameB = (b.teamName || b.displayName).toLowerCase();
+    return nameA.localeCompare(nameB);
   });
 
   const unpaidCount = totalEntries - paidCount;
@@ -230,14 +233,21 @@ export function PaymentTracker({
                   </span>
                   {/* Name */}
                   <div className="flex-1 min-w-0">
-                    <p className="font-sans text-sm font-medium text-text-primary truncate">
-                      {entry.teamName || entry.displayName}
-                      {entry.entryNumber > 1 && (
-                        <span className="text-text-muted text-xs ml-1">E{entry.entryNumber}</span>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-sans text-sm font-medium text-text-primary truncate">
+                        {entry.teamName || entry.displayName}
+                        {entry.entryNumber > 1 && (
+                          <span className="text-text-muted text-xs ml-1">E{entry.entryNumber}</span>
+                        )}
+                      </p>
+                      {entry.isGuest && (
+                        <span className="shrink-0 font-sans text-[10px] font-medium text-accent-info bg-accent-info/10 rounded-data px-1.5 py-0.5">
+                          Guest
+                        </span>
                       )}
-                    </p>
+                    </div>
                     <p className="font-sans text-xs text-text-muted truncate">
-                      {isPaid ? "Paid" : "Unpaid"}
+                      {entry.email ?? (isPaid ? "Paid" : "Unpaid")}
                     </p>
                   </div>
                   {/* Actions */}

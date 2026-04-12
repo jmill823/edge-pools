@@ -42,6 +42,7 @@ export async function GET(
     entryNumber: e.entryNumber,
     teamName: e.teamName,
     paymentStatus: e.paymentStatus,
+    isGuest: !!e.guestPlayerId,
   }));
 
   const paidCount = entries.filter((e) => e.paymentStatus === "paid").length;

@@ -162,7 +162,7 @@ export function EntryRow({
                       WD
                     </span>
                   ) : (
-                    <span className="font-mono text-[10px]" style={{ color: "var(--score-pending)" }}>
+                    <span className="font-mono text-[11px]" style={{ color: "#4B5563" }}>
                       {golfer.thruDisplay}
                     </span>
                   )}
