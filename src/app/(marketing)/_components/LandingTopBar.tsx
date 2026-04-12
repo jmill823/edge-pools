@@ -6,7 +6,7 @@ export function LandingTopBar() {
       <header className="h-12 bg-[var(--bg-brand)]">
         <div className="mx-auto max-w-[960px] h-full px-4 flex items-center justify-between">
           {/* TILT wordmark — 22px Montserrat 900 italic, gold gradient, rotated -3deg */}
-          <div style={{ transform: "rotate(-3deg)" }} className="flex flex-col items-center">
+          <Link href="/" className="flex flex-col items-center cursor-pointer" style={{ transform: "rotate(-3deg)" }}>
             <span
               className="font-sans text-[22px] font-black italic leading-none"
               style={{
@@ -27,7 +27,7 @@ export function LandingTopBar() {
                 borderRadius: "2px",
               }}
             />
-          </div>
+          </Link>
 
           {/* Ghost Sign In button */}
           <Link

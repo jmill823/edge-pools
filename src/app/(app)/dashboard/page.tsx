@@ -168,7 +168,7 @@ function MiniStripItems({ pool }: { pool: PoolItem }) {
         ? `${hoursLeft}h left`
         : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
       chips.push({ label: deadlineStr, style: "bg-[#FDF4E3] text-[#8A6B1E]" });
-      chips.push({ label: `${pool.entryCount} entries` });
+      chips.push({ label: `${pool.entryCount} ${pool.entryCount === 1 ? "entry" : "entries"}` });
       if (!pool.hasSubmittedPicks) {
         chips.push({ label: "No picks yet", style: "bg-[#FDF4E3] text-[#8A6B1E]" });
       }
@@ -179,7 +179,7 @@ function MiniStripItems({ pool }: { pool: PoolItem }) {
         const score = pool.myBestScore > 0 ? `+${pool.myBestScore}` : pool.myBestScore === 0 ? "E" : `${pool.myBestScore}`;
         chips.push({ label: `T${pool.myBestRank} ${score}`, style: "bg-[#F0F5F2] text-accent-primary font-bold" });
       }
-      chips.push({ label: `${pool.entryCount} entries` });
+      chips.push({ label: `${pool.entryCount} ${pool.entryCount === 1 ? "entry" : "entries"}` });
       if (pool.tournament.currentRound) {
         chips.push({ label: `R${pool.tournament.currentRound} live`, style: "bg-[#FCEAE9] text-[#8B2D27]" });
       }
@@ -190,19 +190,19 @@ function MiniStripItems({ pool }: { pool: PoolItem }) {
         const score = pool.myBestScore > 0 ? `+${pool.myBestScore}` : pool.myBestScore === 0 ? "E" : `${pool.myBestScore}`;
         chips.push({ label: `Finished ${pool.myBestRank}${ordSuffix(pool.myBestRank)} (${score})`, style: "bg-[#E8F3ED] text-accent-primary" });
       }
-      chips.push({ label: `${pool.entryCount} entries` });
+      chips.push({ label: `${pool.entryCount} ${pool.entryCount === 1 ? "entry" : "entries"}` });
       break;
     }
     case "LOCKED":
       chips.push({ label: "Picks locked" });
-      chips.push({ label: `${pool.entryCount} entries` });
+      chips.push({ label: `${pool.entryCount} ${pool.entryCount === 1 ? "entry" : "entries"}` });
       break;
     case "SETUP":
       chips.push({ label: "Setting up" });
       chips.push({ label: `${pool.memberCount} members` });
       break;
     case "ARCHIVED":
-      chips.push({ label: `${pool.entryCount} entries` });
+      chips.push({ label: `${pool.entryCount} ${pool.entryCount === 1 ? "entry" : "entries"}` });
       break;
   }
 

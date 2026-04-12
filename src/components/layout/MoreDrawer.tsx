@@ -8,26 +8,43 @@ interface MoreDrawerProps {
   onClose: () => void;
 }
 
-const menuItems = [
-  { icon: "search", label: "Search Players", route: null },
-  { icon: "calendar", label: "Schedule", route: null },
-  { icon: "book", label: "Rules", route: null },
-  { icon: "settings", label: "Pool Settings", route: "manage" },
-  { icon: "bell", label: "Notifications", route: null },
-  { icon: "user", label: "Account", route: "/account" },
-];
+interface MenuItem {
+  icon: string;
+  label: string;
+  route: string | null;
+  ghosted?: boolean;
+}
 
 export function MoreDrawer({ poolId, onClose }: MoreDrawerProps) {
   const router = useRouter();
   const { signOut } = useClerk();
 
-  function handleItemClick(route: string | null) {
-    if (!route) {
-      onClose();
-      return;
-    }
-    const href = route.startsWith("/") ? route : `/pool/${poolId}/${route}`;
-    router.push(href);
+  const hasPool = !!poolId;
+
+  // Active items
+  const activeItems: MenuItem[] = [
+    { icon: "home", label: "Home", route: "/dashboard" },
+    ...(hasPool
+      ? [
+          { icon: "board", label: "Board", route: `/pool/${poolId}/leaderboard` },
+          { icon: "picks", label: "Picks", route: `/pool/${poolId}/picks` },
+          { icon: "pool", label: "Pool", route: `/pool/${poolId}/manage` },
+          { icon: "settings", label: "Pool Settings", route: `/pool/${poolId}/manage` },
+        ]
+      : []),
+    { icon: "user", label: "Account", route: "/account" },
+  ];
+
+  // Ghosted items (visible but disabled)
+  const ghostedItems: MenuItem[] = [
+    { icon: "calendar", label: "Schedule", route: null, ghosted: true },
+    { icon: "book", label: "Rules", route: null, ghosted: true },
+    { icon: "bell", label: "Notifications", route: null, ghosted: true },
+  ];
+
+  function handleItemClick(item: MenuItem) {
+    if (item.ghosted || !item.route) return;
+    router.push(item.route);
     onClose();
   }
 
@@ -63,10 +80,11 @@ export function MoreDrawer({ poolId, onClose }: MoreDrawerProps) {
 
       {/* Menu items */}
       <div className="flex-1 overflow-y-auto px-4 pt-4">
-        {menuItems.map((item) => (
+        {/* Active items */}
+        {activeItems.map((item) => (
           <button
             key={item.label}
-            onClick={() => handleItemClick(item.route)}
+            onClick={() => handleItemClick(item)}
             className="w-full flex items-center gap-4 py-4 cursor-pointer"
             style={{ borderBottom: "0.5px solid rgba(255,255,255,0.12)" }}
           >
@@ -75,6 +93,20 @@ export function MoreDrawer({ poolId, onClose }: MoreDrawerProps) {
               {item.label}
             </span>
           </button>
+        ))}
+
+        {/* Ghosted items */}
+        {ghostedItems.map((item) => (
+          <div
+            key={item.label}
+            className="w-full flex items-center gap-4 py-4"
+            style={{ borderBottom: "0.5px solid rgba(255,255,255,0.12)" }}
+          >
+            <MenuIcon name={item.icon} ghosted />
+            <span className="font-sans text-[14px] font-medium" style={{ color: "rgba(255,255,255,0.3)" }}>
+              {item.label}
+            </span>
+          </div>
         ))}
       </div>
 
@@ -114,15 +146,47 @@ export function MoreDrawer({ poolId, onClose }: MoreDrawerProps) {
 
 /* ─── Menu Icons (24×24, stroke, theme-active color) ─── */
 
-function MenuIcon({ name }: { name: string }) {
-  const color = "var(--theme-active)";
+function MenuIcon({ name, ghosted = false }: { name: string; ghosted?: boolean }) {
+  const color = ghosted ? "rgba(255,255,255,0.3)" : "var(--theme-active)";
 
   switch (name) {
-    case "search":
+    case "home":
       return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      );
+    case "board":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="18" x2="16" y2="18" />
+        </svg>
+      );
+    case "picks":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+          <rect x="9" y="3" width="6" height="4" rx="1" />
+          <path d="M9 14l2 2 4-4" />
+        </svg>
+      );
+    case "pool":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4V7" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 00-3-3.87" />
+          <path d="M16 3.13a4 4 0 010 7.75" />
+        </svg>
+      );
+    case "settings":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
         </svg>
       );
     case "calendar":
@@ -139,13 +203,6 @@ function MenuIcon({ name }: { name: string }) {
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
           <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-        </svg>
-      );
-    case "settings":
-      return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
         </svg>
       );
     case "bell":

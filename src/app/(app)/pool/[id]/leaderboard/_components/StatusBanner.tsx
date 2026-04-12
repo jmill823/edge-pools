@@ -15,7 +15,6 @@ export function StatusBanner({
   poolStatus,
   picksDeadline,
   tournamentName,
-  lastSyncAt,
   hasEntry,
   isArchived,
 }: StatusBannerProps) {
@@ -68,19 +67,6 @@ export function StatusBanner({
     );
   }
 
-  // LIVE — stale warning
-  if (poolStatus === "LIVE" && lastSyncAt) {
-    const staleMinutes = Math.floor((Date.now() - new Date(lastSyncAt).getTime()) / 60000);
-    if (staleMinutes > 15) {
-      return (
-        <div className={`rounded-card border px-4 py-2 font-mono text-xs ${
-          staleMinutes > 30 ? "border-accent-danger bg-[#FCEAE9] text-accent-danger" : "border-[var(--neutral-border)] bg-[#FDF4E3] text-[#8A6B1E]"
-        }`}>
-          Scores may be delayed. Last updated {staleMinutes} minutes ago.
-        </div>
-      );
-    }
-  }
-
+  // LIVE — stale warning removed from here (bottom StaleFooter handles it)
   return null;
 }

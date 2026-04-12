@@ -8,7 +8,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <header>
         <div className="mx-auto flex h-14 items-center justify-between px-4 w-full sm:max-w-[80%]">
           {/* TILT wordmark — gold gradient, rotated */}
-          <Link href="/" className="inline-block" style={{ transform: "rotate(-3deg)" }}>
+          <Link href="/dashboard" className="inline-block" style={{ transform: "rotate(-3deg)" }}>
             <span
               className="font-sans text-[22px] font-black italic leading-none"
               style={{

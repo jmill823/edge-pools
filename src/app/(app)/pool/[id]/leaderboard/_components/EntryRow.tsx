@@ -86,36 +86,38 @@ export function EntryRow({
             borderBottom: "0.5px solid var(--neutral-row-border)",
           }}
         >
-          {/* Golfer column headers — white bg with muted text */}
+          {/* Golfer column headers — aligned to parent grid */}
           <div
             className="flex items-center px-3 py-1.5 bg-white"
             style={{ borderBottom: "0.5px solid var(--neutral-row-border)" }}
           >
-            <span className="w-[30px] shrink-0 font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
+            {/* Maps to parent POS (36px) — split: POS + CAT label */}
+            <span className="w-[36px] shrink-0 font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               POS
             </span>
-            <span className="w-[36px] shrink-0 font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
-              CAT
-            </span>
-            <span className="flex-1 min-w-[80px] font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
+            {/* Maps to parent ENTRY (flex-1 min-100px) — PLAYER spans this area */}
+            <span className="flex-1 min-w-[100px] font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               PLAYER
             </span>
-            <span className="w-[30px] shrink-0 text-center font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
+            {/* Maps to parent MC (36px) — THRU */}
+            <span className="w-[36px] shrink-0 text-center font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               THRU
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
+            {/* Maps to parent R1-R4 (4×36px) */}
+            <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               R1
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
+            <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               R2
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
+            <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               R3
             </span>
-            <span className="w-[32px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
+            <span className="w-[36px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               R4
             </span>
-            <span className="w-[40px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
+            {/* Maps to parent TOTAL (48px) */}
+            <span className="w-[48px] shrink-0 text-right font-sans text-[8px] font-semibold text-[#6B7280] uppercase tracking-[0.5px]">
               TOTAL
             </span>
           </div>
@@ -132,18 +134,16 @@ export function EntryRow({
                 className={`flex items-center px-3 py-1.5 ${rowOpacity}`}
                 style={{ borderBottom: "0.5px solid var(--neutral-row-border)" }}
               >
-                {/* POS */}
-                <span className="w-[30px] shrink-0 font-mono text-[10px]" style={{ color: "var(--neutral-secondary)" }}>
+                {/* POS — aligned to parent POS (36px) */}
+                <span className="w-[36px] shrink-0 font-mono text-[10px]" style={{ color: "var(--neutral-secondary)" }}>
                   {isMcOrWd ? "-" : golfer.positionDisplay}
                 </span>
 
-                {/* CAT — gold */}
-                <span className="w-[36px] shrink-0 font-sans text-[9px] font-medium" style={{ color: "var(--theme-text)" }}>
-                  {golfer.categoryAbbrev}
-                </span>
-
-                {/* PLAYER */}
-                <span className="flex-1 min-w-[80px] font-sans text-[11px] truncate" style={{ color: "var(--neutral-text)" }}>
+                {/* PLAYER (with CAT prefix) — aligned to parent ENTRY (flex-1 min-100px) */}
+                <span className="flex-1 min-w-[100px] font-sans text-[11px] truncate" style={{ color: "var(--neutral-text)" }}>
+                  <span className="font-sans text-[9px] font-medium mr-1" style={{ color: "var(--theme-text)" }}>
+                    {golfer.categoryAbbrev}
+                  </span>
                   {formatGolferNameShort(golfer.golferName)}
                   {golfer.isReplacement && golfer.originalGolferName && (
                     <span className="ml-1 text-[9px]" style={{ color: "var(--score-over)" }}>
@@ -152,8 +152,8 @@ export function EntryRow({
                   )}
                 </span>
 
-                {/* THRU */}
-                <span className="w-[30px] shrink-0 text-center">
+                {/* THRU — aligned to parent MC (36px) */}
+                <span className="w-[36px] shrink-0 text-center">
                   {golfer.status === "cut" ? (
                     <span className="inline-block px-1 py-0.5 rounded-[3px] font-sans text-[8px] font-medium" style={{ background: "rgba(var(--neutral-muted), 0.2)", color: "var(--neutral-muted)" }}>
                       MC
@@ -169,19 +169,19 @@ export function EntryRow({
                   )}
                 </span>
 
-                {/* R1-R4 */}
+                {/* R1-R4 — aligned to parent R1-R4 (4×36px) */}
                 {golfer.roundScores.map((rs) => (
                   <span
                     key={rs.round}
-                    className={`w-[32px] shrink-0 text-right font-mono text-[10px] ${scoreColorClass(rs.color)}`}
+                    className={`w-[36px] shrink-0 text-right font-mono text-[10px] ${scoreColorClass(rs.color)}`}
                   >
                     {rs.display}
                   </span>
                 ))}
 
-                {/* TOTAL */}
+                {/* TOTAL — aligned to parent TOTAL (48px) */}
                 <span
-                  className={`w-[40px] shrink-0 text-right font-mono text-[10px] font-medium ${scoreColorClass(golfer.totalColor)} ${
+                  className={`w-[48px] shrink-0 text-right font-mono text-[10px] font-medium ${scoreColorClass(golfer.totalColor)} ${
                     isExcluded ? "line-through" : ""
                   }`}
                 >

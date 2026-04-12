@@ -28,15 +28,16 @@ const SCORING_TYPE_OPTIONS = [
 ];
 
 const MISSED_CUT_OPTIONS = [
-  { value: "carry-score", label: "Carry score — MC score stays fixed" },
-  { value: "fixed-per-round", label: "Fixed penalty per missed round" },
-  { value: "worst-make-cut", label: "Worst of golfers who made cut" },
+  { value: "fixed-10", label: "+10 per missed round" },
+  { value: "fixed-12", label: "+12 per missed round" },
+  { value: "worst-make-cut", label: "Highest score of day (Sat/Sun)" },
 ];
 
 const TIEBREAKER_OPTIONS = [
-  { value: "entry-timestamp", label: "Earlier submission wins (default)" },
-  { value: "best-individual", label: "Best single golfer score" },
-  { value: "none", label: "Ties remain tied" },
+  { value: "best-round", label: "Lowest Round Score (R1, R2, R3, R4)" },
+  { value: "best-sunday", label: "Lowest Score Sunday" },
+  { value: "entry-timestamp", label: "Earliest Entry" },
+  { value: "none", label: "Ties Remain" },
 ];
 
 const ROSTER_RULE_OPTIONS = [

@@ -99,7 +99,7 @@ function buildInviteHtml(params: Omit<InviteEmailParams, "to">) {
           </tr>
 
           <tr>
-            <td style="padding-top:32px;border-top:1px solid #E2DDD5;margin-top:32px;">
+            <td style="padding-top:32px;">
               <p style="margin:0;font-size:12px;color:#A39E96;text-align:center;">
                 <strong>TILT</strong> &mdash; Ditch the spreadsheet.<br>
                 <a href="https://playtilt.io" style="color:#A39E96;">playtilt.io</a>
