@@ -302,11 +302,10 @@ function FlowView({
         </div>
       </div>
 
-      {/* CTA — dark button (action, not brand) */}
+      {/* CTA — soft green button */}
       <button
         onClick={() => router.push(ctaHref)}
-        className="mt-6 flex items-center justify-center w-full rounded-[6px] py-3.5 font-sans text-[14px] font-bold uppercase tracking-[0.5px] text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer"
-        style={{ background: "var(--neutral-text)" }}
+        className="mt-6 flex items-center justify-center w-full rounded-[6px] bg-gradient-to-r from-[#10B981] to-[#059669] py-3.5 font-sans text-[14px] font-bold uppercase tracking-[0.5px] text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer"
       >
         {ctaLabel}
       </button>

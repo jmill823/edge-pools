@@ -40,7 +40,6 @@ export function EntryRow({
         <span
           className="flex-1 min-w-[100px] truncate font-sans text-[12px]"
           style={{
-            maxWidth: "120px",
             color: isYou ? "var(--neutral-text)" : "var(--theme-text)",
             fontWeight: isYou ? 700 : 500,
           }}
