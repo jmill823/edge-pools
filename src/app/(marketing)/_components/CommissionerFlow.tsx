@@ -84,7 +84,7 @@ export function CommissionerFlow({ onScrollToPlayer }: { onScrollToPlayer: () =>
         <Link
           href="/dashboard"
           className="mt-8 flex items-center justify-center w-full rounded-[4px] py-3.5 font-sans text-[13px] font-semibold tracking-[0.5px] uppercase text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer"
-          style={{ background: "var(--neutral-text)" }}
+          style={{ background: "linear-gradient(to right, #9E8A52, #8A7844)" }}
         >
           Create a Pool
         </Link>

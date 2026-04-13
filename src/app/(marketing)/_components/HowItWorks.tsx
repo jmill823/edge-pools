@@ -18,7 +18,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="py-10" style={{ borderTop: "1px solid var(--neutral-border)" }}>
+    <section className="py-10">
       <div className="mx-auto max-w-[720px] px-5">
         <p className="font-sans text-[10px] font-bold uppercase tracking-[1.5px] mb-6" style={{ color: "var(--neutral-muted)" }}>
           HOW IT WORKS
