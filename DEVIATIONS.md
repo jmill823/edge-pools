@@ -505,3 +505,53 @@
 - **Spec said:** Implement bg-app vs bg-brand routing in root layout or layout wrapper.
 - **What was done:** Applied `background: var(--bg-app)` directly on the pool layout container div. Root layout default is `bg-brand` via globals.css.
 - **Why:** Simplest implementation — no wrapper component needed. The (app) layout inherits bg-brand from globals.css, and pool pages override to bg-app via their layout.
+
+## RBC Heritage Field Load (April 13, 2026)
+
+### DEV RBC-1 — Used `prisma db push` instead of `prisma migrate dev`
+- **Spec said:** Run `npx prisma migrate dev` to apply schema changes.
+- **What was found:** Shadow database creation fails with error P3006 due to existing migration history mismatch.
+- **What was done:** Used `npx prisma db push` which applies schema changes directly without migration files.
+- **Why:** `db push` is the recommended approach for development when migration history is already diverged. Schema changes (birthDate, majorWins) applied successfully.
+
+### DEV RBC-2 — Spec listed "Nico Echavarria" but DB has "Nicolas Echavarria"
+- **Spec said:** Field includes "Nico Echavarria."
+- **What was found:** Existing DB record uses "Nicolas Echavarria" with slashGolfId "51349."
+- **What was done:** Used "Nicolas Echavarria" in templates to match existing DB spelling.
+- **Why:** Template golfer names must exactly match DB names for the create pool flow to work.
+
+### DEV RBC-3 — Spec listed "Ludvig Aberg" but DB has "Ludvig Åberg"
+- **Spec said:** Field includes "Ludvig Aberg" (no diacritics).
+- **What was found:** DB uses "Ludvig Åberg" (with Å) with slashGolfId "52955."
+- **What was done:** Used "Ludvig Åberg" in templates.
+- **Why:** Same as RBC-2 — must match DB spelling exactly.
+
+### DEV RBC-4 — Spec listed "Nicolai Hojgaard" but DB has "Nicolai Højgaard"
+- **Spec said:** "Nicolai Hojgaard"
+- **What was found:** DB uses "Nicolai Højgaard" (with ø).
+- **What was done:** Used "Nicolai Højgaard" in templates.
+- **Why:** Same as RBC-2.
+
+### DEV RBC-5 — SlashGolf entry list unavailable pre-tournament
+- **Spec said:** Look up slashGolfId from SlashGolf API for all golfers.
+- **What was found:** SlashGolf leaderboard and entry-list endpoints return empty data before tournament starts. 72 of 83 field golfers already had slashGolfIds from Masters data.
+- **What was done:** Used existing slashGolfIds for 72 golfers. The 11 newly created golfers (mostly alternates and rookies) have null slashGolfIds for now — these will populate when the leaderboard goes live.
+- **Why:** API doesn't serve pre-tournament field data. IDs will be matched when scoring begins.
+
+### DEV RBC-6 — Added `tournamentName` to existing templates
+- **Spec said:** Add filtering by `tournamentName` field in template JSON.
+- **What was found:** Existing Masters and Valero templates lacked `tournamentName` field.
+- **What was done:** Added `tournamentName: "The Masters"` to masters-classic.json and `tournamentName: "Valero Texas Open"` to valero-texas-open-2026.json.
+- **Why:** Tournament-based template filtering requires all templates to have this field.
+
+### DEV RBC-7 — Added `dynamic = "force-dynamic"` to tournaments API
+- **Spec said:** No specific mention of route config.
+- **What was found:** `npm run build` failed because Next.js tried to statically prerender `/api/tournaments` which calls Prisma (needs DB connection at runtime).
+- **What was done:** Added `export const dynamic = "force-dynamic"` to the route.
+- **Why:** Database-dependent API routes must be server-rendered on demand, not prerendered at build time.
+
+### DEV RBC-8 — 83 field players instead of spec's ~82
+- **Spec said:** Full field of ~82 players.
+- **What was found:** Compiled 83 players from the full committed field list.
+- **What was done:** All 83 loaded. Overlap counts exceed all minimums.
+- **Why:** Approximate count; actual field size varies by week.

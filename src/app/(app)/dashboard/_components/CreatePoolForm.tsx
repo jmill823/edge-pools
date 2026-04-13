@@ -83,6 +83,11 @@ export function CreatePoolForm() {
     if (t) {
       setPicksDeadline(toDateTimeLocal(t.startDate));
       if (!poolName || poolName.endsWith(" Pool")) setPoolName(`${t.name} Pool`);
+      // Re-fetch templates filtered by tournament name
+      fetch(`/api/templates?tournament=${encodeURIComponent(t.name)}`)
+        .then((r) => r.json())
+        .then((tmpl) => setTemplates(tmpl))
+        .catch(() => {/* keep existing templates on error */});
     }
   }
 
