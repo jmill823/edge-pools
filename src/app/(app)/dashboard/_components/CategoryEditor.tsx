@@ -62,7 +62,6 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
     <div className="space-y-3">
       {categories.map((cat, idx) => (
         <div key={idx} className="rounded-card border border-border bg-surface">
-          {/* Header */}
           <div className="flex w-full items-center gap-2 px-4 py-3 min-h-[44px]">
             <button
               onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
@@ -80,7 +79,6 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            {/* Inline edit (rename) */}
             <button
               onClick={() => {
                 const newName = prompt("Rename category:", cat.name);
@@ -94,7 +92,6 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
                 <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
             </button>
-            {/* Inline delete */}
             <button
               onClick={() => deleteCategory(idx)}
               className="shrink-0 rounded p-1 text-text-muted hover:text-accent-danger hover:bg-[#FCEAE9] cursor-pointer transition-colors duration-200"
@@ -107,10 +104,8 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
             </button>
           </div>
 
-          {/* Expanded */}
           {expandedIdx === idx && (
             <div className="border-t border-border px-4 py-3 space-y-3">
-              {/* Rename */}
               <input
                 type="text"
                 value={cat.name}
@@ -118,8 +113,6 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
                 className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
                 placeholder="Category name"
               />
-
-              {/* Golfer list */}
               <div className="space-y-1">
                 {cat.golfers.map((g) => (
                   <div key={g.id} className="flex items-center justify-between rounded-data px-2 py-1.5 font-sans text-sm hover:bg-surface-alt transition-colors duration-150">
@@ -129,9 +122,7 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
                       {g.owgr && <span className="font-mono text-xs text-text-muted">#{g.owgr}</span>}
                     </div>
                     <button
-                      onClick={() =>
-                        updateCategory(idx, { ...cat, golfers: cat.golfers.filter((x) => x.id !== g.id) })
-                      }
+                      onClick={() => updateCategory(idx, { ...cat, golfers: cat.golfers.filter((x) => x.id !== g.id) })}
                       className="ml-2 shrink-0 rounded p-1.5 text-accent-danger hover:bg-[#FCEAE9] cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center transition-colors duration-200"
                       aria-label={`Remove ${g.name}`}
                     >
@@ -142,47 +133,27 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
                   </div>
                 ))}
               </div>
-
-              {/* Add golfer */}
               <GolferSearch
                 golfers={availableGolfers}
                 currentCategoryGolferIds={new Set(cat.golfers.map((g) => g.id))}
                 onSelect={(g) => updateCategory(idx, { ...cat, golfers: [...cat.golfers, g] })}
               />
-
-              {/* Actions */}
               <div className="flex items-center gap-2 pt-2 border-t border-border">
-                <button
-                  onClick={() => moveCategory(idx, -1)}
-                  disabled={idx === 0}
-                  className="rounded-data px-2 py-1.5 font-sans text-xs text-text-secondary hover:bg-surface-alt disabled:opacity-30 min-h-[32px] cursor-pointer transition-colors duration-200"
-                >
-                  Move Up
-                </button>
-                <button
-                  onClick={() => moveCategory(idx, 1)}
-                  disabled={idx === categories.length - 1}
-                  className="rounded-data px-2 py-1.5 font-sans text-xs text-text-secondary hover:bg-surface-alt disabled:opacity-30 min-h-[32px] cursor-pointer transition-colors duration-200"
-                >
-                  Move Down
-                </button>
+                <button onClick={() => moveCategory(idx, -1)} disabled={idx === 0}
+                  className="rounded-data px-2 py-1.5 font-sans text-xs text-text-secondary hover:bg-surface-alt disabled:opacity-30 min-h-[32px] cursor-pointer transition-colors duration-200">Move Up</button>
+                <button onClick={() => moveCategory(idx, 1)} disabled={idx === categories.length - 1}
+                  className="rounded-data px-2 py-1.5 font-sans text-xs text-text-secondary hover:bg-surface-alt disabled:opacity-30 min-h-[32px] cursor-pointer transition-colors duration-200">Move Down</button>
                 <div className="flex-1" />
-                <button
-                  onClick={() => deleteCategory(idx)}
-                  className="rounded-data px-2 py-1.5 font-sans text-xs text-accent-danger hover:bg-[#FCEAE9] min-h-[32px] cursor-pointer transition-colors duration-200"
-                >
-                  Delete Category
-                </button>
+                <button onClick={() => deleteCategory(idx)}
+                  className="rounded-data px-2 py-1.5 font-sans text-xs text-accent-danger hover:bg-[#FCEAE9] min-h-[32px] cursor-pointer transition-colors duration-200">Delete Category</button>
               </div>
             </div>
           )}
         </div>
       ))}
 
-      <button
-        onClick={addCategory}
-        className="w-full rounded-card border-2 border-dashed border-border py-3 font-sans text-sm font-medium text-accent-primary hover:border-accent-primary/40 hover:bg-surface-alt min-h-[44px] cursor-pointer transition-colors duration-200"
-      >
+      <button onClick={addCategory}
+        className="w-full rounded-card border-2 border-dashed border-border py-3 font-sans text-sm font-medium text-accent-primary hover:border-accent-primary/40 hover:bg-surface-alt min-h-[44px] cursor-pointer transition-colors duration-200">
         + Add Category
       </button>
     </div>
@@ -190,9 +161,7 @@ export function CategoryEditor({ categories, availableGolfers, onChange }: Categ
 }
 
 function GolferSearch({
-  golfers,
-  currentCategoryGolferIds,
-  onSelect,
+  golfers, currentCategoryGolferIds, onSelect,
 }: {
   golfers: GolferData[];
   currentCategoryGolferIds: Set<string>;
@@ -216,22 +185,17 @@ function GolferSearch({
 
   return (
     <div ref={ref} className="relative">
-      <input
-        type="text"
-        value={query}
+      <input type="text" value={query}
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onFocus={() => query && setOpen(true)}
         placeholder="Search golfers to add..."
-        className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
-      />
+        className="w-full rounded-btn border border-border bg-surface px-3 py-2 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15" />
       {open && query && filtered.length > 0 && (
         <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-card border border-border bg-surface shadow-subtle">
           {filtered.map((g) => (
-            <button
-              key={g.id}
+            <button key={g.id}
               onClick={() => { onSelect(g); setQuery(""); setOpen(false); }}
-              className="flex w-full items-center gap-2 px-3 py-2 font-sans text-sm text-left hover:bg-surface-alt min-h-[40px] cursor-pointer transition-colors duration-150"
-            >
+              className="flex w-full items-center gap-2 px-3 py-2 font-sans text-sm text-left hover:bg-surface-alt min-h-[40px] cursor-pointer transition-colors duration-150">
               <span className="flex-1 truncate text-text-primary">{g.name}</span>
               {g.country && <span className="text-xs text-text-muted">{g.country}</span>}
               {g.owgr && <span className="font-mono text-xs text-text-muted">#{g.owgr}</span>}

@@ -98,7 +98,7 @@ export function RoleModal({ initialView = "select", onClose }: RoleModalProps) {
             subtitle="No spreadsheets, no group texts, no chasing payments. You set it up &mdash; TILT handles the rest."
             steps={commissionerSteps}
             ctaLabel="CREATE A POOL"
-            ctaHref="/dashboard/create"
+            ctaHref="/dashboard"
             crosslinkText="Actually, I&rsquo;m joining someone else&rsquo;s pool &rarr;"
             onCrosslinkClick={() => setView("player")}
           />
