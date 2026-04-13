@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 const variants = {
-  primary: "bg-gradient-to-r from-[#10B981] to-[#059669] text-white font-bold hover:brightness-105 focus-visible:ring-[#10B981]",
+  primary: "bg-gradient-to-r from-[#9E8A52] to-[#8A7844] text-white font-bold hover:brightness-105 focus-visible:ring-[#9E8A52]",
   secondary: "border border-border text-text-primary hover:bg-surface-alt focus-visible:ring-accent-primary",
   destructive: "border border-accent-danger text-accent-danger hover:bg-red-50 focus-visible:ring-accent-danger",
   outline: "border border-border text-text-secondary hover:bg-surface-alt focus-visible:ring-accent-primary",

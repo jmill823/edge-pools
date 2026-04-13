@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LandingTopBar } from "./_components/LandingTopBar";
 import { MiniLeaderboard } from "./_components/MiniLeaderboard";
@@ -11,11 +11,34 @@ import { HowItWorks } from "./_components/HowItWorks";
 import { LandingFooter } from "./_components/LandingFooter";
 import { RoleModal } from "./_components/RoleModal";
 
-type ModalView = "commissioner" | "player" | null;
+type ModalView = "select" | "commissioner" | "player" | null;
+
+const ONBOARDED_KEY = "tilt_onboarded";
 
 export default function HomePage() {
   const [modalView, setModalView] = useState<ModalView>(null);
   const router = useRouter();
+
+  // Auto-show onboarding popup for first-time visitors
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem(ONBOARDED_KEY)) {
+        setModalView("select");
+      }
+    } catch {
+      // localStorage unavailable — show popup (safe default)
+      setModalView("select");
+    }
+  }, []);
+
+  function handleModalClose() {
+    setModalView(null);
+    try {
+      localStorage.setItem(ONBOARDED_KEY, "1");
+    } catch {
+      // localStorage unavailable — popup won't persist, acceptable
+    }
+  }
 
   return (
     <div className="bg-[var(--bg-brand)] min-h-screen flex flex-col">
@@ -125,7 +148,7 @@ export default function HomePage() {
       {modalView && (
         <RoleModal
           initialView={modalView}
-          onClose={() => setModalView(null)}
+          onClose={handleModalClose}
         />
       )}
     </div>

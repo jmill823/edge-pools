@@ -172,7 +172,7 @@ export default function Quick6Page() {
           <div className="mt-10 flex flex-col sm:flex-row gap-3">
             <Link
               href="/dashboard/create"
-              className="inline-flex items-center justify-center rounded-[4px] bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-3 font-sans text-[13px] font-semibold tracking-[0.5px] uppercase text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
+              className="inline-flex items-center justify-center rounded-[4px] bg-gradient-to-r from-[#9E8A52] to-[#8A7844] px-6 py-3 font-sans text-[13px] font-semibold tracking-[0.5px] uppercase text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer text-center"
             >
               Create your pool &rarr;
             </Link>

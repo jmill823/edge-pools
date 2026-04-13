@@ -6,7 +6,7 @@ export function SocialProof() {
   ];
 
   return (
-    <section className="py-8" style={{ borderTop: "1px solid var(--neutral-border)" }}>
+    <section className="py-8">
       <div className="mx-auto max-w-[720px] px-5">
         <div className="flex items-center justify-center gap-8">
           {stats.map((stat, i) => (

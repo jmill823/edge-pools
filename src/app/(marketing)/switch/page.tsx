@@ -77,8 +77,8 @@ export default function SwitchPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="max-w-content w-full text-center py-16">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#ECFDF5]">
-            <svg className="h-8 w-8 text-[#10B981]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#F5F2EB]">
+            <svg className="h-8 w-8 text-[#9E8A52]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -130,7 +130,7 @@ export default function SwitchPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 min-h-[44px]"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#9E8A52] focus:outline-none focus:ring-2 focus:ring-[#9E8A52]/15 min-h-[44px]"
             />
           </div>
 
@@ -144,7 +144,7 @@ export default function SwitchPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 min-h-[44px]"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#9E8A52] focus:outline-none focus:ring-2 focus:ring-[#9E8A52]/15 min-h-[44px]"
             />
           </div>
 
@@ -157,7 +157,7 @@ export default function SwitchPage() {
               value={poolType}
               onChange={(e) => setPoolType(e.target.value)}
               required
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 min-h-[44px]"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#9E8A52] focus:outline-none focus:ring-2 focus:ring-[#9E8A52]/15 min-h-[44px]"
             >
               <option value="">Select type...</option>
               {POOL_TYPES.map((t) => (
@@ -177,13 +177,13 @@ export default function SwitchPage() {
               required
               rows={4}
               placeholder="~players, scoring, rules, format — categories, etc. We'll take care of the rest."
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#10B981]/15 resize-none"
+              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-[#9E8A52] focus:outline-none focus:ring-2 focus:ring-[#9E8A52]/15 resize-none"
             />
           </div>
 
           {/* Free callout */}
-          <div className="rounded-data bg-[#ECFDF5] px-4 py-2.5">
-            <p className="font-sans text-sm font-medium text-[#059669]">
+          <div className="rounded-data bg-[#F5F2EB] px-4 py-2.5">
+            <p className="font-sans text-sm font-medium text-[#8A7844]">
               Your first pool will be set up for free.
             </p>
           </div>

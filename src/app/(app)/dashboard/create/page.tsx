@@ -178,13 +178,13 @@ export default function CreatePoolPage() {
                   onClick={() => handleTournamentChange(t.id)}
                   className={`w-full rounded-card border p-3 text-left transition-all duration-200 min-h-[44px] cursor-pointer ${
                     tournamentId === t.id
-                      ? "border-[#10B981] bg-[#ECFDF5]"
-                      : "border-border hover:border-[#10B981]/40"
+                      ? "border-[#9E8A52] bg-[#F5F2EB]"
+                      : "border-border hover:border-[#9E8A52]/40"
                   } ${isGhosted && tournamentId !== t.id ? "opacity-50" : ""}`}
                 >
                   <div className={`font-sans font-medium text-text-primary ${isGhosted && tournamentId !== t.id ? "text-xs" : "text-sm"}`}>
                     {t.name}
-                    {isDefault && <span className="ml-2 text-[10px] font-mono text-[#10B981] uppercase">This Week</span>}
+                    {isDefault && <span className="ml-2 text-[10px] font-mono text-[#9E8A52] uppercase">This Week</span>}
                   </div>
                   <div className="mt-0.5 font-sans text-xs text-text-secondary">
                     {t.course && <>{t.course} · </>}
