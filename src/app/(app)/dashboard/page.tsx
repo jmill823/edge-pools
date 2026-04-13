@@ -135,13 +135,13 @@ export default function DashboardPage() {
         </h1>
         <div className="flex gap-2">
           <Link href="/dashboard/create">
-            <button className="rounded-[6px] bg-[#2D7A4F] text-white font-sans text-[11px] font-medium px-3 py-1.5 hover:bg-[#246840] transition-colors duration-200 cursor-pointer min-h-[32px]">
+            <button className="rounded-[6px] bg-[#2D7A4F] text-white font-sans text-[11px] font-medium px-3 py-2 hover:bg-[#246840] transition-colors duration-200 cursor-pointer min-h-[44px]">
               Create
             </button>
           </Link>
           <button
             onClick={() => setShowJoin(!showJoin)}
-            className="rounded-[6px] border border-[#E2DDD5] bg-white text-[#1A1A18] font-sans text-[11px] font-medium px-3 py-1.5 hover:bg-[#F5F2EB] transition-colors duration-200 cursor-pointer min-h-[32px]"
+            className="rounded-[6px] border border-[#E2DDD5] bg-white text-[#1A1A18] font-sans text-[11px] font-medium px-3 py-2 hover:bg-[#F5F2EB] transition-colors duration-200 cursor-pointer min-h-[44px]"
           >
             Join
           </button>
@@ -306,7 +306,7 @@ function CommissionerMetrics({ pool }: { pool: PoolItem }) {
       return (
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-mono text-[11px] text-[#6B6560]">
-            {pool.picksSubmitted}/{pool.entryCount || pool.memberCount} picked
+            {pool.picksSubmitted}/{pool.memberCount} picked
           </span>
           {pool.unpaidCount > 0 && (
             <span className="font-mono text-[11px] text-[#A3342D]">
