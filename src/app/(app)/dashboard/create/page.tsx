@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
 import { InlineFeedback } from "@/components/ui/InlineFeedback";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 import { TemplateSelector } from "./_components/TemplateSelector";
@@ -22,6 +21,8 @@ interface Template {
   categories: { name: string; qualifier?: string; sortOrder: number; golferNames: string[] }[];
 }
 
+const STEPS = ["Tournament", "Template", "Settings", "Review"];
+
 export default function CreatePoolPage() {
   const router = useRouter();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -30,6 +31,8 @@ export default function CreatePoolPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [step, setStep] = useState(0);
+  const [showRules, setShowRules] = useState(false);
 
   // Form state
   const [tournamentId, setTournamentId] = useState("");
@@ -55,13 +58,11 @@ export default function CreatePoolPage() {
       fetch("/api/templates").then((r) => r.json()),
       fetch("/api/golfers").then((r) => r.json()),
     ]).then(([t, tmpl, g]) => {
-      // Sort tournaments: current/upcoming first, past hidden
       const now = new Date();
       const sorted = (t as Tournament[])
-        .filter((x) => new Date(x.endDate) >= now) // hide past tournaments
+        .filter((x) => new Date(x.endDate) >= now)
         .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
 
-      // Find current week's tournament (started or starting within 7 days)
       const currentWeek = sorted.find((x) => {
         const start = new Date(x.startDate);
         const end = new Date(x.endDate);
@@ -75,15 +76,20 @@ export default function CreatePoolPage() {
       if (defaultTournament) {
         setTournamentId(defaultTournament.id);
         setPicksDeadline(toDateTimeLocal(defaultTournament.startDate));
+        setPoolName(`${defaultTournament.name} Pool`);
       }
       setLoading(false);
     }).catch(() => { setError("Failed to load data"); setLoading(false); });
   }, []);
 
-  function handleTournamentChange(id: string) {
+  function handleTournamentSelect(id: string) {
     setTournamentId(id);
     const t = tournaments.find((x) => x.id === id);
-    if (t) setPicksDeadline(toDateTimeLocal(t.startDate));
+    if (t) {
+      setPicksDeadline(toDateTimeLocal(t.startDate));
+      if (!poolName || poolName.endsWith(" Pool")) setPoolName(`${t.name} Pool`);
+    }
+    setStep(1);
   }
 
   function handleTemplateSelect(templateName: string) {
@@ -99,6 +105,7 @@ export default function CreatePoolPage() {
         golfers: c.golferNames.map((n) => golferMap.get(n)).filter((g): g is GolferData => !!g),
       }))
     );
+    setStep(2);
   }
 
   async function handleSubmit() {
@@ -149,156 +156,241 @@ export default function CreatePoolPage() {
     );
   }
 
+  const selectedTournament = tournaments.find((t) => t.id === tournamentId);
   const canSubmit = !!tournamentId && !!poolName.trim() && categories.length > 0 && !submitting;
 
   return (
-    <div className="mx-auto max-w-content px-4 py-8">
-      <h1 className="font-sans text-2xl font-bold text-text-primary">Create a Pool</h1>
-      <p className="mt-1 font-sans text-sm text-text-secondary">Set up your pool in a few steps.</p>
+    <div className="mx-auto max-w-content px-4 py-4 space-y-4">
+      {/* Title */}
+      <h1 className="font-sans text-[18px] font-medium text-[#1A1A18]">Create a Pool</h1>
+
+      {/* Step Indicator */}
+      <div className="flex items-center justify-center gap-0">
+        {STEPS.map((label, i) => (
+          <div key={label} className="flex items-center">
+            <button
+              onClick={() => { if (i <= step) setStep(i); }}
+              disabled={i > step}
+              className={`flex items-center justify-center h-6 w-6 rounded-full text-[10px] font-semibold transition-colors duration-200 cursor-pointer ${
+                i < step
+                  ? "bg-[#2D7A4F] text-white"
+                  : i === step
+                  ? "bg-[#B09A60] text-white"
+                  : "border border-[#E2DDD5] text-[#A39E96]"
+              } ${i > step ? "cursor-not-allowed" : ""}`}
+            >
+              {i < step ? "✓" : i + 1}
+            </button>
+            <span className={`ml-1 font-sans text-[9px] ${i === step ? "text-[#1A1A18] font-medium" : "text-[#A39E96]"}`}>
+              {label}
+            </span>
+            {i < STEPS.length - 1 && (
+              <div className={`w-6 h-[1px] mx-1 ${i < step ? "bg-[#2D7A4F]" : "bg-[#E2DDD5]"}`} />
+            )}
+          </div>
+        ))}
+      </div>
 
       {error && (
-        <div className="mt-4">
-          <InlineFeedback type="error" message={error} onDismiss={() => setError(null)} />
-        </div>
+        <InlineFeedback type="error" message={error} onDismiss={() => setError(null)} />
       )}
 
-      <div className="mt-8 space-y-8">
-        {/* 1. Tournament */}
-        <Section num="1" label="Select Tournament">
-          <div className="space-y-1.5">
-            {tournaments.map((t, idx) => {
-              const isDefault = idx === 0;
-              const isGhosted = idx > 0 && idx <= 3;
-              const isHidden = idx > 3;
-              if (isHidden) return null;
+      {/* Step 1: Tournament */}
+      {step === 0 && (
+        <div className="space-y-2">
+          <p className="font-sans text-[12px] font-medium text-[#A39E96] uppercase tracking-[0.5px]">
+            SELECT TOURNAMENT
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {tournaments.slice(0, 4).map((t, idx) => {
+              const isSelected = tournamentId === t.id;
+              const isFirstWeek = idx === 0;
               return (
                 <button
                   key={t.id}
-                  type="button"
-                  onClick={() => handleTournamentChange(t.id)}
-                  className={`w-full rounded-card border p-3 text-left transition-all duration-200 min-h-[44px] cursor-pointer ${
-                    tournamentId === t.id
-                      ? "border-[#9E8A52] bg-[#F5F2EB]"
-                      : "border-border hover:border-[#9E8A52]/40"
-                  } ${isGhosted && tournamentId !== t.id ? "opacity-50" : ""}`}
+                  onClick={() => handleTournamentSelect(t.id)}
+                  className={`text-left bg-white border rounded-[6px] p-[10px] transition-all duration-200 cursor-pointer ${
+                    isSelected ? "border-[#B09A60] border-2" : "border-[#E2DDD5] hover:border-[#B09A60]/40"
+                  } ${!isFirstWeek && !isSelected ? "opacity-60" : ""}`}
                 >
-                  <div className={`font-sans font-medium text-text-primary ${isGhosted && tournamentId !== t.id ? "text-xs" : "text-sm"}`}>
-                    {t.name}
-                    {isDefault && <span className="ml-2 text-[10px] font-mono text-[#9E8A52] uppercase">This Week</span>}
-                  </div>
-                  <div className="mt-0.5 font-sans text-xs text-text-secondary">
+                  <p className="font-sans text-[12px] font-medium text-[#1A1A18] truncate">{t.name}</p>
+                  {isFirstWeek && (
+                    <span className="font-mono text-[8px] text-[#B09A60] uppercase">This Week</span>
+                  )}
+                  <p className="font-sans text-[9px] text-[#A39E96] mt-0.5">
                     {t.course && <>{t.course} · </>}
                     {fmtDate(t.startDate)} – {fmtDate(t.endDate)}
-                  </div>
+                  </p>
                 </button>
               );
             })}
           </div>
-        </Section>
-
-        {/* 2. Pool name */}
-        <Section num="2" label="Name Your Pool">
-          <input
-            type="text"
-            value={poolName}
-            onChange={(e) => setPoolName(e.target.value)}
-            placeholder="e.g., Mike's Masters Pool 2026"
-            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px]"
-          />
-        </Section>
-
-        {/* 3. Template */}
-        <Section num="3" label="Select Template">
-          <TemplateSelector templates={templates} selected={selectedTemplate} onSelect={handleTemplateSelect} />
-        </Section>
-
-        {/* 4. Categories */}
-        {categories.length > 0 && (
-          <Section num="4" label="Review & Edit Categories">
-            <CategoryEditor categories={categories} availableGolfers={allGolfers} onChange={setCategories} />
-          </Section>
-        )}
-
-        {/* 5. Deadline + Max entries side by side */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <Section num="5" label="Picks Deadline">
-            <input
-              type="datetime-local"
-              value={picksDeadline}
-              onChange={(e) => setPicksDeadline(e.target.value)}
-              className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15 min-h-[44px]"
-            />
-          </Section>
-
-          <Section num="6" label="Max Entries per Player">
-            <div className="flex items-center gap-4">
-              <button
-                type="button"
-                onClick={() => setMaxEntries((v) => Math.max(1, v - 1))}
-                disabled={maxEntries <= 1}
-                className="flex h-11 w-11 items-center justify-center rounded-btn border border-border font-sans text-lg font-bold text-text-secondary hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
-              >
-                &minus;
-              </button>
-              <span className="font-mono text-lg font-bold text-text-primary w-6 text-center">{maxEntries}</span>
-              <button
-                type="button"
-                onClick={() => setMaxEntries((v) => Math.min(5, v + 1))}
-                disabled={maxEntries >= 5}
-                className="flex h-11 w-11 items-center justify-center rounded-btn border border-border font-sans text-lg font-bold text-text-secondary hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
-              >
-                +
-              </button>
-            </div>
-            {maxEntries > 1 && (
-              <p className="mt-2 font-sans text-xs text-text-muted">Players can submit up to {maxEntries} entries</p>
-            )}
-          </Section>
         </div>
+      )}
 
-        {/* 7. Scoring Configuration */}
-        <Section num="7" label="Scoring Configuration">
-          <ScoringConfig
-            scoringType={scoringConfig.scoringType}
-            missedCutPenaltyType={scoringConfig.missedCutPenaltyType}
-            missedCutFixedPenalty={scoringConfig.missedCutFixedPenalty}
-            tiebreakerRule={scoringConfig.tiebreakerRule}
-            rosterRule={scoringConfig.rosterRule}
-            rosterRuleMode={scoringConfig.rosterRuleMode}
-            rosterRuleCount={scoringConfig.rosterRuleCount}
-            categoryCount={categories.length || 9}
-            onChange={setScoringConfig}
-          />
-        </Section>
+      {/* Step 2: Template */}
+      {step === 1 && (
+        <div className="space-y-2">
+          <p className="font-sans text-[12px] font-medium text-[#A39E96] uppercase tracking-[0.5px]">
+            SELECT TEMPLATE
+          </p>
+          <TemplateSelector templates={templates} selected={selectedTemplate} onSelect={handleTemplateSelect} />
+        </div>
+      )}
 
-        {/* 8. Rules */}
-        <Section num="8" label="House Rules (Optional)">
-          <textarea
-            value={rules}
-            onChange={(e) => setRules(e.target.value)}
-            placeholder="Prize structure, tiebreakers, etc."
-            rows={3}
-            className="w-full rounded-btn border border-border bg-surface px-3 py-2.5 font-sans text-sm focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/15"
-          />
-        </Section>
+      {/* Step 3: Settings */}
+      {step === 2 && (
+        <div className="space-y-3">
+          <p className="font-sans text-[12px] font-medium text-[#A39E96] uppercase tracking-[0.5px]">
+            POOL SETTINGS
+          </p>
 
-        {/* Submit */}
-        <Button variant="primary" className="w-full" loading={submitting} disabled={!canSubmit} onClick={handleSubmit}>
-          Create Pool
-        </Button>
-      </div>
+          <div className="bg-white border border-[#E2DDD5] rounded-[6px] p-3 space-y-3">
+            {/* Pool Name */}
+            <div>
+              <label className="block font-sans text-[10px] font-medium text-[#6B6560] mb-1">Pool name</label>
+              <input
+                type="text"
+                value={poolName}
+                onChange={(e) => setPoolName(e.target.value)}
+                placeholder="e.g., Masters Pool 2026"
+                className="w-full rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-sans text-[13px] focus:border-[#1B5E3B] focus:outline-none focus:ring-2 focus:ring-[#1B5E3B]/15 min-h-[44px]"
+              />
+            </div>
+
+            {/* Picks Deadline */}
+            <div>
+              <label className="block font-sans text-[10px] font-medium text-[#6B6560] mb-1">Picks deadline</label>
+              <input
+                type="datetime-local"
+                value={picksDeadline}
+                onChange={(e) => setPicksDeadline(e.target.value)}
+                className="w-full rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-mono text-[13px] focus:border-[#1B5E3B] focus:outline-none focus:ring-2 focus:ring-[#1B5E3B]/15 min-h-[44px]"
+              />
+            </div>
+
+            {/* Max Entries */}
+            <div>
+              <label className="block font-sans text-[10px] font-medium text-[#6B6560] mb-1">Max entries per player</label>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setMaxEntries((v) => Math.max(1, v - 1))}
+                  disabled={maxEntries <= 1}
+                  className="flex h-10 w-10 items-center justify-center rounded-[6px] border border-[#E2DDD5] font-sans text-lg font-bold text-[#6B6560] hover:bg-[#F5F2EB] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
+                >
+                  −
+                </button>
+                <span className="font-mono text-[16px] font-bold text-[#1A1A18] w-6 text-center">{maxEntries}</span>
+                <button
+                  type="button"
+                  onClick={() => setMaxEntries((v) => Math.min(5, v + 1))}
+                  disabled={maxEntries >= 5}
+                  className="flex h-10 w-10 items-center justify-center rounded-[6px] border border-[#E2DDD5] font-sans text-lg font-bold text-[#6B6560] hover:bg-[#F5F2EB] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors duration-200"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Scoring Config */}
+            <div>
+              <label className="block font-sans text-[10px] font-medium text-[#6B6560] mb-1">Scoring</label>
+              <ScoringConfig
+                scoringType={scoringConfig.scoringType}
+                missedCutPenaltyType={scoringConfig.missedCutPenaltyType}
+                missedCutFixedPenalty={scoringConfig.missedCutFixedPenalty}
+                tiebreakerRule={scoringConfig.tiebreakerRule}
+                rosterRule={scoringConfig.rosterRule}
+                rosterRuleMode={scoringConfig.rosterRuleMode}
+                rosterRuleCount={scoringConfig.rosterRuleCount}
+                categoryCount={categories.length || 9}
+                onChange={setScoringConfig}
+              />
+            </div>
+
+            {/* Rules (collapsed by default) */}
+            {!showRules ? (
+              <button
+                onClick={() => setShowRules(true)}
+                className="font-sans text-[11px] text-[#1B5E3B] cursor-pointer hover:underline"
+              >
+                + Add house rules
+              </button>
+            ) : (
+              <div>
+                <label className="block font-sans text-[10px] font-medium text-[#6B6560] mb-1">House rules (optional)</label>
+                <textarea
+                  value={rules}
+                  onChange={(e) => setRules(e.target.value)}
+                  placeholder="Prize structure, tiebreakers, etc."
+                  rows={3}
+                  className="w-full rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-sans text-[13px] focus:border-[#1B5E3B] focus:outline-none focus:ring-2 focus:ring-[#1B5E3B]/15 resize-none"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Categories preview */}
+          {categories.length > 0 && (
+            <div>
+              <p className="font-sans text-[10px] font-medium text-[#6B6560] mb-1">
+                {categories.length} categories · {selectedTemplate}
+              </p>
+              <CategoryEditor categories={categories} availableGolfers={allGolfers} onChange={setCategories} />
+            </div>
+          )}
+
+          <button
+            onClick={() => setStep(3)}
+            disabled={!poolName.trim()}
+            className="w-full rounded-[6px] bg-[#B09A60] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#9E8A52] transition-colors duration-200 cursor-pointer disabled:opacity-40 min-h-[44px]"
+          >
+            Review →
+          </button>
+        </div>
+      )}
+
+      {/* Step 4: Review */}
+      {step === 3 && (
+        <div className="space-y-3">
+          <p className="font-sans text-[12px] font-medium text-[#A39E96] uppercase tracking-[0.5px]">
+            REVIEW
+          </p>
+
+          <div className="bg-white border border-[#E2DDD5] rounded-[6px] p-3 space-y-2">
+            <ReviewRow label="Tournament" value={selectedTournament ? `${selectedTournament.name} · ${fmtDate(selectedTournament.startDate)} – ${fmtDate(selectedTournament.endDate)}` : "—"} />
+            <ReviewRow label="Pool name" value={poolName || "—"} />
+            <ReviewRow label="Template" value={selectedTemplate || "Custom"} />
+            <ReviewRow label="Categories" value={`${categories.length} categories`} />
+            <ReviewRow label="Deadline" value={picksDeadline ? new Date(picksDeadline).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "—"} mono />
+            <ReviewRow label="Max entries" value={String(maxEntries)} mono />
+            <ReviewRow label="Scoring" value={scoringConfig.scoringType === "to-par" ? "To Par" : scoringConfig.scoringType} />
+            {rules.trim() && <ReviewRow label="Rules" value={rules.trim()} />}
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            className="w-full rounded-[6px] bg-[#2D7A4F] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#246840] transition-colors duration-200 cursor-pointer disabled:opacity-40 min-h-[44px]"
+          >
+            {submitting ? "Creating..." : "Create Pool"}
+          </button>
+          <p className="font-sans text-[10px] text-[#A39E96] text-center">
+            You can edit all settings after creating
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
-function Section({ num, label, children }: { num: string; label: string; children: React.ReactNode }) {
+function ReviewRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <section>
-      <label className="block font-sans text-xs font-medium text-text-secondary mb-1">
-        {num}. {label}
-      </label>
-      <div className="mt-2">{children}</div>
-    </section>
+    <div className="flex justify-between items-start gap-2">
+      <span className="font-sans text-[10px] font-medium text-[#A39E96] uppercase tracking-[0.3px] shrink-0">{label}</span>
+      <span className={`text-[12px] text-[#1A1A18] text-right truncate ${mono ? "font-mono" : "font-sans"}`}>{value}</span>
+    </div>
   );
 }
 
