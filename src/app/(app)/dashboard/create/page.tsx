@@ -201,30 +201,47 @@ export default function CreatePoolPage() {
           <p className="font-sans text-[12px] font-medium text-[#A39E96] uppercase tracking-[0.5px]">
             SELECT TOURNAMENT
           </p>
-          <div className="grid grid-cols-2 gap-2">
-            {tournaments.slice(0, 4).map((t, idx) => {
-              const isSelected = tournamentId === t.id;
-              const isFirstWeek = idx === 0;
-              return (
-                <button
-                  key={t.id}
-                  onClick={() => handleTournamentSelect(t.id)}
-                  className={`text-left bg-white border rounded-[6px] p-[10px] transition-all duration-200 cursor-pointer ${
-                    isSelected ? "border-[#B09A60] border-2" : "border-[#E2DDD5] hover:border-[#B09A60]/40"
-                  } ${!isFirstWeek && !isSelected ? "opacity-60" : ""}`}
-                >
-                  <p className="font-sans text-[12px] font-medium text-[#1A1A18] truncate">{t.name}</p>
-                  {isFirstWeek && (
-                    <span className="font-mono text-[8px] text-[#B09A60] uppercase">This Week</span>
-                  )}
-                  <p className="font-sans text-[9px] text-[#A39E96] mt-0.5">
-                    {t.course && <>{t.course} · </>}
-                    {fmtDate(t.startDate)} – {fmtDate(t.endDate)}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
+          {tournaments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <p className="font-sans text-[14px] text-[#6B6560] max-w-[280px]">
+                No upcoming tournaments available right now.
+              </p>
+              <p className="font-sans text-[12px] text-[#A39E96] mt-2 max-w-[260px]">
+                Tournaments are synced automatically. Check back when the next PGA event is scheduled.
+              </p>
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="mt-6 rounded-[6px] border border-[#E2DDD5] bg-white text-[#1A1A18] font-sans text-[13px] font-medium px-5 py-2.5 hover:bg-[#F5F2EB] transition-colors duration-200 cursor-pointer min-h-[44px]"
+              >
+                Back to Dashboard
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {tournaments.slice(0, 4).map((t, idx) => {
+                const isSelected = tournamentId === t.id;
+                const isFirstWeek = idx === 0;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => handleTournamentSelect(t.id)}
+                    className={`text-left bg-white border rounded-[6px] p-[10px] transition-all duration-200 cursor-pointer ${
+                      isSelected ? "border-[#B09A60] border-2" : "border-[#E2DDD5] hover:border-[#B09A60]/40"
+                    } ${!isFirstWeek && !isSelected ? "opacity-60" : ""}`}
+                  >
+                    <p className="font-sans text-[12px] font-medium text-[#1A1A18] truncate">{t.name}</p>
+                    {isFirstWeek && (
+                      <span className="font-mono text-[8px] text-[#B09A60] uppercase">This Week</span>
+                    )}
+                    <p className="font-sans text-[9px] text-[#A39E96] mt-0.5">
+                      {t.course && <>{t.course} · </>}
+                      {fmtDate(t.startDate)} – {fmtDate(t.endDate)}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
