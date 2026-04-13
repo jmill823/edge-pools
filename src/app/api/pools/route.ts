@@ -25,7 +25,10 @@ export async function GET() {
     },
     include: {
       tournament: true,
-      _count: { select: { members: true, entries: true } },
+      _count: { select: { members: true, entries: true, categories: true } },
+      members: {
+        select: { hasPaid: true },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -46,15 +49,77 @@ export async function GET() {
     }
   }
 
-  const result = pools.map((p) => ({
-    ...p,
-    memberCount: p._count.members,
-    entryCount: p._count.entries,
-    hasSubmittedPicks: poolsWithPicks.has(p.id),
-    isOrganizer: p.organizerId === user.id,
-    myBestRank: bestEntry.get(p.id)?.rank ?? null,
-    myBestScore: bestEntry.get(p.id)?.teamScore ?? null,
-  }));
+  // For commissioner pools: get picks submitted count and unpaid count
+  // Also get winner name for COMPLETE/ARCHIVED pools
+  const poolIds = pools.map((p) => p.id);
+  const allEntries = await prisma.entry.findMany({
+    where: { poolId: { in: poolIds } },
+    select: {
+      poolId: true,
+      paymentStatus: true,
+      rank: true,
+      teamScore: true,
+      teamName: true,
+      userId: true,
+      guestPlayerId: true,
+      _count: { select: { picks: true } },
+    },
+  });
+
+  // Build per-pool stats
+  const poolStats = new Map<string, {
+    picksSubmitted: number;
+    unpaidCount: number;
+    winnerName: string | null;
+    winnerScore: number | null;
+  }>();
+
+  for (const pool of pools) {
+    const poolEntries = allEntries.filter((e) => e.poolId === pool.id);
+    const catCount = pool._count.categories;
+    const picksSubmitted = poolEntries.filter((e) => e._count.picks >= catCount).length;
+    const unpaidCount = poolEntries.filter((e) => e.paymentStatus !== "paid").length;
+
+    // Winner = rank 1 entry
+    let winnerName: string | null = null;
+    let winnerScore: number | null = null;
+    const winner = poolEntries.find((e) => e.rank === 1);
+    if (winner) {
+      winnerScore = winner.teamScore;
+      winnerName = winner.teamName || null;
+    }
+
+    poolStats.set(pool.id, { picksSubmitted, unpaidCount, winnerName, winnerScore });
+  }
+
+  const result = pools.map((p) => {
+    const stats = poolStats.get(p.id);
+    return {
+      id: p.id,
+      name: p.name,
+      status: p.status,
+      picksDeadline: p.picksDeadline.toISOString(),
+      maxEntries: p.maxEntries,
+      memberCount: p._count.members,
+      entryCount: p._count.entries,
+      hasSubmittedPicks: poolsWithPicks.has(p.id),
+      isOrganizer: p.organizerId === user.id,
+      myBestRank: bestEntry.get(p.id)?.rank ?? null,
+      myBestScore: bestEntry.get(p.id)?.teamScore ?? null,
+      picksSubmitted: stats?.picksSubmitted ?? 0,
+      unpaidCount: stats?.unpaidCount ?? 0,
+      winnerName: stats?.winnerName ?? null,
+      winnerScore: stats?.winnerScore ?? null,
+      tournament: {
+        name: p.tournament.name,
+        status: p.tournament.status,
+        startDate: p.tournament.startDate.toISOString(),
+        endDate: p.tournament.endDate.toISOString(),
+        currentRound: (p.tournament as Record<string, unknown>).currentRound as number | undefined,
+      },
+      updatedAt: p.updatedAt.toISOString(),
+    };
+  });
 
   return NextResponse.json(result);
 }
