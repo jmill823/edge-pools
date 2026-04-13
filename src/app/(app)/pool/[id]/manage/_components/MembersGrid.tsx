@@ -80,14 +80,11 @@ export function MembersGrid({
     }
   }, [poolId, onGuestPaidToggle]);
 
-  // Picks display helper
+  // Picks display helper: fraction = complete entries / max entries allowed
   const getPicksBadge = (row: MemberRow) => {
     if (!showPicks) return null;
-    const total = row.isGuest ? 1 : Math.min(row.entryCount || 1, maxEntries);
+    const total = row.isGuest ? 1 : maxEntries;
     const complete = row.completePicks;
-    if (row.entryCount === 0 && !row.isGuest) {
-      return { text: `0/${maxEntries}`, color: "bg-[#A3342D]" };
-    }
     if (complete >= total && total > 0) {
       return { text: `${complete}/${total}`, color: "bg-[#2D7A4F]" };
     }

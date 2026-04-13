@@ -267,13 +267,8 @@ export function ActionBanner({
           >
             {loading ? "Polling..." : "Poll Scores Now"}
           </button>
-          <p className="font-sans text-[10px] text-[#6B6560] mt-1.5 text-center">
-            <button
-              onClick={() => window.open(`/pool/${poolId}/manage`, "_self")}
-              className="underline cursor-pointer hover:text-[#1A1A18] transition-colors"
-            >
-              Enter scores manually
-            </button>
+          <p className="font-sans text-[10px] text-[#A39E96] mt-1.5 text-center">
+            Manual score entry available in row expansion (coming soon)
           </p>
         </>
       )}

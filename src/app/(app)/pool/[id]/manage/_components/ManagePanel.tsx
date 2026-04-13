@@ -97,7 +97,12 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, guestM
 
   // Filter counts
   const unpaidRows = allRows.filter((r) => !(r.isGuest ? r.paymentStatus === "paid" : r.hasPaid));
-  const noPicksRows = allRows.filter((r) => r.completePicks === 0 && r.entryCount === 0);
+  const noPicksRows = allRows.filter((r) => {
+    // Members with no entries at all, OR entries with incomplete picks
+    if (r.entryCount === 0) return true;
+    if (r.isGuest) return r.completePicks === 0;
+    return r.completePicks < r.entryCount;
+  });
 
   // Apply filter
   let filteredRows = allRows;
