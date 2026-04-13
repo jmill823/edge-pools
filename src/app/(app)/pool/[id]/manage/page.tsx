@@ -25,30 +25,70 @@ export default async function ManagePage({
 
   // Organizer-only page
   const isOrganizer = pool.organizerId === user.id;
-  if (!isOrganizer) redirect(`/pool/${pool.id}/leaderboard`);
+  if (!isOrganizer) redirect(`/pool/${pool.id}`);
 
+  // Fetch members with their roles
   const members = await prisma.poolMember.findMany({
     where: { poolId: pool.id },
     include: { user: { select: { displayName: true, email: true } } },
     orderBy: { joinedAt: "asc" },
   });
 
-  const entries = await prisma.entry.groupBy({
-    by: ["userId"],
+  // Fetch ALL entries for this pool with pick counts
+  const entries = await prisma.entry.findMany({
     where: { poolId: pool.id },
-    _count: true,
+    include: {
+      guestPlayer: { select: { displayName: true, email: true } },
+      _count: { select: { picks: true } },
+    },
   });
-  const entryCountMap = new Map(entries.map((e) => [e.userId, e._count]));
+
+  // Build member data with entry counts and pick completeness
+  const categoryCount = pool._count.categories;
+  const memberEntries = new Map<string, { count: number; completePicks: number }>();
+  for (const entry of entries) {
+    if (!entry.userId) continue;
+    const existing = memberEntries.get(entry.userId) || { count: 0, completePicks: 0 };
+    existing.count += 1;
+    if (entry._count.picks >= categoryCount) {
+      existing.completePicks += 1;
+    }
+    memberEntries.set(entry.userId, existing);
+  }
+
+  // Guest entries: entries with guestPlayerId but no userId
+  const guestEntries = entries.filter((e) => e.guestPlayerId && !e.userId);
 
   const pendingReplacements = await prisma.pendingReplacement.count({
     where: { poolId: pool.id, status: "PENDING" },
   });
 
+  // Winner name for COMPLETE status
+  let winnerName: string | null = null;
+  if (pool.status === "COMPLETE" || pool.status === "ARCHIVED") {
+    const topEntry = await prisma.entry.findFirst({
+      where: { poolId: pool.id, rank: 1 },
+      include: { guestPlayer: { select: { displayName: true } } },
+    });
+    if (topEntry) {
+      if (topEntry.userId) {
+        const topUser = members.find((m) => m.userId === topEntry.userId);
+        winnerName = topEntry.teamName || topUser?.user.displayName || "Unknown";
+      } else if (topEntry.guestPlayer) {
+        winnerName = topEntry.teamName || topEntry.guestPlayer.displayName;
+      }
+    }
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
   if (!baseUrl) {
-    console.warn("[TILT] NEXT_PUBLIC_APP_URL is not set — invite links will use a relative path. Set this env var in Vercel project settings.");
+    console.warn("[TILT] NEXT_PUBLIC_APP_URL is not set — invite links will use a relative path.");
   }
   const inviteUrl = `${baseUrl || ""}/join/${pool.inviteCode}`;
+
+  // Total entries including guests
+  const totalEntries = pool._count.entries;
+  const paidEntries = entries.filter((e) => e.paymentStatus === "paid").length;
 
   return (
     <ManagePanel
@@ -60,20 +100,7 @@ export default async function ManagePage({
         inviteCode: pool.inviteCode,
         maxEntries: pool.maxEntries,
         picksDeadline: pool.picksDeadline.toISOString(),
-        rules: pool.rules,
-        missedCutPenalty: pool.missedCutPenalty,
-        scoringMode: pool.scoringMode,
-        bestX: pool.bestX,
-        bestY: pool.bestY,
-        tiebreaker: pool.tiebreaker,
-        scoringType: (pool as Record<string, unknown>).scoringType as string ?? "to-par",
-        missedCutPenaltyType: (pool as Record<string, unknown>).missedCutPenaltyType as string ?? "carry-score",
-        missedCutFixedPenalty: (pool as Record<string, unknown>).missedCutFixedPenalty as number | null ?? 4,
-        tiebreakerRule: (pool as Record<string, unknown>).tiebreakerRule as string ?? "entry-timestamp",
-        rosterRule: (pool as Record<string, unknown>).rosterRule as string ?? "all-play",
-        rosterRuleMode: (pool as Record<string, unknown>).rosterRuleMode as string ?? "per-tournament",
-        rosterRuleCount: (pool as Record<string, unknown>).rosterRuleCount as number | null ?? null,
-        categoryCount: pool._count.categories,
+        categoryCount,
         tournamentId: pool.tournament.id,
         tournament: {
           name: pool.tournament.name,
@@ -82,21 +109,34 @@ export default async function ManagePage({
           course: pool.tournament.course,
         },
         memberCount: pool._count.members,
-        entryCount: pool._count.entries,
-        entryFee: pool.entryFee ?? null,
-        paymentInfo: pool.paymentInfo ?? null,
+        totalEntries,
+        paidEntries,
         lastSyncAt: pool.tournament.lastSyncAt?.toISOString() ?? null,
         pendingReplacements,
+        winnerName,
       }}
-      members={members.map((m) => ({
-        id: m.id,
-        userId: m.userId,
-        displayName: m.user.displayName,
-        email: m.user.email,
-        role: m.role,
-        hasPaid: m.hasPaid,
-        joinedAt: m.joinedAt.toISOString(),
-        entriesSubmitted: entryCountMap.get(m.userId) || 0,
+      members={members.map((m) => {
+        const entryData = memberEntries.get(m.userId) || { count: 0, completePicks: 0 };
+        return {
+          id: m.id,
+          userId: m.userId,
+          displayName: m.user.displayName,
+          email: m.user.email,
+          role: m.role,
+          hasPaid: m.hasPaid,
+          entryCount: entryData.count,
+          completePicks: entryData.completePicks,
+          isGuest: false,
+        };
+      })}
+      guestMembers={guestEntries.map((e) => ({
+        entryId: e.id,
+        displayName: e.guestPlayer?.displayName || e.teamName || "Guest",
+        email: e.guestPlayer?.email || null,
+        paymentStatus: e.paymentStatus,
+        entryCount: 1,
+        completePicks: e._count.picks >= categoryCount ? 1 : 0,
+        isGuest: true,
       }))}
       inviteUrl={inviteUrl}
     />
