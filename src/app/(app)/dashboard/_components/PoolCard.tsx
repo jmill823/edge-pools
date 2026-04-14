@@ -29,13 +29,14 @@ export interface PoolItem {
   updatedAt: string;
 }
 
+// D-3: Bolder strip colors for 4px line visibility
 const STRIP_COLORS: Record<string, string> = {
-  SETUP: "#E5E7EB",
-  OPEN: "#FEF3C7",
-  LOCKED: "#E5E7EB",
-  LIVE: "#FEE2E2",
-  COMPLETE: "#D1FAE5",
-  ARCHIVED: "#E5E7EB",
+  SETUP: "#A39E96",
+  OPEN: "#C4973B",
+  LOCKED: "#6B6560",
+  LIVE: "#2D7A4F",
+  COMPLETE: "#185FA5",
+  ARCHIVED: "#A39E96",
 };
 
 export function PoolCard({
@@ -48,8 +49,25 @@ export function PoolCard({
   archived?: boolean;
 }) {
   const isCommissioner = variant === "commissioner";
-  const href = isCommissioner ? `/pool/${pool.id}/manage` : `/pool/${pool.id}`;
-  const stripColor = archived ? "#E5E7EB" : (STRIP_COLORS[pool.status] || "#E5E7EB");
+
+  // D-2: Correct routing per role + status
+  let href: string;
+  if (isCommissioner) {
+    href = `/pool/${pool.id}/manage`;
+  } else {
+    switch (pool.status) {
+      case "OPEN":
+        href = pool.hasSubmittedPicks ? `/pool/${pool.id}/leaderboard` : `/pool/${pool.id}/picks`;
+        break;
+      case "SETUP":
+        href = `/pool/${pool.id}`;
+        break;
+      default:
+        href = `/pool/${pool.id}/leaderboard`;
+    }
+  }
+
+  const stripColor = archived ? "#A39E96" : (STRIP_COLORS[pool.status] || "#A39E96");
 
   const start = new Date(pool.tournament.startDate);
   const end = new Date(pool.tournament.endDate);
@@ -57,7 +75,8 @@ export function PoolCard({
 
   return (
     <Link href={href} className="block cursor-pointer">
-      <div className={`bg-white border border-[#E2DDD5] rounded-[6px] overflow-hidden hover:border-[#1B5E3B]/40 transition-colors duration-200 ${archived ? "opacity-60" : ""}`}>
+      <div className={`bg-white border-[0.5px] border-[#E2DDD5] rounded-[8px] overflow-hidden hover:border-[#1B5E3B]/40 transition-colors duration-200 ${archived ? "opacity-60" : ""}`}>
+        {/* D-3: 4px status color strip */}
         <div style={{ height: "4px", backgroundColor: stripColor }} />
         <div className="p-[10px]">
           <div className="flex items-center justify-between mb-1">
@@ -69,10 +88,11 @@ export function PoolCard({
               </svg>
             )}
           </div>
-          <p className="font-sans text-[13px] font-medium text-[#1A1A18] truncate leading-tight">{pool.name}</p>
+          <p className="font-sans text-[13px] font-semibold text-[#1A1A18] truncate leading-tight">{pool.name}</p>
           <p className="font-sans text-[9px] text-[#A39E96] truncate mt-0.5">{pool.tournament.name} · {dateStr}</p>
-          <div className="mt-2">
-            {isCommissioner ? <CommissionerMetrics pool={pool} /> : <PlayerMetrics pool={pool} />}
+          {/* D-1: Status-specific metric */}
+          <div className="mt-1">
+            <CardMetric pool={pool} isCommissioner={isCommissioner} />
           </div>
         </div>
       </div>
@@ -80,103 +100,61 @@ export function PoolCard({
   );
 }
 
-function CommissionerMetrics({ pool }: { pool: PoolItem }) {
+// D-1: Unified metric line
+function CardMetric({ pool, isCommissioner }: { pool: PoolItem; isCommissioner: boolean }) {
   switch (pool.status) {
     case "SETUP":
-      return <p className="font-sans text-[11px] font-medium text-[#8A6B1E]">Finish setup →</p>;
+      return <p className="font-sans text-[13px] font-medium text-[#B09A60]">Finish setup →</p>;
     case "OPEN":
       return (
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-mono text-[11px] text-[#6B6560]">{pool.picksSubmitted}/{pool.memberCount} picked</span>
-          {pool.unpaidCount > 0 && <span className="font-mono text-[11px] text-[#A3342D]">{pool.unpaidCount} unpaid</span>}
-        </div>
+        <p className="font-mono text-[14px] font-semibold text-[#1A1A18]">
+          {pool.picksSubmitted}/{pool.memberCount} picked
+        </p>
       );
     case "LOCKED":
       return (
-        <div className="flex items-center gap-2">
-          <span className="font-sans text-[11px] text-[#6B6560]">All locked</span>
-          <span className="font-mono text-[11px] text-[#A39E96]">{pool.entryCount} {pool.entryCount === 1 ? "entry" : "entries"}</span>
-        </div>
+        <p className="font-mono text-[14px] font-semibold text-[#1A1A18]">
+          Locked · {pool.entryCount} {pool.entryCount === 1 ? "entry" : "entries"}
+        </p>
       );
     case "LIVE":
+      if (isCommissioner && pool.myBestRank !== null) {
+        return (
+          <p className="font-mono text-[14px] font-semibold text-[#1A1A18]">
+            {ordPosition(pool.myBestRank)} of {pool.entryCount}
+          </p>
+        );
+      }
+      if (!isCommissioner && pool.myBestRank !== null) {
+        return (
+          <p className="font-mono text-[14px] font-semibold text-[#1A1A18]">
+            {ordPosition(pool.myBestRank)} of {pool.entryCount}
+          </p>
+        );
+      }
       return (
-        <div className="flex items-center gap-2">
-          {pool.myBestRank !== null && (
-            <span className="font-mono text-[16px] font-bold text-[#1A1A18]">T{pool.myBestRank}{pool.myBestRank <= 3 ? ordSuffix(pool.myBestRank) : ""}</span>
-          )}
-          <span className="font-mono text-[11px] text-[#A39E96]">{pool.entryCount} {pool.entryCount === 1 ? "entry" : "entries"}</span>
-        </div>
+        <p className="font-mono text-[14px] font-semibold text-[#1A1A18]">
+          {pool.entryCount} {pool.entryCount === 1 ? "entry" : "entries"}
+        </p>
       );
     case "COMPLETE":
+      if (pool.winnerName) {
+        return <p className="font-sans text-[14px] font-semibold text-[#1A1A18] truncate">Winner: {pool.winnerName}</p>;
+      }
+      return <p className="font-mono text-[14px] font-semibold text-[#1A1A18]">{pool.entryCount} entries</p>;
+    case "ARCHIVED": {
+      const endDate = new Date(pool.tournament.endDate);
+      const month = endDate.toLocaleDateString("en-US", { month: "short" });
+      const year = endDate.getFullYear();
       return (
-        <div>
-          {pool.winnerName && <p className="font-sans text-[11px] font-medium text-[#1A1A18] truncate">🏆 {pool.winnerName}</p>}
-          {pool.winnerScore !== null && <p className="font-mono text-[11px] text-[#6B6560]">{formatScore(pool.winnerScore)}</p>}
-        </div>
+        <p className="font-mono text-[14px] font-semibold text-[#1A1A18]">
+          {month} {year} · {pool.entryCount} {pool.entryCount === 1 ? "entry" : "entries"}
+        </p>
       );
-    case "ARCHIVED":
-      return (
-        <div className="flex items-center gap-2">
-          <span className="font-sans text-[11px] text-[#A39E96]">Archived</span>
-          <span className="font-mono text-[11px] text-[#A39E96]">{pool.entryCount} {pool.entryCount === 1 ? "entry" : "entries"}</span>
-        </div>
-      );
-    default:
-      return null;
-  }
-}
-
-function PlayerMetrics({ pool }: { pool: PoolItem }) {
-  switch (pool.status) {
-    case "OPEN": {
-      const d = new Date(pool.picksDeadline);
-      const deadlineStr = isNaN(d.getTime()) ? "—" : `Picks due ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
-      return <p className="font-sans text-[11px] text-[#8A6B1E]">{deadlineStr}</p>;
     }
-    case "LOCKED":
-      return <p className="font-sans text-[11px] text-[#6B6560]">Waiting for {pool.tournament.name}</p>;
-    case "LIVE":
-      return (
-        <div className="flex items-baseline gap-1.5">
-          {pool.myBestRank !== null ? (
-            <>
-              <span className="font-mono text-[16px] font-bold text-[#1A1A18]">{ordPosition(pool.myBestRank)}</span>
-              <span className="font-mono text-[11px] text-[#A39E96]">/ {pool.entryCount}</span>
-            </>
-          ) : (
-            <span className="font-sans text-[11px] text-[#A39E96]">No entries</span>
-          )}
-          {pool.myBestScore !== null && <span className="font-mono text-[11px] text-[#6B6560] ml-1">{formatScore(pool.myBestScore)}</span>}
-        </div>
-      );
-    case "COMPLETE":
-      return (
-        <div className="flex items-baseline gap-1.5">
-          {pool.myBestRank !== null ? (
-            <>
-              {pool.myBestRank === 1 ? (
-                <span className="font-sans text-[11px] font-medium text-[#1A1A18]">Winner! 🏆</span>
-              ) : (
-                <span className="font-sans text-[11px] text-[#6B6560]">{ordPosition(pool.myBestRank)} place</span>
-              )}
-              {pool.myBestScore !== null && <span className="font-mono text-[11px] text-[#A39E96] ml-1">{formatScore(pool.myBestScore)}</span>}
-            </>
-          ) : (
-            <span className="font-sans text-[11px] text-[#A39E96]">—</span>
-          )}
-        </div>
-      );
-    case "ARCHIVED":
-      return <span className="font-sans text-[11px] text-[#A39E96]">{pool.myBestRank ? `${ordPosition(pool.myBestRank)} place` : "—"}</span>;
     default:
       return null;
   }
-}
-
-function formatScore(score: number): string {
-  if (score > 0) return `+${score}`;
-  if (score === 0) return "E";
-  return `${score}`;
 }
 
 function ordSuffix(n: number): string {

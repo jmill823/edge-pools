@@ -45,6 +45,8 @@ export function ActionBanner({
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [syncTime, setSyncTime] = useState(lastSyncAt);
   const [countdown, setCountdown] = useState("");
+  // M-3: Two-tap lock confirmation
+  const [confirmingLock, setConfirmingLock] = useState(false);
 
   // Countdown timer for OPEN status
   useEffect(() => {
@@ -211,12 +213,27 @@ export function ActionBanner({
           <p className="font-sans text-[11px] text-[#6B6560] mt-0.5">
             {deadlineDisplay}
           </p>
+          {/* M-3: Two-tap lock confirmation */}
           <button
-            onClick={() => setShowConfirm(true)}
+            onClick={() => {
+              if (confirmingLock) {
+                // Second tap — execute lock
+                transitionStatus("LOCKED");
+                setConfirmingLock(false);
+              } else {
+                // First tap — show confirm state
+                setConfirmingLock(true);
+                setTimeout(() => setConfirmingLock(false), 3000);
+              }
+            }}
             disabled={loading}
-            className="mt-3 w-full rounded-[6px] border border-[#8A6B1E] bg-transparent text-[#8A6B1E] font-sans text-[13px] font-medium py-2.5 hover:bg-[#FDF4E3] transition-colors duration-200 cursor-pointer disabled:opacity-50 min-h-[44px]"
+            className={`mt-3 w-full rounded-[6px] border font-sans text-[13px] font-medium py-2.5 transition-colors duration-200 cursor-pointer disabled:opacity-50 min-h-[44px] ${
+              confirmingLock
+                ? "border-[#A3342D] text-[#A3342D] bg-transparent hover:bg-[#FCEAE9]"
+                : "border-[#8A6B1E] text-[#8A6B1E] bg-transparent hover:bg-[#FDF4E3]"
+            }`}
           >
-            {loading ? "Locking..." : "Lock Now"}
+            {loading ? "Locking..." : confirmingLock ? "Confirm lock?" : "Lock Now"}
           </button>
         </>
       )}
@@ -309,18 +326,7 @@ export function ActionBanner({
           onCancel={() => setShowConfirm(false)}
         />
       )}
-      {status === "OPEN" && (
-        <ConfirmModal
-          open={showConfirm}
-          title={confirmMessages.LOCKED?.title || ""}
-          description={confirmMessages.LOCKED?.desc || ""}
-          confirmLabel="Lock Picks"
-          confirmVariant="destructive"
-          loading={loading}
-          onConfirm={() => transitionStatus("LOCKED")}
-          onCancel={() => setShowConfirm(false)}
-        />
-      )}
+      {/* M-3: OPEN uses inline two-tap — no modal needed */}
       {status === "LOCKED" && (
         <ConfirmModal
           open={showConfirm}
