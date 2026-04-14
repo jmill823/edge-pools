@@ -102,16 +102,14 @@ export async function GET(
   });
 
   // Build scoring config from pool record
-  // Cast to any because Prisma client may not have the new fields yet
-  const poolAny = pool as Record<string, unknown>;
   const scoringConfig = buildScoringConfig({
-    scoringType: (poolAny.scoringType as string) || "to-par",
-    missedCutPenaltyType: (poolAny.missedCutPenaltyType as string) || "carry-score",
-    missedCutFixedPenalty: (poolAny.missedCutFixedPenalty as number | null) ?? 4,
-    tiebreakerRule: (poolAny.tiebreakerRule as string) || "entry-timestamp",
-    rosterRule: (poolAny.rosterRule as string) || "all-play",
-    rosterRuleMode: (poolAny.rosterRuleMode as string) || "per-tournament",
-    rosterRuleCount: (poolAny.rosterRuleCount as number | null) ?? null,
+    scoringType: pool.scoringType || "to-par",
+    missedCutPenaltyType: pool.missedCutPenaltyType || "carry-score",
+    missedCutFixedPenalty: pool.missedCutFixedPenalty ?? 4,
+    tiebreakerRule: pool.tiebreakerRule || "entry-timestamp",
+    rosterRule: pool.rosterRule || "all-play",
+    rosterRuleMode: pool.rosterRuleMode || "per-tournament",
+    rosterRuleCount: pool.rosterRuleCount ?? null,
   });
 
   // Build entry data for engine

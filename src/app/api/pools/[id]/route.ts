@@ -76,9 +76,9 @@ export async function PATCH(
   // Pool settings editable in SETUP and OPEN
   const settingsFields = [
     "name", "picksDeadline", "maxEntries", "rules",
-    "missedCutPenalty", "scoringMode", "bestX", "bestY", "tiebreaker",
     "scoringType", "missedCutPenaltyType", "missedCutFixedPenalty",
     "tiebreakerRule", "rosterRule", "rosterRuleMode", "rosterRuleCount",
+    "scoringCustomText", "missedCutCustomText", "tiebreakerCustomText",
   ];
   const hasSettings = settingsFields.some((f) => body[f] !== undefined);
   if (hasSettings && !["SETUP", "OPEN"].includes(pool.status)) {
@@ -97,12 +97,6 @@ export async function PATCH(
     allowed.picksDeadline = new Date(body.picksDeadline);
   if (body.maxEntries !== undefined) allowed.maxEntries = body.maxEntries;
   if (body.rules !== undefined) allowed.rules = body.rules;
-  if (body.missedCutPenalty !== undefined) allowed.missedCutPenalty = body.missedCutPenalty;
-  if (body.scoringMode !== undefined) allowed.scoringMode = body.scoringMode;
-  if (body.bestX !== undefined) allowed.bestX = body.bestX;
-  if (body.bestY !== undefined) allowed.bestY = body.bestY;
-  if (body.tiebreaker !== undefined) allowed.tiebreaker = body.tiebreaker;
-  // New scoring config fields
   if (body.scoringType !== undefined) allowed.scoringType = body.scoringType;
   if (body.missedCutPenaltyType !== undefined) allowed.missedCutPenaltyType = body.missedCutPenaltyType;
   if (body.missedCutFixedPenalty !== undefined) allowed.missedCutFixedPenalty = body.missedCutFixedPenalty;
@@ -110,6 +104,9 @@ export async function PATCH(
   if (body.rosterRule !== undefined) allowed.rosterRule = body.rosterRule;
   if (body.rosterRuleMode !== undefined) allowed.rosterRuleMode = body.rosterRuleMode;
   if (body.rosterRuleCount !== undefined) allowed.rosterRuleCount = body.rosterRuleCount;
+  if (body.scoringCustomText !== undefined) allowed.scoringCustomText = body.scoringCustomText;
+  if (body.missedCutCustomText !== undefined) allowed.missedCutCustomText = body.missedCutCustomText;
+  if (body.tiebreakerCustomText !== undefined) allowed.tiebreakerCustomText = body.tiebreakerCustomText;
 
   const updated = await prisma.pool.update({
     where: { id: params.id },

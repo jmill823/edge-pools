@@ -153,18 +153,15 @@ export default function CreatePoolPage() {
     // Scoring type
     if (scoringType === "custom") {
       payload.scoringType = "custom";
-      payload.rules = [rules, customScoringType ? `Scoring: ${customScoringType}` : ""].filter(Boolean).join("\n");
+      payload.scoringCustomText = customScoringType || null;
     } else {
       payload.scoringType = scoringType === "stroke" ? "total-strokes" : "to-par";
     }
 
     // MC penalty
     if (mcPenalty === "custom") {
-      payload.missedCutPenaltyType = "carry-score";
-      if (!payload.rules) payload.rules = rules;
-      if (customMcPenalty) {
-        payload.rules = [payload.rules as string, `MC penalty: ${customMcPenalty}`].filter(Boolean).join("\n");
-      }
+      payload.missedCutPenaltyType = "custom";
+      payload.missedCutCustomText = customMcPenalty || null;
     } else if (mcPenalty === "none") {
       payload.missedCutPenaltyType = "carry-score";
     } else {
@@ -174,10 +171,8 @@ export default function CreatePoolPage() {
 
     // Tiebreaker
     if (tiebreaker === "custom") {
-      payload.tiebreakerRule = "none";
-      if (customTiebreaker) {
-        payload.rules = [(payload.rules as string) || rules, `Tiebreaker: ${customTiebreaker}`].filter(Boolean).join("\n");
-      }
+      payload.tiebreakerRule = "custom";
+      payload.tiebreakerCustomText = customTiebreaker || null;
     } else if (tiebreaker === "best-score") {
       payload.tiebreakerRule = "best-individual";
     } else {

@@ -12,13 +12,6 @@ interface PoolSettingsProps {
   picksDeadline: string;
   maxEntries: number;
   rules: string | null;
-  // Legacy fields (kept for backwards compat)
-  missedCutPenalty: string;
-  scoringMode: string;
-  bestX: number | null;
-  bestY: number | null;
-  tiebreaker: string;
-  // New scoring config fields
   scoringType: string;
   missedCutPenaltyType: string;
   missedCutFixedPenalty: number | null;

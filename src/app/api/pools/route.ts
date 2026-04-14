@@ -138,11 +138,6 @@ export async function POST(req: Request) {
     picksDeadline,
     maxEntries,
     rules,
-    missedCutPenalty,
-    scoringMode,
-    bestX,
-    bestY,
-    tiebreaker,
     scoringType,
     missedCutPenaltyType,
     missedCutFixedPenalty,
@@ -150,6 +145,9 @@ export async function POST(req: Request) {
     rosterRule,
     rosterRuleMode,
     rosterRuleCount,
+    scoringCustomText,
+    missedCutCustomText,
+    tiebreakerCustomText,
   }: {
     name: string;
     tournamentId: string;
@@ -157,11 +155,6 @@ export async function POST(req: Request) {
     picksDeadline: string;
     maxEntries: number;
     rules?: string;
-    missedCutPenalty?: string;
-    scoringMode?: string;
-    bestX?: number;
-    bestY?: number;
-    tiebreaker?: string;
     scoringType?: string;
     missedCutPenaltyType?: string;
     missedCutFixedPenalty?: number;
@@ -169,6 +162,9 @@ export async function POST(req: Request) {
     rosterRule?: string;
     rosterRuleMode?: string;
     rosterRuleCount?: number;
+    scoringCustomText?: string;
+    missedCutCustomText?: string;
+    tiebreakerCustomText?: string;
   } = body;
 
   if (!name || !tournamentId || !categories?.length || !picksDeadline) {
@@ -190,8 +186,7 @@ export async function POST(req: Request) {
 
   const inviteCode = await generateUniqueInviteCode();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pool = await (prisma.pool.create as any)({
+  const pool = await prisma.pool.create({
     data: {
       name,
       organizerId: user.id,
@@ -200,11 +195,6 @@ export async function POST(req: Request) {
       picksDeadline: new Date(picksDeadline),
       maxEntries: maxEntries || 1,
       rules: rules || null,
-      missedCutPenalty: missedCutPenalty || "+8",
-      scoringMode: scoringMode || "total",
-      bestX: bestX ?? null,
-      bestY: bestY ?? null,
-      tiebreaker: tiebreaker || "lowest_final_round",
       scoringType: scoringType || "to-par",
       missedCutPenaltyType: missedCutPenaltyType || "carry-score",
       missedCutFixedPenalty: missedCutFixedPenalty ?? 4,
@@ -212,6 +202,9 @@ export async function POST(req: Request) {
       rosterRule: rosterRule || "all-play",
       rosterRuleMode: rosterRuleMode || "per-tournament",
       rosterRuleCount: rosterRuleCount ?? null,
+      scoringCustomText: scoringCustomText || null,
+      missedCutCustomText: missedCutCustomText || null,
+      tiebreakerCustomText: tiebreakerCustomText || null,
       status: "SETUP",
       categories: {
         create: categories.map((cat) => ({

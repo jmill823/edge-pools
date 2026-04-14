@@ -326,17 +326,14 @@ export async function recalculatePoolStandings(
 
   if (entries.length === 0) return;
 
-  // Build scoring config — cast to any because Prisma client may not be
-  // regenerated yet with the new fields. They exist in DB with defaults.
-  const poolAny = pool as Record<string, unknown> | null;
   const config: PoolScoringConfig = {
-    scoringType: ((poolAny?.scoringType as string) || "to-par") as ScoringType,
-    missedCutPenaltyType: ((poolAny?.missedCutPenaltyType as string) || "carry-score") as MissedCutPenalty,
-    missedCutFixedPenalty: (poolAny?.missedCutFixedPenalty as number) ?? 4,
-    tiebreakerRule: ((poolAny?.tiebreakerRule as string) || "entry-timestamp") as TiebreakerRule,
-    rosterRule: ((poolAny?.rosterRule as string) || "all-play") as RosterRuleType,
-    rosterRuleMode: ((poolAny?.rosterRuleMode as string) || "per-tournament") as RosterRuleMode,
-    rosterRuleCount: (poolAny?.rosterRuleCount as number) ?? null,
+    scoringType: (pool?.scoringType || "to-par") as ScoringType,
+    missedCutPenaltyType: (pool?.missedCutPenaltyType || "carry-score") as MissedCutPenalty,
+    missedCutFixedPenalty: pool?.missedCutFixedPenalty ?? 4,
+    tiebreakerRule: (pool?.tiebreakerRule || "entry-timestamp") as TiebreakerRule,
+    rosterRule: (pool?.rosterRule || "all-play") as RosterRuleType,
+    rosterRuleMode: (pool?.rosterRuleMode || "per-tournament") as RosterRuleMode,
+    rosterRuleCount: pool?.rosterRuleCount ?? null,
   };
 
   const strategy = getStrategy(config.scoringType);

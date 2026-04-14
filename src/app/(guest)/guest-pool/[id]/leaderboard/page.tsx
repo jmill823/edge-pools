@@ -1,49 +1,38 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { LeaderboardList } from "@/app/(app)/pool/[id]/leaderboard/_components/LeaderboardList";
+import type { LeaderboardEntry } from "@/app/(app)/pool/[id]/leaderboard/_components/LeaderboardList";
 import { StatusBanner } from "@/app/(app)/pool/[id]/leaderboard/_components/StatusBanner";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 import { Confetti } from "@/app/(app)/pool/[id]/leaderboard/_components/Confetti";
 import { WinnerCelebration } from "@/app/(app)/pool/[id]/leaderboard/_components/WinnerCelebration";
 import { StaleFooter } from "@/app/(app)/pool/[id]/leaderboard/_components/StaleFooter";
-import { formatScore, scoreColor, formatRankWithTies } from "@/app/(app)/pool/[id]/leaderboard/_components/score-utils";
-
-interface PickDetail {
-  golferId: string;
-  categoryName: string;
-  golferName: string;
-  golferCountry: string | null;
-  golferScore: number | null;
-  golferPosition: string | null;
-  holesCompleted: number;
-  round: number;
-  isReplacement: boolean;
-  originalGolferName: string | null;
-}
-
-interface LeaderboardEntry {
-  id: string;
-  userId: string | null;
-  guestPlayerId: string | null;
-  displayName: string;
-  teamName: string;
-  entryNumber: number;
-  teamScore: number | null;
-  rank: number | null;
-  previousRank: number | null;
-  isCurrentUser: boolean;
-  submittedAt: string;
-  winProbability: number | null;
-  cutProbability: number | null;
-  picks: PickDetail[];
-}
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 interface LeaderboardData {
-  pool: { id: string; name: string; status: string; maxEntries: number; picksDeadline: string; inviteCode: string };
-  tournament: { name: string; status: string; lastSyncAt: string | null; currentRound: number | null };
+  pool: {
+    id: string;
+    name: string;
+    status: string;
+    maxEntries: number;
+    picksDeadline: string;
+    inviteCode: string;
+    scoringConfig: {
+      scoringType: string;
+      rosterRule: string;
+    };
+  };
+  tournament: {
+    name: string;
+    status: string;
+    lastSyncAt: string | null;
+    currentRound: number | null;
+  };
+  templateName: string;
   onCourse: number;
-  pendingReplacements: number;
-  leaderboard: LeaderboardEntry[];
+  entries: LeaderboardEntry[];
+  rosterRuleSummary: string | null;
 }
 
 export default function GuestLeaderboardPage({ params }: { params: { id: string } }) {
@@ -91,28 +80,40 @@ export default function GuestLeaderboardPage({ params }: { params: { id: string 
   if (error) return <div className="mx-auto max-w-leaderboard px-4 py-12 text-center font-sans text-accent-danger">{error}</div>;
   if (!data) return null;
 
-  const { pool, tournament, leaderboard } = data;
+  const { pool, tournament, entries, rosterRuleSummary } = data;
   const hasScores = ["LIVE", "COMPLETE", "ARCHIVED"].includes(pool.status);
   const isComplete = pool.status === "COMPLETE";
-  const myEntry = leaderboard.find((e) => e.isCurrentUser);
-  const allRanks = leaderboard.map((e) => e.rank);
-  const winner = leaderboard.length > 0 && leaderboard[0].rank === 1 && isComplete ? leaderboard[0] : null;
+  const winner = entries.length > 0 && entries[0].position === 1 && isComplete ? entries[0] : null;
+
+  const statusDisplay = pool.status === "LIVE" && tournament.currentRound
+    ? `LIVE · R${tournament.currentRound}`
+    : pool.status;
 
   return (
     <div className="mx-auto max-w-leaderboard px-4 py-4">
-      <div className="mb-2">
-        <h1 className="font-sans text-lg font-bold text-text-primary">{pool.name}</h1>
-        <p className="font-sans text-sm text-text-secondary">{tournament.name}</p>
+      {/* Header bar */}
+      <div className="flex items-start justify-between mb-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-sans text-sm font-semibold text-text-primary truncate">
+            {tournament.name}
+          </p>
+          <p className="font-sans text-xs text-text-secondary mt-0.5">
+            {pool.name}
+          </p>
+        </div>
+        <div className="shrink-0 ml-3">
+          <StatusBadge status={statusDisplay} />
+        </div>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-3">
         <StatusBanner
           poolId={pool.id}
           poolStatus={pool.status}
           picksDeadline={pool.picksDeadline}
           tournamentName={tournament.name}
           lastSyncAt={tournament.lastSyncAt}
-          hasEntry={!!myEntry}
+          hasEntry={entries.some((e) => e.isCurrentUser)}
         />
       </div>
 
@@ -120,49 +121,44 @@ export default function GuestLeaderboardPage({ params }: { params: { id: string 
         <>
           <Confetti poolId={pool.id} />
           <WinnerCelebration
-            winnerName={winner.teamName || winner.displayName}
+            winnerName={winner.teamName}
             poolName={pool.name}
             tournamentName={tournament.name}
-            winnerScore={winner.teamScore}
+            winnerScore={winner.total}
           />
         </>
       )}
 
-      {/* Simple guest leaderboard table */}
-      {leaderboard.length === 0 ? (
-        <div className="py-12 text-center font-sans text-sm text-text-muted">
-          No entries yet.
-        </div>
-      ) : (
-        <>
-          <div className="flex items-center px-3 py-2 border-b border-border">
-            <span className="w-[30px] font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Rank</span>
-            <span className="flex-1 font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Team</span>
-            <span className="w-[40px] text-right font-sans text-[9px] font-medium text-text-muted uppercase tracking-[0.5px]">Score</span>
-          </div>
-          {leaderboard.map((entry) => (
-            <button
-              key={entry.id}
-              onClick={() => setExpanded(expanded === entry.id ? null : entry.id)}
-              className={`w-full flex items-center px-3 py-2.5 text-left border-b border-border/50 min-h-[44px] cursor-pointer ${
-                entry.isCurrentUser ? "bg-[var(--neutral-you-row)]" : "hover:bg-surface-alt"
-              }`}
-            >
-              <span className="w-[30px] shrink-0 font-mono text-xs font-bold text-[#C4B896]">
-                {hasScores ? formatRankWithTies(entry.rank, allRanks) : "\u2014"}
-              </span>
-              <span className="flex-1 truncate font-sans text-sm font-medium text-text-primary">
-                {entry.teamName}
-              </span>
-              <span className={`w-[40px] shrink-0 text-right font-mono text-[13px] font-bold ${hasScores ? scoreColor(entry.teamScore) : "text-text-muted"}`}>
-                {hasScores ? formatScore(entry.teamScore) : "\u2014"}
-              </span>
-            </button>
-          ))}
-        </>
-      )}
+      {/* Same LeaderboardList component as authenticated users */}
+      <LeaderboardList
+        entries={entries}
+        hasScores={hasScores}
+        expanded={expanded}
+        onToggle={(id) => setExpanded(expanded === id ? null : id)}
+        rosterRuleSummary={rosterRuleSummary}
+        entryCount={entries.length}
+        tournamentName={tournament.name}
+      />
 
       <StaleFooter lastSyncAt={tournament.lastSyncAt} hasScores={hasScores} />
+
+      {/* Guest CTA */}
+      <div className="mt-6 text-center">
+        <a
+          href={`/join/${pool.inviteCode}`}
+          className="inline-block rounded-[8px] px-6 py-3 font-sans text-sm font-semibold text-white min-h-[44px]"
+          style={{ background: "linear-gradient(135deg, #5A8A5E, #4A7A4E)" }}
+        >
+          Join this pool
+        </a>
+      </div>
+
+      <style jsx global>{`
+        @keyframes expandIn {
+          from { max-height: 0; opacity: 0; }
+          to { max-height: 1000px; opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
