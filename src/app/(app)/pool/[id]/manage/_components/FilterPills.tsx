@@ -4,54 +4,31 @@ export type FilterType = "all" | "unpaid" | "no-picks";
 
 interface FilterPillsProps {
   active: FilterType;
+  totalCount: number;
   unpaidCount: number;
   noPicksCount: number;
   onChange: (filter: FilterType) => void;
 }
 
-export function FilterPills({ active, unpaidCount, noPicksCount, onChange }: FilterPillsProps) {
+export function FilterPills({ active, totalCount, unpaidCount, noPicksCount, onChange }: FilterPillsProps) {
   return (
-    <div className="flex items-center gap-1.5 overflow-x-auto">
-      <Pill
-        label="All"
-        active={active === "all"}
-        onClick={() => onChange("all")}
-      />
-      <Pill
-        label={`Unpaid (${unpaidCount})`}
-        active={active === "unpaid"}
-        onClick={() => onChange("unpaid")}
-        countColor={unpaidCount > 0 ? "text-[#A3342D]" : undefined}
-      />
-      <Pill
-        label={`No picks (${noPicksCount})`}
-        active={active === "no-picks"}
-        onClick={() => onChange("no-picks")}
-        countColor={noPicksCount > 0 ? "text-[#8A6B1E]" : undefined}
-      />
+    <div className="flex items-center gap-[6px] overflow-x-auto">
+      <Pill label={`All (${totalCount})`} active={active === "all"} onClick={() => onChange("all")} />
+      <Pill label={`Unpaid (${unpaidCount})`} active={active === "unpaid"} onClick={() => onChange("unpaid")} />
+      <Pill label={`No picks (${noPicksCount})`} active={active === "no-picks"} onClick={() => onChange("no-picks")} />
     </div>
   );
 }
 
-function Pill({
-  label,
-  active,
-  onClick,
-  countColor,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  countColor?: string;
-}) {
+function Pill({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 font-sans text-[10px] font-medium border rounded-[4px] px-2 py-[3px] transition-colors duration-200 cursor-pointer ${
+      className={`shrink-0 font-sans text-[12px] font-medium rounded-full px-[14px] py-[7px] transition-colors duration-200 cursor-pointer min-h-[44px] ${
         active
-          ? "bg-[#F5F2EB] border-[#E2DDD5] text-[#1A1A18]"
-          : "bg-transparent border-[#E2DDD5] text-[#6B6560] hover:bg-[#F5F2EB]"
-      } ${countColor && !active ? countColor : ""}`}
+          ? "bg-[#B09A60] text-white border-transparent"
+          : "bg-white border-[0.5px] border-[#E2DDD5] text-[#1A1A18] hover:bg-[#F5F2EB]"
+      }`}
     >
       {label}
     </button>

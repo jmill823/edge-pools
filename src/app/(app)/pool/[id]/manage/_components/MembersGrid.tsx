@@ -95,19 +95,19 @@ export function MembersGrid({
   };
 
   return (
-    <div className="border border-[#E2DDD5] rounded-[6px] overflow-hidden">
-      {/* Gold header row */}
-      <div className="flex items-center bg-[#B09A60] px-3 py-2">
-        <span className="flex-1 font-sans text-[10px] font-semibold text-white uppercase tracking-[0.5px]">
+    <div className="border-[0.5px] border-[#E2DDD5] rounded-[8px] overflow-hidden">
+      {/* M-2: Gold header row — 36px, rounded top corners */}
+      <div className="flex items-center bg-[#B09A60] px-3 h-[36px] rounded-t-[8px]">
+        <span className="flex-1 font-sans text-[9px] font-medium text-white uppercase tracking-[0.5px]">
           MEMBER
         </span>
-        <span className="w-[44px] text-center font-sans text-[10px] font-semibold text-white uppercase tracking-[0.5px]">
+        <span className="w-[44px] text-center font-sans text-[9px] font-medium text-white uppercase tracking-[0.5px]">
           PAID
         </span>
-        <span className="w-[44px] text-center font-sans text-[10px] font-semibold text-white uppercase tracking-[0.5px]">
+        <span className="w-[44px] text-center font-sans text-[9px] font-medium text-white uppercase tracking-[0.5px]">
           ENT
         </span>
-        <span className="w-[52px] text-center font-sans text-[10px] font-semibold text-white uppercase tracking-[0.5px]">
+        <span className="w-[52px] text-center font-sans text-[9px] font-medium text-white uppercase tracking-[0.5px]">
           PICKS
         </span>
       </div>

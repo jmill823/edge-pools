@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { StatCards } from "./StatCards";
 import { ActionBanner } from "./ActionBanner";
-import { InviteShareRow } from "./InviteShareRow";
 import { FilterPills, FilterType } from "./FilterPills";
 import { MembersGrid, MemberRow } from "./MembersGrid";
 
@@ -61,6 +61,7 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, guestM
   const [members, setMembers] = useState(initialMembers);
   const [guests, setGuests] = useState(initialGuests);
   const [filter, setFilter] = useState<FilterType>("all");
+  const [shareCopied, setShareCopied] = useState(false);
 
   // Computed counts
   const totalMembersPaid = members.filter((m) => m.hasPaid).length;
@@ -142,7 +143,7 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, guestM
   const dateDisplay = `${startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${endDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
 
   return (
-    <div className="mx-auto max-w-content px-4 py-4 space-y-3">
+    <div className="mx-auto max-w-content px-4 py-4 space-y-3" style={{ background: "#FAFAFA" }}>
       {/* A. Pool Header */}
       <div>
         <div className="flex items-center gap-2 mb-0.5">
@@ -182,17 +183,24 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, guestM
         onSyncTimeUpdate={handleSyncTimeUpdate}
       />
 
-      {/* D. Invite + Share Row */}
-      <InviteShareRow
-        inviteUrl={inviteUrl}
-        poolName={pool.name}
-        tournamentName={pool.tournament.name}
-        status={pool.status}
-      />
+      {/* D. Invite / Share / Settings Row (M-4) */}
+      {["SETUP", "OPEN", "LOCKED", "LIVE"].includes(pool.status) && (
+        <InviteShareSettingsRow
+          poolId={pool.id}
+          status={pool.status}
+          shareCopied={shareCopied}
+          onShareCopy={() => {
+            navigator.clipboard.writeText(inviteUrl).catch(() => {});
+            setShareCopied(true);
+            setTimeout(() => setShareCopied(false), 1500);
+          }}
+        />
+      )}
 
       {/* E. Filter Pills */}
       <FilterPills
         active={filter}
+        totalCount={allRows.length}
         unpaidCount={unpaidRows.length}
         noPicksCount={noPicksRows.length}
         onChange={setFilter}
@@ -207,6 +215,39 @@ export function ManagePanel({ pool: initialPool, members: initialMembers, guestM
         onMemberPaidToggle={handleMemberPaidToggle}
         onGuestPaidToggle={handleGuestPaidToggle}
       />
+    </div>
+  );
+}
+
+/* ── M-4: Invite / Share / Settings compact row ── */
+
+function InviteShareSettingsRow({
+  poolId,
+  status,
+  shareCopied,
+  onShareCopy,
+}: {
+  poolId: string;
+  status: string;
+  shareCopied: boolean;
+  onShareCopy: () => void;
+}) {
+  const showSettings = ["SETUP", "OPEN"].includes(status);
+  const cardClass = "flex-1 flex items-center justify-center bg-white border-[0.5px] border-[#E2DDD5] rounded-[8px] p-[10px] min-h-[44px] font-sans text-[12px] font-medium cursor-pointer hover:bg-[#F5F2EB] transition-colors duration-200";
+
+  return (
+    <div className="flex gap-2">
+      <Link href={`/pool/${poolId}/invite`} className={`${cardClass} text-[#B09A60]`}>
+        Invite
+      </Link>
+      <button onClick={onShareCopy} className={`${cardClass} text-[#6B6560]`}>
+        {shareCopied ? "Copied!" : "Share"}
+      </button>
+      {showSettings && (
+        <Link href={`/pool/${poolId}/manage`} className={`${cardClass} text-[#6B6560]`}>
+          Settings
+        </Link>
+      )}
     </div>
   );
 }

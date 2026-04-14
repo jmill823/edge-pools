@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { PoolCard, PoolItem } from "./_components/PoolCard";
 import { CreatePoolForm } from "./_components/CreatePoolForm";
 
@@ -36,6 +37,7 @@ export default function DashboardPage() {
   const commissionerPools = pools.filter((p) => p.isOrganizer && p.status !== "ARCHIVED");
   const playerPools = pools.filter((p) => !p.isOrganizer && p.status !== "ARCHIVED");
   const archivedPools = pools.filter((p) => p.status === "ARCHIVED");
+  const hasAnyPools = pools.length > 0;
 
   function handleJoin(e: React.FormEvent) {
     e.preventDefault();
@@ -44,61 +46,122 @@ export default function DashboardPage() {
 
   if (loading) return null;
 
-  return (
-    <div className="mx-auto max-w-content px-4 py-6 space-y-6 pb-8">
-      {/* Title + Join */}
-      <div className="flex items-center justify-between">
-        <h1 className="font-sans text-[18px] font-medium text-[#1A1A18]">Dashboard</h1>
-        <button
-          onClick={() => setShowJoin(!showJoin)}
-          className="rounded-[6px] border border-[#E2DDD5] bg-white text-[#1A1A18] font-sans text-[11px] font-medium px-3 py-2 hover:bg-[#F5F2EB] transition-colors duration-200 cursor-pointer min-h-[44px]"
-        >
-          Join a pool
-        </button>
-      </div>
-
-      {showJoin && (
-        <form onSubmit={handleJoin} className="flex gap-2">
-          <input type="text" value={joinCode} onChange={(e) => setJoinCode(e.target.value)}
-            placeholder="Invite code" maxLength={8} autoFocus
-            className="flex-1 rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-mono text-sm tracking-widest text-center focus:border-[#1B5E3B] focus:outline-none focus:ring-2 focus:ring-[#1B5E3B]/15 min-h-[44px]" />
-          <button type="submit" disabled={!joinCode.trim()}
-            className="rounded-[6px] bg-[#2D7A4F] text-white font-sans text-[13px] font-medium px-5 py-2.5 hover:bg-[#246840] transition-colors duration-200 cursor-pointer min-h-[44px] disabled:opacity-40">
-            Join
+  // D-6: Empty state (no pools at all)
+  if (!hasAnyPools) {
+    return (
+      <div className="mx-auto max-w-content px-4 py-8" style={{ background: "#FAFAFA" }}>
+        <div className="bg-white border-[0.5px] border-[#E2DDD5] rounded-[8px] p-6 text-center mt-8">
+          <h2 className="font-sans text-[16px] font-semibold text-[#1A1A18]">Create your first pool</h2>
+          <p className="font-sans text-[13px] text-[#6B6560] mt-2">Set up a golf pool in under 3 minutes</p>
+          <Link href="/create">
+            <button
+              className="w-full mt-5 rounded-[8px] text-white font-sans text-[15px] font-semibold py-[14px] min-h-[48px] cursor-pointer"
+              style={{ background: "linear-gradient(135deg, #5A8A5E, #4A7A4E)" }}
+            >
+              Create a pool
+            </button>
+          </Link>
+          <button
+            onClick={() => setShowJoin(true)}
+            className="mt-2 font-sans text-[12px] font-medium text-[#B09A60] cursor-pointer hover:underline"
+          >
+            or Join a pool
           </button>
-        </form>
-      )}
+          {/* D-7: Inline join */}
+          {showJoin && (
+            <form onSubmit={handleJoin} className="flex gap-2 mt-3">
+              <input
+                type="text"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value)}
+                placeholder="Enter invite code"
+                maxLength={8}
+                autoFocus
+                className="flex-1 rounded-[8px] border-[0.5px] border-[#E2DDD5] bg-white px-4 py-3 font-sans text-[14px] text-center focus:border-[#B09A60] focus:outline-none focus:ring-2 focus:ring-[#B09A60]/15 min-h-[44px]"
+              />
+              <button
+                type="submit"
+                disabled={!joinCode.trim()}
+                className="font-sans text-[13px] font-medium text-[#B09A60] px-4 py-3 cursor-pointer disabled:opacity-40 min-h-[44px]"
+              >
+                Go
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  }
 
-      {/* My Pools */}
+  return (
+    <div className="mx-auto max-w-content px-4 py-6 space-y-6 pb-8" style={{ background: "#FAFAFA" }}>
+      {/* D-4: "My pools" section with inline actions */}
       {commissionerPools.length > 0 && (
         <section>
-          <p className="font-sans text-[12px] font-medium text-[#A39E96] uppercase tracking-[0.5px] mb-2">My pools</p>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="font-sans text-[14px] font-semibold text-[#1A1A18]">My pools</h2>
+            <div className="flex items-center gap-3">
+              <Link href="/create" className="font-sans text-[12px] font-medium text-[#B09A60] hover:underline">
+                + Create
+              </Link>
+              <button
+                onClick={() => setShowJoin(!showJoin)}
+                className="font-sans text-[12px] font-medium text-[#6B6560] hover:underline cursor-pointer"
+              >
+                Join
+              </button>
+            </div>
+          </div>
+          {/* D-7: Inline join */}
+          {showJoin && (
+            <form onSubmit={handleJoin} className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value)}
+                placeholder="Enter invite code"
+                maxLength={8}
+                autoFocus
+                className="flex-1 rounded-[8px] border-[0.5px] border-[#E2DDD5] bg-white px-4 py-3 font-sans text-[14px] text-center focus:border-[#B09A60] focus:outline-none focus:ring-2 focus:ring-[#B09A60]/15 min-h-[44px]"
+              />
+              <button
+                type="submit"
+                disabled={!joinCode.trim()}
+                className="font-sans text-[13px] font-medium text-[#B09A60] px-4 py-3 cursor-pointer disabled:opacity-40 min-h-[44px]"
+              >
+                Go
+              </button>
+            </form>
+          )}
           <div className="grid grid-cols-2 gap-2">
             {commissionerPools.map((p) => <PoolCard key={p.id} pool={p} variant="commissioner" />)}
           </div>
         </section>
       )}
 
-      {/* Pools I'm In */}
+      {/* "Pools I'm in" section — no actions on right */}
       {playerPools.length > 0 && (
         <section>
-          <p className="font-sans text-[12px] font-medium text-[#A39E96] uppercase tracking-[0.5px] mb-2">Pools I&apos;m in</p>
+          <h2 className="font-sans text-[14px] font-semibold text-[#1A1A18] mb-2">Pools I&apos;m in</h2>
           <div className="grid grid-cols-2 gap-2">
             {playerPools.map((p) => <PoolCard key={p.id} pool={p} variant="player" />)}
           </div>
         </section>
       )}
 
-      {/* Past Pools */}
+      {/* D-5: Past pools collapsible */}
       {archivedPools.length > 0 && (
         <section>
-          <button onClick={() => setPastOpen(!pastOpen)} className="flex items-center gap-1.5 cursor-pointer w-full">
-            <p className="font-sans text-[12px] font-medium text-[#A39E96] uppercase tracking-[0.5px]">Past pools</p>
-            <svg className={`h-3 w-3 text-[#A39E96] transition-transform duration-200 ${pastOpen ? "rotate-180" : ""}`}
-              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          <button onClick={() => setPastOpen(!pastOpen)} className="flex items-center gap-1.5 cursor-pointer">
+            <span className="font-sans text-[12px] font-medium text-[#A39E96]">
+              Past pools ({archivedPools.length})
+            </span>
+            <svg
+              className={`h-3 w-3 text-[#A39E96] transition-transform duration-200 ${pastOpen ? "rotate-90" : ""}`}
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
-            <span className="font-sans text-[10px] text-[#A39E96]">({archivedPools.length})</span>
           </button>
           {pastOpen && (
             <div className="grid grid-cols-2 gap-2 mt-2">
@@ -108,7 +171,24 @@ export default function DashboardPage() {
         </section>
       )}
 
-      {/* Create a Pool — always visible */}
+      {/* If user has no commissioner pools but has player pools, show Create + Join at bottom */}
+      {commissionerPools.length === 0 && playerPools.length > 0 && (
+        <section>
+          <div className="flex items-center gap-3">
+            <Link href="/create" className="font-sans text-[12px] font-medium text-[#B09A60] hover:underline">
+              + Create a pool
+            </Link>
+            <button
+              onClick={() => setShowJoin(!showJoin)}
+              className="font-sans text-[12px] font-medium text-[#6B6560] hover:underline cursor-pointer"
+            >
+              Join a pool
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* Create a Pool form — always visible at bottom */}
       <section>
         <p className="font-sans text-[12px] font-medium text-[#A39E96] uppercase tracking-[0.5px] mb-3">Create a pool</p>
         <CreatePoolForm />
