@@ -29,7 +29,6 @@ export function MoreDrawer({ poolId, onClose }: MoreDrawerProps) {
           { icon: "board", label: "Board", route: `/pool/${poolId}/leaderboard` },
           { icon: "picks", label: "Picks", route: `/pool/${poolId}/picks` },
           { icon: "pool", label: "Pool", route: `/pool/${poolId}/manage` },
-          { icon: "settings", label: "Pool Settings", route: `/pool/${poolId}/manage` },
         ]
       : []),
     { icon: "user", label: "Account", route: "/account" },

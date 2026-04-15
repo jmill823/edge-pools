@@ -19,7 +19,7 @@
   /* Theme Layer (swappable per tournament — gold is default) */
   --theme-primary: #B09A60;
   --theme-text: #9E8A52;
-  --theme-active: #9E8A52;
+  --theme-active: #B09A60;
   --theme-dark: #5C4E20;
 
   /* Neutral Layer (never changes) */

@@ -60,12 +60,17 @@ function TiltLogo() {
     <Link
       href={href}
       className="inline-flex flex-col items-center"
-      style={{ transform: "rotate(-3deg)" }}
+      style={{
+        transform: "rotate(-3deg)",
+        transformOrigin: "left center",
+        paddingRight: "6px",
+      }}
     >
       <span
         className="font-sans text-[28px] font-black italic leading-none"
         style={{
           letterSpacing: "-0.5px",
+          paddingRight: "2px",
           background: "linear-gradient(135deg, #9E8A52, #8A7844)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",

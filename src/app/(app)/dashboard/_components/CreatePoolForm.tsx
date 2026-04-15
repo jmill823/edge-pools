@@ -200,12 +200,12 @@ export function CreatePoolForm() {
           <div>
             <label className="block font-sans text-[10px] font-medium text-[#6B6560] mb-1">Pool name</label>
             <input type="text" value={poolName} onChange={(e) => setPoolName(e.target.value)} placeholder="e.g., Masters Pool 2026"
-              className="w-full rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-sans text-[13px] focus:border-[#1B5E3B] focus:outline-none focus:ring-2 focus:ring-[#1B5E3B]/15 min-h-[44px]" />
+              className="w-full rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-sans text-[13px] focus:border-[#B09A60] focus:outline-none focus:ring-2 focus:ring-[#B09A60]/15 min-h-[44px]" />
           </div>
           <div>
             <label className="block font-sans text-[10px] font-medium text-[#6B6560] mb-1">Picks deadline</label>
             <input type="datetime-local" value={picksDeadline} onChange={(e) => setPicksDeadline(e.target.value)}
-              className="w-full rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-mono text-[13px] focus:border-[#1B5E3B] focus:outline-none focus:ring-2 focus:ring-[#1B5E3B]/15 min-h-[44px]" />
+              className="w-full rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-mono text-[13px] focus:border-[#B09A60] focus:outline-none focus:ring-2 focus:ring-[#B09A60]/15 min-h-[44px]" />
           </div>
           <div>
             <label className="block font-sans text-[10px] font-medium text-[#6B6560] mb-1">Max entries per player</label>
@@ -225,12 +225,12 @@ export function CreatePoolForm() {
               rosterRuleCount={scoringConfig.rosterRuleCount} categoryCount={categories.length || 9} onChange={setScoringConfig} />
           </div>
           {!showRules ? (
-            <button onClick={() => setShowRules(true)} className="font-sans text-[11px] text-[#1B5E3B] cursor-pointer hover:underline">+ Add house rules</button>
+            <button onClick={() => setShowRules(true)} className="font-sans text-[11px] text-[#B09A60] cursor-pointer hover:underline">+ Add house rules</button>
           ) : (
             <div>
               <label className="block font-sans text-[10px] font-medium text-[#6B6560] mb-1">House rules (optional)</label>
               <textarea value={rules} onChange={(e) => setRules(e.target.value)} placeholder="Prize structure, tiebreakers, etc." rows={3}
-                className="w-full rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-sans text-[13px] focus:border-[#1B5E3B] focus:outline-none focus:ring-2 focus:ring-[#1B5E3B]/15 resize-none" />
+                className="w-full rounded-[6px] border border-[#E2DDD5] bg-white px-3 py-2 font-sans text-[13px] focus:border-[#B09A60] focus:outline-none focus:ring-2 focus:ring-[#B09A60]/15 resize-none" />
             </div>
           )}
         </div>
@@ -248,7 +248,7 @@ export function CreatePoolForm() {
 
       {/* Submit */}
       <button onClick={handleSubmit} disabled={!canSubmit}
-        className="w-full rounded-[6px] bg-[#2D7A4F] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#246840] transition-colors duration-200 cursor-pointer disabled:opacity-40 min-h-[44px]">
+        className="w-full rounded-[6px] bg-[#B09A60] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#9E8A52] transition-colors duration-200 cursor-pointer disabled:opacity-40 min-h-[44px]">
         {submitting ? "Creating..." : "Create Pool"}
       </button>
       <p className="font-sans text-[10px] text-[#A39E96] text-center">You can edit all settings after creating</p>

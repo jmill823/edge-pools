@@ -12,6 +12,8 @@ interface InviteEmailParams {
   templateName: string;
   categoryCount: number;
   inviteUrl: string;
+  picksDeadline?: string | null;
+  maxEntries?: number | null;
 }
 
 export async function sendInviteEmail(params: InviteEmailParams) {
@@ -27,12 +29,14 @@ export async function sendInviteEmail(params: InviteEmailParams) {
     templateName,
     categoryCount,
     inviteUrl,
+    picksDeadline,
+    maxEntries,
   } = params;
 
   const { error } = await resend.emails.send({
     from: "TILT <noreply@playtilt.io>",
     to,
-    subject: `You're invited to join ${poolName} on TILT`,
+    subject: `Join ${poolName} on Tilt \u2014 Ditch the spreadsheet.`,
     html: buildInviteHtml({
       commissionerName,
       poolName,
@@ -40,6 +44,8 @@ export async function sendInviteEmail(params: InviteEmailParams) {
       templateName,
       categoryCount,
       inviteUrl,
+      picksDeadline,
+      maxEntries,
     }),
   });
 
@@ -48,15 +54,35 @@ export async function sendInviteEmail(params: InviteEmailParams) {
   }
 }
 
+function formatDeadline(deadline: string | null | undefined): string {
+  if (!deadline) return "\u2014";
+  try {
+    const d = new Date(deadline);
+    if (isNaN(d.getTime())) return "\u2014";
+    return d.toLocaleString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      timeZoneName: "short",
+    });
+  } catch {
+    return "\u2014";
+  }
+}
+
 function buildInviteHtml(params: Omit<InviteEmailParams, "to">) {
   const {
     commissionerName,
     poolName,
-    tournamentName,
-    templateName,
-    categoryCount,
     inviteUrl,
+    picksDeadline,
+    maxEntries,
   } = params;
+
+  const deadlineDisplay = formatDeadline(picksDeadline);
+  const entriesDisplay = maxEntries && maxEntries > 0 ? String(maxEntries) : "1";
 
   return `
 <!DOCTYPE html>
@@ -72,24 +98,28 @@ function buildInviteHtml(params: Omit<InviteEmailParams, "to">) {
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background-color:#FFFFFF;border-radius:12px;border:1px solid #E2DDD5;padding:40px 32px;">
           <tr>
             <td>
-              <p style="margin:0 0 24px;font-size:16px;line-height:1.6;color:#2C2925;">
-                <strong>${commissionerName}</strong> invited you to join their golf pool for <strong>${tournamentName}</strong>.
+              <p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:#2C2925;">
+                Hi &mdash; you have been invited to join <strong>${poolName}</strong>.
               </p>
 
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAFAFA;border-radius:8px;padding:20px;margin-bottom:24px;">
-                <tr><td style="padding:4px 0;font-size:14px;color:#6B6560;">Pool</td><td style="padding:4px 0;font-size:14px;color:#2C2925;font-weight:600;text-align:right;">${poolName}</td></tr>
-                <tr><td style="padding:4px 0;font-size:14px;color:#6B6560;">Format</td><td style="padding:4px 0;font-size:14px;color:#2C2925;text-align:right;">${templateName} (${categoryCount} categories)</td></tr>
-                <tr><td style="padding:4px 0;font-size:14px;color:#6B6560;">Tournament</td><td style="padding:4px 0;font-size:14px;color:#2C2925;text-align:right;">${tournamentName}</td></tr>
+              <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#2C2925;">
+                Here&rsquo;s the details:
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+                <tr><td style="padding:4px 0;font-size:14px;color:#2C2925;"><strong>Deadline:</strong> ${deadlineDisplay}</td></tr>
+                <tr><td style="padding:4px 0;font-size:14px;color:#2C2925;"><strong>Entry(s):</strong> ${entriesDisplay}</td></tr>
+                <tr><td style="padding:4px 0;font-size:14px;color:#2C2925;"><strong>Host:</strong> ${commissionerName}</td></tr>
               </table>
 
-              <p style="margin:0 0 24px;font-size:14px;color:#6B6560;">
-                Join and make your picks &mdash; no account needed.
+              <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#2C2925;">
+                More details on TILT: <a href="${inviteUrl}" style="color:#B09A60;font-weight:600;text-decoration:underline;">${inviteUrl}</a>
               </p>
 
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="${inviteUrl}" style="display:inline-block;background:linear-gradient(to right,#10B981,#059669);color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:8px;">
+                    <a href="${inviteUrl}" style="display:inline-block;background:linear-gradient(135deg,#B09A60,#9E8A52);color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:8px;">
                       Join Pool &rarr;
                     </a>
                   </td>

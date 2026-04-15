@@ -195,7 +195,7 @@ export function ActionBanner({
           <button
             onClick={() => setShowConfirm(true)}
             disabled={loading}
-            className="mt-3 w-full rounded-[6px] bg-[#2D7A4F] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#246840] transition-colors duration-200 cursor-pointer disabled:opacity-50 min-h-[44px]"
+            className="mt-3 w-full rounded-[6px] bg-[#B09A60] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#9E8A52] transition-colors duration-200 cursor-pointer disabled:opacity-50 min-h-[44px]"
           >
             {loading ? "Updating..." : "Go Live"}
           </button>
@@ -280,7 +280,7 @@ export function ActionBanner({
           <button
             onClick={pollScores}
             disabled={loading}
-            className="mt-3 w-full rounded-[6px] bg-[#2D7A4F] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#246840] transition-colors duration-200 cursor-pointer disabled:opacity-50 min-h-[44px]"
+            className="mt-3 w-full rounded-[6px] bg-[#B09A60] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#9E8A52] transition-colors duration-200 cursor-pointer disabled:opacity-50 min-h-[44px]"
           >
             {loading ? "Polling..." : "Poll Scores Now"}
           </button>

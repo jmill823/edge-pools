@@ -147,7 +147,7 @@ export default function GuestLeaderboardPage({ params }: { params: { id: string 
         <a
           href={`/join/${pool.inviteCode}`}
           className="inline-block rounded-[8px] px-6 py-3 font-sans text-sm font-semibold text-white min-h-[44px]"
-          style={{ background: "linear-gradient(135deg, #5A8A5E, #4A7A4E)" }}
+          style={{ background: "linear-gradient(135deg, #B09A60, #9E8A52)" }}
         >
           Join this pool
         </a>

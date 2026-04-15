@@ -155,7 +155,7 @@ export default function InvitePage({ params }: { params: { id: string } }) {
           </p>
           <button
             onClick={copyLink}
-            className="shrink-0 rounded-[6px] bg-[#2D7A4F] text-white font-sans text-[11px] font-medium px-3 py-2 hover:bg-[#246840] transition-colors duration-200 cursor-pointer min-h-[36px]"
+            className="shrink-0 rounded-[6px] bg-[#B09A60] text-white font-sans text-[11px] font-medium px-3 py-2 hover:bg-[#9E8A52] transition-colors duration-200 cursor-pointer min-h-[36px]"
           >
             {copied ? "Copied!" : "Copy"}
           </button>
@@ -243,7 +243,7 @@ export default function InvitePage({ params }: { params: { id: string } }) {
         <button
           onClick={openPool}
           disabled={opening}
-          className="w-full rounded-[6px] bg-[#2D7A4F] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#246840] transition-colors duration-200 cursor-pointer disabled:opacity-50 min-h-[44px]"
+          className="w-full rounded-[6px] bg-[#B09A60] text-white font-sans text-[13px] font-medium py-2.5 hover:bg-[#9E8A52] transition-colors duration-200 cursor-pointer disabled:opacity-50 min-h-[44px]"
         >
           {opening ? "Opening..." : "Open Pool for Players"}
         </button>

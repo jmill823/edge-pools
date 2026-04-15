@@ -17,10 +17,10 @@ export default function JoinPage() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-12">
-      <h1 className="text-2xl font-bold text-green-900 text-center">
+      <h1 className="text-2xl font-bold text-text-primary text-center">
         Join a Pool
       </h1>
-      <p className="mt-2 text-sm text-green-600 text-center">
+      <p className="mt-2 text-sm text-text-secondary text-center">
         Enter the invite code shared by your pool organizer.
       </p>
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -29,7 +29,7 @@ export default function JoinPage() {
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Enter invite code"
-          className="w-full rounded-md border border-green-200 px-4 py-3 text-center text-lg font-mono tracking-widest focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full rounded-md border border-[#E2DDD5] px-4 py-3 text-center text-lg font-mono tracking-widest focus:border-[#B09A60] focus:outline-none focus:ring-1 focus:ring-[#B09A60]"
           maxLength={8}
         />
         <Button variant="primary" type="submit" disabled={!code.trim()} className="w-full">

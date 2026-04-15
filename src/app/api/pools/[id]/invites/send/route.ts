@@ -23,6 +23,7 @@ export async function POST(
       categories: { select: { id: true } },
     },
   });
+  // picksDeadline and maxEntries are scalar fields on the Pool model — available via pool.picksDeadline / pool.maxEntries
 
   if (!pool || pool.organizerId !== user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -85,6 +86,8 @@ export async function POST(
         templateName,
         categoryCount: pool.categories.length,
         inviteUrl,
+        picksDeadline: pool.picksDeadline ? pool.picksDeadline.toISOString() : null,
+        maxEntries: pool.maxEntries,
       });
 
       // Upsert invite record

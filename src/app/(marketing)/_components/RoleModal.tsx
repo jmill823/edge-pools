@@ -305,7 +305,7 @@ function FlowView({
       {/* CTA — gold button */}
       <button
         onClick={() => router.push(ctaHref)}
-        className="mt-6 flex items-center justify-center w-full rounded-[6px] bg-gradient-to-r from-[#9E8A52] to-[#8A7844] py-3.5 font-sans text-[14px] font-bold uppercase tracking-[0.5px] text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer"
+        className="mt-6 flex items-center justify-center w-full rounded-[6px] bg-gradient-to-br from-[#B09A60] to-[#9E8A52] py-3.5 font-sans text-[14px] font-bold uppercase tracking-[0.5px] text-white hover:opacity-90 transition-opacity duration-200 active:scale-[0.98] min-h-[44px] cursor-pointer"
       >
         {ctaLabel}
       </button>

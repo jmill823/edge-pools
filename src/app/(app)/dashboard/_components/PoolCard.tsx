@@ -75,7 +75,7 @@ export function PoolCard({
 
   return (
     <Link href={href} className="block cursor-pointer">
-      <div className={`bg-white border-[0.5px] border-[#E2DDD5] rounded-[8px] overflow-hidden hover:border-[#1B5E3B]/40 transition-colors duration-200 ${archived ? "opacity-60" : ""}`}>
+      <div className={`bg-white border-[0.5px] border-[#E2DDD5] rounded-[8px] overflow-hidden hover:border-[#B09A60]/40 transition-colors duration-200 ${archived ? "opacity-60" : ""}`}>
         {/* D-3: 4px status color strip */}
         <div style={{ height: "4px", backgroundColor: stripColor }} />
         <div className="p-[10px]">

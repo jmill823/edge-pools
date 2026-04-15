@@ -83,7 +83,10 @@ export default function CreatePoolPage() {
       fetch("/api/golfers").then((r) => r.json()),
     ])
       .then(([t, tmpl, g]) => {
-        const tournamentList = t as Tournament[];
+        // Filter out Valero Texas Open from the selector (per QA-027a)
+        const tournamentList = (t as Tournament[]).filter(
+          (x) => !x.name.toLowerCase().includes("valero")
+        );
         setTournaments(tournamentList);
         setAllTemplates(tmpl);
         setAllGolfers(g);
@@ -515,7 +518,7 @@ export default function CreatePoolPage() {
             ? "text-white cursor-pointer"
             : "bg-[#A39E96] text-white cursor-not-allowed"
         }`}
-        style={canSubmit ? { background: "linear-gradient(135deg, #5A8A5E, #4A7A4E)" } : undefined}
+        style={canSubmit ? { background: "linear-gradient(135deg, #B09A60, #9E8A52)" } : undefined}
       >
         {submitting ? "Creating..." : "Create pool"}
       </button>

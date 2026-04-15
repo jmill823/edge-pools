@@ -250,7 +250,7 @@ export default function JoinPoolPage({ params }: { params: { inviteCode: string 
             <Button
               type="submit"
               variant="primary"
-              className="w-full !bg-gradient-to-r !from-[#2D7A4F] !to-[#3A9963]"
+              className="w-full !bg-gradient-to-r !from-[#B09A60] !to-[#9E8A52]"
               loading={guestJoining}
             >
               Make My Picks &rarr;

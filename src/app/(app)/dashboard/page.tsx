@@ -56,7 +56,7 @@ export default function DashboardPage() {
           <Link href="/create">
             <button
               className="w-full mt-5 rounded-[8px] text-white font-sans text-[15px] font-semibold py-[14px] min-h-[48px] cursor-pointer"
-              style={{ background: "linear-gradient(135deg, #5A8A5E, #4A7A4E)" }}
+              style={{ background: "linear-gradient(135deg, #B09A60, #9E8A52)" }}
             >
               Create a pool
             </button>

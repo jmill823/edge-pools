@@ -2,13 +2,11 @@ import { NextResponse, NextRequest } from "next/server";
 
 // Static imports so Next.js bundles these into the serverless function
 import mastersClassic from "../../../data/templates/masters-classic.json";
-import valeroTexasOpen from "../../../data/templates/valero-texas-open-2026.json";
 import rbcHeritageQuick6 from "../../../data/templates/rbc-heritage-quick-6.json";
 import rbcHeritageClassic from "../../../data/templates/rbc-heritage-classic.json";
 
 const ALL_TEMPLATES = [
   mastersClassic,
-  valeroTexasOpen,
   rbcHeritageQuick6,
   rbcHeritageClassic,
 ];
