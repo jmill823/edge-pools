@@ -228,7 +228,7 @@ export default function PicksPage({ params }: { params: { id: string } }) {
     : isMultiEntry ? `New Entry (${entryCount + 1} of ${maxEntries})` : "Make your picks";
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)] sm:h-[calc(100vh-180px)] mx-auto w-full md:w-[80%] md:max-w-[1200px]">
+    <div className="flex flex-col h-[calc(100vh-120px)] sm:h-auto mx-auto w-full md:w-[80%] md:max-w-[1200px]">
       {/* Header */}
       <div className="px-4 pt-3 pb-2 shrink-0">
         <div className="flex items-center justify-between">

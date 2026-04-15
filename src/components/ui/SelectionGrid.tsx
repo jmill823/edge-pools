@@ -63,10 +63,10 @@ export function SelectionGrid({
   return (
     <div
       ref={containerRef}
-      className="overflow-x-auto flex-1 min-h-0 px-3 sm:px-6"
+      className="overflow-x-auto flex-1 min-h-0 sm:min-h-0 sm:flex-none sm:overflow-x-auto px-3 sm:px-6 sm:flex sm:justify-center"
       style={{ WebkitOverflowScrolling: "touch" }}
     >
-      <table className="border-collapse min-w-max">
+      <table className="border-collapse min-w-max mx-auto">
         {/* Column headers */}
         <thead className="sticky top-0 z-10">
           <tr>
