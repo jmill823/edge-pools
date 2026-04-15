@@ -174,6 +174,89 @@ Do NOT silently correct deviations.
 
 ---
 
+## Mandatory Verification Protocol
+
+Every CC spec MUST include three verification sections. If a spec arrives without them, CC must flag the gap before building — do NOT proceed without verification criteria.
+
+### 1. Flow Trace Checks (FT-)
+
+Step-by-step user flows that CC must manually verify on the preview deploy. Format:
+
+```
+FT-1: [Flow name]
+  Do X
+  ✅ See Y
+  Do Z
+  ✅ See W
+```
+
+Every new feature or redesign needs at least one flow trace per user-facing interaction. If a user can tap it, there's a flow trace for it.
+
+### 2. State Matrix Compliance Checks (SM-)
+
+For any feature that behaves differently across pool statuses (SETUP, OPEN, LOCKED, LIVE, COMPLETE, ARCHIVED), verify the correct behavior in EACH status. Reference STATE-MATRIX.md for the source of truth on what's allowed where.
+
+### 3. Regression Checks (REG-)
+
+Verify that ALL existing features still work after the build. At minimum, check:
+
+- Leaderboard renders (gold header, score colors, entry expansion, "You" row)
+- Picks grid works (categories, selection, cross-pick validation, submit)
+- Guest flow works (invite link → team name + email → picks → appears on leaderboard)
+- Landing page renders (wordmark, CTAs, background color, mini leaderboard)
+- BottomNav works (5 tabs, gold active state, MORE → MoreDrawer)
+- Payment tracker works (guest badge, paid toggle, email column)
+- Scoring engine works (Poll Scores Now → leaderboard updates)
+- Auth flows work (sign in → dashboard, sign out → landing page)
+
+Specs may add additional regression checks specific to recently shipped features. Regression checks compound — each session re-verifies everything before it.
+
+### Gate B Enforcement
+
+Gate B (preview deploy phone test) REQUIRES passing ALL flow traces, ALL state matrix checks, AND ALL regression checks before merge approval. Do NOT request merge if any check fails — fix first, re-verify, then request.
+
+### Post-Build Auto-Verify
+
+After completing a build, CC MUST run every Flow Trace (FT-), State Matrix (SM-), and Regression (REG-) check from the spec BEFORE reporting "ready for Gate B." This is not optional. Do not request merge approval until all checks are run and results reported.
+
+**Report format:**
+```
+FT-1: PASS — [one-line evidence]
+FT-2: FAIL — [what's wrong]
+```
+
+If any check FAILS:
+1. Fix the issue
+2. Re-run the failing check AND all regression checks
+3. Push updated commit
+4. Report full results again
+
+CC does NOT say "ready for Gate B" until every check shows PASS. Jeff should never have to send a separate prompt asking CC to verify — verification is automatic.
+
+---
+
+## Intelligence System (INFRA-002)
+
+This project is connected to a cross-project intelligence wiki at `jmill823/intel`.
+Before starting any build, clone that repo and read the relevant wiki pages.
+
+**Mapping:**
+- Feature/UI build → `intel/wiki/build-patterns.md` + `intel/wiki/product-decisions.md`
+- Scoring engine / data work → `intel/wiki/build-patterns.md` + `intel/wiki/data-infrastructure.md`
+- Outreach / cold email → `intel/wiki/outreach-patterns.md` + `intel/wiki/sales-positioning.md`
+- Agent or infrastructure work → `intel/wiki/agent-architecture.md` + `intel/wiki/tools-and-infrastructure.md`
+
+After any build, ask: "Did I encounter something NOT already in the wiki pages I read at session start?" If yes, write a raw file to `intel/raw/` with:
+- `source_type: build_lesson`
+- `projects: [tilt]`
+- `topics: [the relevant wiki domain tag from schema.md]`
+
+The learning must be specific and new — not a restatement of existing principles. If the build went as expected, write nothing.
+
+Do NOT update wiki pages — that happens during the next compile cycle.
+
+---
+
 ## Autonomous Execution Rules
 
 1. Dependency version mismatch but compatible → document, continue
