@@ -93,6 +93,12 @@ CLAUDE.md has the rules. This file has the experience. Every lesson here was lea
 - Organizer-only routes must additionally check `PoolRole.ORGANIZER` for that specific pool.
 - Cross-pool admin access (golfer mapping, manual scores): check if user is organizer of ANY pool. (Standing rule)
 
+### Prefer UI Filtering Over DB Deletion for Entity Removal
+- When removing a data entity (tournament, template, golfer) from a selector, prefer a `.filter()` in the UI/API layer over a DB deletion if existing records may reference it.
+- DB migration/deletion is riskier than UI filtering for MVP — can break foreign keys, orphan related records, or require backfills.
+- Pattern: filter at the fetch boundary (`.filter(x => !x.name.toLowerCase().includes("valero"))`) and document the deviation. Ship it. Revisit with a proper migration later if/when the DB row is genuinely stale.
+- Valero Texas Open removal (QA-027a, Apr 14) followed this pattern — UI filter + deleted template JSON, no DB touch. (Quick bundle, Apr 14)
+
 ### No-Reuse Logic Is Per-Entry, Not Per-User
 - In multi-entry pools, the no-reuse rule (can't pick the same golfer in two categories) applies WITHIN each entry, NOT across entries.
 - Entry 1 and Entry 2 can both pick Scheffler — just not in two categories within the same entry. (D4, locked Mar 29)
