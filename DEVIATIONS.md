@@ -555,3 +555,50 @@
 - **What was found:** Compiled 83 players from the full committed field list.
 - **What was done:** All 83 loaded. Overlap counts exceed all minimums.
 - **Why:** Approximate count; actual field size varies by week.
+
+---
+
+## TILT MCP v1 — Day 2 (May 7, 2026)
+
+### DEV MCP2-1 — `@modelcontextprotocol/sdk` not added to package.json on Day 2
+- **Spec said:** Files to touch: `package.json — add @modelcontextprotocol/sdk dependency (MODIFY)`.
+- **What was found:** The MCP TypeScript SDK is primarily oriented toward stdio transports. For a Vercel-hosted Next.js App Router serverless deployment with HTTP transport, implementing JSON-RPC 2.0 dispatch directly in the route handler is simpler, lighter, and avoids transport-coupling.
+- **What was done:** Implemented JSON-RPC 2.0 dispatch directly in `src/app/api/mcp/[[...slug]]/route.ts`. No SDK dependency added. Server responds to `initialize`, `tools/list`, `tools/call`, and `ping`. Tool result envelopes match the MCP convention (`{content: [{type: "text", text}], structuredContent, isError}`).
+- **Why:** Spec § "Decisions you may make without coming back to Product" delegates library choices to CC. Will revisit on Day 4 alongside auth bridge design — if SDK provides useful auth/transport helpers we'll add it then.
+
+### DEV MCP2-2 — `current_standings` reads from Prisma directly, doesn't HTTP-fetch existing leaderboard route
+- **Spec said:** "Wraps: existing GET /api/pools/[id]/leaderboard". Files NOT to touch: existing API routes.
+- **What was found:** The existing leaderboard route uses Clerk session cookies via `currentUser()`. The MCP auth bridge ships Day 4. There's no clean way for the MCP tool to forward auth to an HTTP call against itself on Day 2, and extracting the route logic into a shared helper would require touching the existing route (forbidden).
+- **What was done:** `current_standings` queries Prisma directly and reuses the engine via `import { calculatePoolResults, getCategoryAbbrev } from "@/lib/scoring/engine"`. The `buildGolferDataMap` helper is duplicated (~70 lines) — the alternative is touching the existing route to extract it. The data contract delivered to the agent is the same; the wrap relationship is preserved at the contract level, not the implementation level.
+- **Why:** Files NOT to touch list (per spec) explicitly forbids modifying `src/app/api/pools/[id]/leaderboard/route.ts`. The duplication is bounded (read-only assembly logic) and isolated to the MCP tool. **Build lesson candidate for `ops/canonical/BUILD-LESSONS.md` after Day 7:** future MCP wrappers should plan for shared-helper extraction at spec-time so Day-2-style duplication isn't forced.
+
+### DEV MCP2-3 — `late_pickers.last_seen` returns `joinedAt` instead of null — RESOLVED in v0.6 patch
+- **Spec said:** `last_seen` field "comes from the member record if available; null otherwise."
+- **What was found:** No `last_seen` column exists on `PoolMember`. `joinedAt` is the closest signal.
+- **What was done initially (Day 2 build):** Returning `joinedAt.toISOString()` as `last_seen`. More useful to the agent than null and gives the commissioner a "first seen" hint.
+- **Resolution (v0.6 patch, May 8):** Per Product watch-item #2 — renamed the response field to `joined_at` to match the data semantics. Both `LatePicker` interface in `lib/types.ts` and the tool mapping in `tools/late_pickers.ts` updated. Field name now matches the value returned, so agents can't misrepresent it.
+- **Why the rename matters:** Calling it `last_seen` while returning a join timestamp is a contract lie — the agent sees `last_seen: 2026-04-01T...` and tells the commissioner "they were last seen April 1," when really April 1 is just when they joined and never came back. `joined_at` is honest.
+
+### DEV MCP2-7 — Production guard added against `MCP_DEV_BYPASS_TOKEN`
+- **Spec said:** v0.6 watch-item #1: "Add a startup check that throws if `MCP_DEV_BYPASS_TOKEN` is set in `NODE_ENV=production`."
+- **What was done:** Added a module-load-time check at the top of `src/app/api/mcp/auth.ts`. If both conditions are true, the module throws on import — Next.js cold-starts will fail fast, surfacing the misconfiguration immediately. Also added a belt-and-suspenders check inside `resolveAuth()` that won't take the dev-bypass branch in production even if module load somehow succeeded.
+- **Why the load-time throw beats a runtime check:** A runtime check only fires when an MCP request comes in. The load-time throw fires on the first import in any function — `vercel deploy` will refuse to mark the deploy healthy if the function can't initialize, so the misconfig surfaces in CI rather than in a successful deploy that quietly leaves dev-bypass active.
+
+### DEV MCP2-4 — `market_coverage.field_pending` semantics derived from `lastSyncAt`
+- **Spec said:** Status enum `ready | field_pending | scoring_pending | unsupported`. No precise definition of `field_pending`.
+- **What was done:** Mapping rule encoded in `tools/market_coverage.ts`:
+  - `slashGolfTournId === null && status === "COMPLETE"` → `unsupported`
+  - `slashGolfTournId === null` (otherwise) → `scoring_pending`
+  - `slashGolfTournId set && status === "UPCOMING" && lastSyncAt === null` → `field_pending`
+  - everything else → `ready`
+- **Why:** The Tournament schema doesn't have a separate "field loaded" flag. `lastSyncAt === null` is the closest proxy for "we know about it but haven't pulled the field yet."
+
+### DEV MCP2-5 — Auth bridge stub ships before Clerk dashboard validation completes
+- **Spec said:** Day 4 auth bridge gated on Jeff's Clerk Apps dashboard check.
+- **What was done:** Day 2 ships `src/app/api/mcp/auth.ts` as a stub: returns `auth_bridge_pending` (HTTP 503) by default, and a dev-bypass path activated by `MCP_DEV_BYPASS_TOKEN` + `MCP_DEV_COMMISSIONER_USER_ID` env vars (both required) so Day 3 dogfood can run without the real bridge. Real Clerk OAuth handler still lands Day 4.
+- **Why:** Day 2 read tools need *some* auth surface to test the dispatch flow end-to-end. The stub gives a stable error contract that the real bridge will replace without breaking callers.
+
+### DEV MCP2-6 — Landing page (`src/app/mcp/page.tsx`) and footer line not built Day 2
+- **Spec said:** Files to touch lists both as NEW/MODIFY.
+- **What was done:** Both deferred to Day 5 per spec § Sprint timeline ("Day 5 (May 11): Distribution: 3 registries + footer line"). Day 2 scope is read tools.
+- **Why:** Following the spec's day-by-day timeline. Not actually a deviation — flagging here so a reviewer doesn't expect the landing page in the Day 2 PR.

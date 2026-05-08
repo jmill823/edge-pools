@@ -1,0 +1,16 @@
+{
+  "name": "tilt",
+  "title": "TILT — Golf pool management",
+  "version": "1.0.0-day2",
+  "vendor": "TILT (playtilt.io)",
+  "description": "Run a TILT golf pool from inside your AI assistant. Six commissioner tools: current_standings, replay_last_season, add_players, nudge_late_pickers, late_pickers, market_coverage.",
+  "endpoint": "/api/mcp",
+  "transport": "streamable-http",
+  "auth": {
+    "type": "oauth2",
+    "status": "pending_day_4",
+    "public_endpoints": ["/api/mcp/public/coverage"]
+  },
+  "homepage": "https://playtilt.io/mcp",
+  "support": "https://playtilt.io"
+}

@@ -19,6 +19,9 @@ export default clerkMiddleware(async (auth, req) => {
   if (pathname.startsWith('/api/templates')) return NextResponse.next()
   if (pathname.startsWith('/api/golfers')) return NextResponse.next()
   if (pathname.startsWith('/api/pools/join/')) return NextResponse.next()
+  // MCP server uses commissioner-scoped Bearer tokens, not Clerk session
+  // cookies. Auth is enforced inside the route handlers via auth.ts.
+  if (pathname.startsWith('/api/mcp/')) return NextResponse.next()
 
   // Guest player routes — no Clerk auth required
   if (pathname.match(/^\/api\/pools\/[^/]+\/guest\//)) return NextResponse.next()
